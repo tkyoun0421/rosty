@@ -6,6 +6,8 @@ export type UserStatus =
   | 'active'
   | 'suspended';
 
+export type ProfileGender = 'male' | 'female' | 'unspecified';
+
 export type AuthSource = 'demo' | 'supabase';
 
 export type AuthSession = {

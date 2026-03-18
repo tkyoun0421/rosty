@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Plan the next feature on top of the new auth session: real profile setup submission and `profiles` persistence.
+Plan the next feature on top of the completed profile submission flow: admin approval and member status management.
 
 ## Plan Doc
 
@@ -10,27 +10,26 @@ Plan the next feature on top of the new auth session: real profile setup submiss
 
 ## Last Completed
 
-Completed the Google OAuth and Supabase session integration task:
+Completed the profile setup and `profiles` persistence task:
 
-- Added a platform-aware Supabase auth client with secure persisted session storage for native and browser-safe storage for web.
-- Connected real Google OAuth start, callback code exchange, session restore, auth subscription, and sign-out into the existing auth shell.
-- Added safe `profiles` lookup with fallback to `employee` plus `profile_incomplete` when product profile data is missing.
-- Kept demo personas only as local non-production fallback entries.
-- Updated `.env.example` and the setup guide for Supabase-managed Google OAuth redirect configuration.
-- Archived the completed feature plan into `docs/development-plans/google-oauth-and-supabase-session/` with `plan.md` and `summary.md`.
+- Added validated profile input for real Supabase sessions.
+- Wrote the signed-in user's `profiles` row through a TanStack Query mutation and refreshed auth routing after submission.
+- Replaced the real-session placeholder on `Profile Setup` with the first actual form while preserving demo-mode transitions.
+- Added unit coverage for profile setup defaults and validation behavior.
+- Confirmed `GITHUB_PAT_TOKEN` is not referenced by the app codebase.
+- Archived the completed feature plan into `docs/development-plans/profile-setup-and-profiles-persistence/` with `plan.md` and `summary.md`.
 
 ## Next Action
 
-Lock the profile setup form and `profiles` upsert plan, then implement the real submission flow that moves a signed-in user out of the fallback state.
+Lock the admin approval and member-status management plan, then implement the path that moves pending users to `active` or `suspended`.
 
 ## Blockers
 
-Real end-to-end OAuth still requires Supabase Google provider configuration, including `rosty://auth/callback` and the active Expo web callback URL when browser testing is needed.
+Real end-to-end verification of profile submission still depends on the `profiles` table and matching self-write RLS policies existing in Supabase.
 
 ## Latest Verification
 
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm test`
-- Manual readback of edited files after shell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Encoding scan for mojibake markers in tracked app, src, docs, and env files returned no matches.
+- Repository search for `GITHUB_PAT_TOKEN` returned no tracked app usage.
