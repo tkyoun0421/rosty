@@ -34,6 +34,12 @@ Each agent has a narrow responsibility and a required handoff to the next stage.
 - Each completed task must end with a commit and push to the active remote branch.
 - Follow the secret handling rules in [docs/ops/secrets.md](docs/ops/secrets.md).
 
+## Editing Safety
+
+- When editing files from PowerShell on Windows, prefer literal here-strings or explicit line arrays over newline escape replacements in regex strings.
+- After any scripted write, immediately reopen the edited file and confirm there are no literal escape sequences, broken markdown headers, or encoding corruption.
+- If a non-default editing fallback is used because a patch tool failed, record that fallback in the task notes and verify the rendered file before continuing.
+
 ## Session Recovery
 
 - [`WORKLOG.md`](WORKLOG.md) is the single source of truth for the latest in-flight or recently completed task.
@@ -63,6 +69,17 @@ Each agent has a narrow responsibility and a required handoff to the next stage.
 - Use `skill-installer` only when a skill adds clear recurring value and does not conflict with repo rules, and only when the install target matches the repo policy.
 - Use `skill-creator` only after a workflow repeats enough to justify a project-local skill.
 - Project-local skills are deferred for now.
+
+## State Management Standards
+
+- `zustand` is the default library for client-owned app state such as auth shell state, view filters, temporary selections, cross-screen drafts, and other UI workflow state.
+- `zustand` must not be used as the primary cache for Supabase rows, API payloads, or other server-owned collections.
+- Keep Zustand stores feature-scoped under `src/features/<feature>/model/` by default. Promote a store to shared only when multiple features consume the same local state contract.
+- Persist only non-sensitive local state in Zustand. Do not persist access tokens, service keys, or other secrets through store middleware.
+- `@tanstack/react-query` is the default library for all server state, including Supabase reads, mutations, cache invalidation, background refetch, and loading or error lifecycle handling.
+- Every remote read should have a stable query key and a single query-function boundary. Every remote write should update or invalidate the affected query keys explicitly.
+- Screens must read server-owned data through query hooks instead of copying remote collections into Zustand.
+- When both libraries are involved, TanStack Query owns remote truth and Zustand owns local interaction state. Store only the local controls in Zustand and derive rendered data from query results.
 
 ## Release Gates
 
