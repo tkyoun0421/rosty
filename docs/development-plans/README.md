@@ -13,10 +13,12 @@ Implementation follows the plan, not the other way around.
 6. Update [`WORKLOG.md`](../../WORKLOG.md) again with the latest verification, blockers, and next action.
 7. End the completed task with a commit and push.
 8. If the task installs repo-local skills, commit the generated skills-lock.json and agent skill directories with the task.
+9. When the feature is completed, archive its plan artifacts into `docs/development-plans/<task-slug>/` and add a `summary.md` for the final handoff note.
 
 ## Naming
 
-- Use `YYYY-MM-DD-<task-slug>.md`.
+- Active plans may start as `YYYY-MM-DD-<task-slug>.md`.
+- Completed feature archives live under `docs/development-plans/<task-slug>/` and should include the detailed plan plus `summary.md`.
 - Keep one active plan per implementation task.
 
 ## Required Sections
@@ -62,4 +64,5 @@ Short description of the task and why it exists.
 
 - Observable completion conditions
 ```
+
 

@@ -2,22 +2,24 @@
 
 ## Current Task
 
-Await the next implementation task. The repo now has locked state management standards for `zustand` and `@tanstack/react-query`, plus editing safety rules for Windows shell-based file writes.
+Await the next implementation task. The auth shell and dashboard foundation is complete, and its plan is archived under the feature folder summary.
 
 ## Plan Doc
 
-- [2026-03-18-state-management-standards](docs/development-plans/2026-03-18-state-management-standards.md)
+- [auth-shell-and-dashboard-foundation summary](docs/development-plans/auth-shell-and-dashboard-foundation/summary.md)
 
 ## Last Completed
 
-Completed the state management standards task:
-- Added `State Management Standards` to `AGENTS.md` for the `zustand` and `@tanstack/react-query` ownership split.
-- Added `Editing Safety` rules to `AGENTS.md` so scripted writes on Windows require immediate readback verification.
-- Confirmed both libraries are already present in `package.json`, so no dependency install was required.
+Completed the auth shell and dashboard foundation task:
+- Added a persisted Zustand auth store and guarded auth/status routes.
+- Replaced the bootstrap landing screen with role-aware employee and manager home entry.
+- Added TanStack Query-backed dashboard data for the home shells.
+- Archived the completed feature plan into `docs/development-plans/auth-shell-and-dashboard-foundation/` with `plan.md` and `summary.md`.
+- Normalized newly added UI copy after shell encoding corruption was detected during implementation.
 
 ## Next Action
 
-Resume the auth shell planning and implementation work using the documented local-state versus server-state boundaries.
+Create the next plan for real Google OAuth plus Supabase session integration, or start the schedule list and detail flow if auth integration is intentionally deferred.
 
 ## Blockers
 
@@ -25,4 +27,4 @@ None.
 
 ## Latest Verification
 
-Manual readback passed for `AGENTS.md`, `WORKLOG.md`, and `docs/development-plans/2026-03-18-state-management-standards.md`. `git diff -- AGENTS.md WORKLOG.md docs/development-plans/2026-03-18-state-management-standards.md` shows only the intended documentation changes.
+`pnpm lint`, `pnpm typecheck`, and `pnpm test` all passed. `pnpm test` includes auth route rule coverage and role home dashboard rendering coverage.

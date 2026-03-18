@@ -1,66 +1,151 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { ReactNode } from 'react';
 
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { publicEnv } from '@/shared/config/env';
-import { hasSupabaseConfig } from '@/shared/lib/supabase/client';
+import { useAuthStore } from '@/features/auth/model/auth-store';
+import type { AuthSession } from '@/features/auth/model/auth-types';
+import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 
-const setupCards = [
-  {
-    title: 'Expo Router',
-    body: 'Managed workflow, typed routes, and a single app repository are ready.',
-  },
-  {
-    title: 'Supabase baseline',
-    body: hasSupabaseConfig
-      ? 'Public Supabase keys were detected for local development.'
-      : 'Add your public Supabase keys to start backend integration.',
-  },
-  {
-    title: 'Verification',
-    body: 'Lint, typecheck, unit test, build, and Detox entry points are wired.',
-  },
-];
+type RoleHomeProps = {
+  session: AuthSession;
+};
 
-export function HomeScreen() {
+type HomeFrameProps = {
+  badge: string;
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+};
+
+type InfoCardProps = {
+  title: string;
+  subtitle: string;
+  meta: string;
+};
+
+type QuickActionCardProps = {
+  title: string;
+  detail: string;
+};
+
+type LoadingStateProps = {
+  title: string;
+};
+
+export function EmployeeHomeScreen({ session }: RoleHomeProps) {
+  const signOut = useAuthStore((state) => state.signOut);
+  const { data, isLoading } = useHomeDashboardQuery(session.role);
+
+  if (isLoading || !data || data.kind !== 'employee') {
+    return <HomeLoadingState title="Loading employee home" />;
+  }
+
+  return (
+    <HomeFrame badge={session.role.toUpperCase()} title={session.displayName} subtitle={data.headline}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Upcoming assignments</Text>
+        {data.upcomingAssignments.map((item) => {
+          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+        })}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Open schedules</Text>
+        {data.openSchedules.map((item) => {
+          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+        })}
+      </View>
+
+      <Pressable accessibilityRole="button" onPress={signOut} style={styles.signOutButton}>
+        <Text style={styles.signOutLabel}>Sign out</Text>
+      </Pressable>
+    </HomeFrame>
+  );
+}
+
+export function ManagerHomeScreen({ session }: RoleHomeProps) {
+  const signOut = useAuthStore((state) => state.signOut);
+  const { data, isLoading } = useHomeDashboardQuery(session.role);
+
+  if (isLoading || !data || data.kind !== 'manager') {
+    return <HomeLoadingState title="Loading operations home" />;
+  }
+
+  return (
+    <HomeFrame badge={session.role.toUpperCase()} title={session.displayName} subtitle={data.headline}>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Operations queue</Text>
+        {data.operationsQueue.map((item) => {
+          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+        })}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Quick actions</Text>
+        {data.quickActions.map((item) => {
+          return <QuickActionCard key={item.title} title={item.title} detail={item.detail} />;
+        })}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>This week</Text>
+        {data.weekSchedule.map((item) => {
+          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+        })}
+      </View>
+
+      <Pressable accessibilityRole="button" onPress={signOut} style={styles.signOutButton}>
+        <Text style={styles.signOutLabel}>Sign out</Text>
+      </Pressable>
+    </HomeFrame>
+  );
+}
+
+function HomeLoadingState({ title }: LoadingStateProps) {
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.loadingWrap}>
+        <ActivityIndicator size="large" color="#14342b" />
+        <Text style={styles.loadingTitle}>{title}</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function HomeFrame({ badge, title, subtitle, children }: HomeFrameProps) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.hero}>
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>{publicEnv.appEnv.toUpperCase()}</Text>
+            <Text style={styles.badgeLabel}>{badge}</Text>
           </View>
-          <Text style={styles.title}>Rosty</Text>
-          <Text style={styles.subtitle}>Wedding hall operations cockpit</Text>
-          <Text style={styles.description}>
-            Fresh Expo Router workspace for staffing, scheduling, payroll estimation, and operator tools.
-          </Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.subtitle}>{subtitle}</Text>
         </View>
-
-        <View style={styles.panel}>
-          <Text style={styles.sectionTitle}>Boot checklist</Text>
-          {setupCards.map((card) => {
-            return (
-              <View key={card.title} style={styles.card}>
-                <Text style={styles.cardTitle}>{card.title}</Text>
-                <Text style={styles.cardBody}>{card.body}</Text>
-              </View>
-            );
-          })}
-        </View>
-
-        <View style={styles.panel}>
-          <Text style={styles.sectionTitle}>Next moves</Text>
-          <Text style={styles.listItem}>1. Fill `.env` from `.env.example`.</Text>
-          <Text style={styles.listItem}>2. Connect Supabase project and OAuth providers.</Text>
-          <Text style={styles.listItem}>3. Prebuild native projects when EAS or Detox native flows begin.</Text>
-        </View>
-
-        <Pressable accessibilityLabel="Open setup checklist" accessibilityRole="button" style={styles.cta}>
-          <Text style={styles.ctaText}>Setup scaffold ready</Text>
-        </Pressable>
+        {children}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function InfoCard({ title, subtitle, meta }: InfoCardProps) {
+  return (
+    <View style={styles.infoCard}>
+      <Text style={styles.infoTitle}>{title}</Text>
+      <Text style={styles.infoSubtitle}>{subtitle}</Text>
+      <Text style={styles.infoMeta}>{meta}</Text>
+    </View>
+  );
+}
+
+function QuickActionCard({ title, detail }: QuickActionCardProps) {
+  return (
+    <View style={styles.quickActionCard}>
+      <Text style={styles.quickActionTitle}>{title}</Text>
+      <Text style={styles.quickActionDetail}>{detail}</Text>
+    </View>
   );
 }
 
@@ -69,14 +154,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f6efe5',
   },
+  loadingWrap: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#f6efe5',
+  },
+  loadingTitle: {
+    color: '#14342b',
+    fontSize: 18,
+    fontWeight: '700',
+  },
   content: {
     paddingHorizontal: 20,
     paddingVertical: 24,
     gap: 18,
   },
   hero: {
+    borderRadius: 30,
     backgroundColor: '#14342b',
-    borderRadius: 28,
     padding: 24,
     gap: 12,
   },
@@ -87,70 +184,80 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
-  badgeText: {
+  badgeLabel: {
     color: '#14342b',
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '800',
     letterSpacing: 1.2,
   },
   title: {
     color: '#fff8ef',
-    fontSize: 42,
+    fontSize: 34,
     fontWeight: '800',
-    letterSpacing: -1.2,
+    letterSpacing: -1,
   },
   subtitle: {
-    color: '#f4bb65',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  description: {
     color: '#d7d4ce',
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 23,
   },
-  panel: {
-    backgroundColor: '#fff8ef',
+  section: {
     borderRadius: 24,
+    backgroundColor: '#fff8ef',
     padding: 20,
-    gap: 14,
+    gap: 12,
   },
   sectionTitle: {
     color: '#14342b',
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: '800',
   },
-  card: {
+  infoCard: {
     borderRadius: 18,
-    backgroundColor: '#f0e2cf',
+    backgroundColor: '#efe0c8',
     padding: 16,
-    gap: 6,
+    gap: 4,
   },
-  cardTitle: {
+  infoTitle: {
     color: '#14342b',
     fontSize: 16,
     fontWeight: '700',
   },
-  cardBody: {
-    color: '#4f5a55',
+  infoSubtitle: {
+    color: '#45524d',
     fontSize: 14,
     lineHeight: 20,
   },
-  listItem: {
-    color: '#4f5a55',
-    fontSize: 15,
-    lineHeight: 22,
+  infoMeta: {
+    color: '#7a2e1f',
+    fontSize: 13,
+    fontWeight: '700',
   },
-  cta: {
+  quickActionCard: {
+    borderRadius: 18,
+    backgroundColor: '#d8e5de',
+    padding: 16,
+    gap: 4,
+  },
+  quickActionTitle: {
+    color: '#14342b',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  quickActionDetail: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  signOutButton: {
     borderRadius: 999,
     backgroundColor: '#7a2e1f',
     paddingVertical: 16,
-    paddingHorizontal: 20,
     alignItems: 'center',
   },
-  ctaText: {
+  signOutLabel: {
     color: '#fff8ef',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
   },
 });

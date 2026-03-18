@@ -1,5 +1,5 @@
-import { HomeScreen } from '@/features/home/ui/home-screen';
+import { EntryRoute } from '@/features/auth/ui/auth-route';
 
 export default function IndexRoute() {
-  return <HomeScreen />;
+  return <EntryRoute />;
 }

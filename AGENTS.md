@@ -40,6 +40,13 @@ Each agent has a narrow responsibility and a required handoff to the next stage.
 - After any scripted write, immediately reopen the edited file and confirm there are no literal escape sequences, broken markdown headers, or encoding corruption.
 - If a non-default editing fallback is used because a patch tool failed, record that fallback in the task notes and verify the rendered file before continuing.
 
+## Plan Archive
+
+- When a feature implementation task is completed, move its plan artifacts into `docs/development-plans/<task-slug>/`.
+- Keep a short `summary.md` in that folder with the locked goal, shipped scope, verification result, and follow-up notes.
+- Keep the detailed working plan in the same folder so the summary and the full execution record stay together.
+- After archival, update `WORKLOG.md` so it points to the archived summary or the next active plan as the recovery entry.
+
 ## Session Recovery
 
 - [`WORKLOG.md`](WORKLOG.md) is the single source of truth for the latest in-flight or recently completed task.

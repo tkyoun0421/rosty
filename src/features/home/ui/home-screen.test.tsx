@@ -1,13 +1,41 @@
+import type { ReactElement } from 'react';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react-native';
 
-import { HomeScreen } from '@/features/home/ui/home-screen';
+import { createDemoSession } from '@/features/auth/model/auth-rules';
 
-describe('HomeScreen', () => {
-  it('renders the scaffold headline and checklist', () => {
-    render(<HomeScreen />);
+import { EmployeeHomeScreen, ManagerHomeScreen } from '@/features/home/ui/home-screen';
 
-    expect(screen.getByText('Rosty')).toBeTruthy();
-    expect(screen.getByText('Wedding hall operations cockpit')).toBeTruthy();
-    expect(screen.getByText('Boot checklist')).toBeTruthy();
+function renderWithQuery(ui: ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: Infinity,
+      },
+    },
+  });
+
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
+
+describe('role home screens', () => {
+  it('renders employee priorities from the dashboard query', async () => {
+    renderWithQuery(<EmployeeHomeScreen session={createDemoSession('employee-active')} />);
+
+    expect(await screen.findByText('Upcoming assignments')).toBeTruthy();
+    expect(screen.getAllByText('Laviebel Grand Hall')).toHaveLength(2);
+    expect(screen.getByText('Open schedules')).toBeTruthy();
+  });
+
+  it('renders manager operations and quick actions from the dashboard query', async () => {
+    renderWithQuery(<ManagerHomeScreen session={createDemoSession('manager-active')} />);
+
+    expect(await screen.findByText('Operations queue')).toBeTruthy();
+    expect(screen.getByText('Quick actions')).toBeTruthy();
+    expect(screen.getByText('Create schedule')).toBeTruthy();
   });
 });
+
+
