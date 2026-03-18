@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "task-planning": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "computedHash": "cc0f00bb1c8c5130160a08b18cd71d6f743871036593ce5b31e0fc9e4e0205df"
+    }
+  }
+}

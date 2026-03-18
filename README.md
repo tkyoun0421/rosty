@@ -38,6 +38,9 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 
 ## Docs
 
+- [Agent Workflow](AGENTS.md)
+- [Development Plan Rules](docs/development-plans/README.md)
+- [Current Task Pointer](WORKLOG.md)
 - [PRD](docs/product/prd.md)
 - [Supabase Schema Design](docs/product/supabase-schema.md)
 - [Screen IA](docs/product/screen-ia.md)

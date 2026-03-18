@@ -1,38 +1,71 @@
 # Rosty Agents
 
-This repository uses a small set of focused agents.
+Rosty uses five role-specific agents.
+Each agent has a narrow responsibility and a required handoff to the next stage.
 
-## product-doc
+## Role Index
 
-- Purpose: write and update PRD, architecture, schema, navigation, and release notes.
-- Inputs: feature goal, user flow, domain rule changes.
-- Outputs: concise markdown docs aligned with implemented behavior.
-- Guardrails: do not invent backend behavior that is not agreed or implemented.
+- [PM](docs/agents/pm.md)
+- [Documentation](docs/agents/documentation.md)
+- [Development](docs/agents/development.md)
+- [Testing](docs/agents/testing.md)
+- [Review](docs/agents/review.md)
 
-## mobile-implementation
+## Workflow
 
-- Purpose: implement Expo Router screens, shared UI, state, and client-side workflow logic.
-- Inputs: approved product scope, UI requirements, test expectations.
-- Outputs: app code, unit tests, setup updates when implementation changes prerequisites.
-- Guardrails: keep Expo managed-first assumptions unless native requirements are explicit.
+1. `PM` locks the feature goal, scope, acceptance criteria, and out-of-scope items.
+2. `Documentation` updates the PRD, schema, IA, state tables, and the implementation plan in [`docs/development-plans/`](docs/development-plans/README.md) when code work is required.
+3. `Development` updates [`WORKLOG.md`](WORKLOG.md) before implementation starts and works only from the locked plan.
+4. `Testing` is mandatory for every completed feature.
+5. `Development` updates [`WORKLOG.md`](WORKLOG.md) again after testing, then commits and pushes the completed task.
+6. `Review` is mandatory before release and release-like merges.
 
-## backend-supabase
+## Common Rules
 
-- Purpose: design and implement Supabase auth, schema, RLS, and integration boundaries.
-- Inputs: role model, tenant rules, data lifecycle requirements.
-- Outputs: schema docs, SQL migrations, client integration contracts.
-- Guardrails: tenant isolation and role enforcement must be solved at the backend boundary, not only in UI.
+- Product decisions must be locked before implementation starts.
+- Documentation is a required artifact, not a cleanup step after coding.
+- Every implementation task must start with a written plan under [`docs/development-plans/`](docs/development-plans/README.md).
+- If implementation scope changes, update the plan document before continuing the code change.
+- [`WORKLOG.md`](WORKLOG.md) is the session recovery pointer and must be updated before implementation starts and after implementation or testing ends.
+- Development may not invent unresolved product behavior. Escalate back to `PM`.
+- Testing must leave a reproducible command list, pass/fail result, and residual risk note.
+- Review follows a findings-first style and focuses on correctness, regressions, and role leakage.
+- Keep docs, code, schema, and tests aligned when behavior changes.
+- Each completed task must end with a commit and push to the active remote branch.
+- Follow the secret handling rules in [docs/ops/secrets.md](docs/ops/secrets.md).
 
-## qa-review
+## Session Recovery
 
-- Purpose: review changes for regressions, risk, missing tests, and doc drift.
-- Inputs: diff, changed flows, acceptance criteria.
-- Outputs: findings-first review notes, test gaps, rollback risks.
-- Guardrails: prioritize correctness, role leakage, and environment setup regressions.
+- [`WORKLOG.md`](WORKLOG.md) is the single source of truth for the latest in-flight or recently completed task.
+- The minimum pointer fields are `Current Task`, `Plan Doc`, `Last Completed`, `Next Action`, `Blockers`, and `Latest Verification`.
+- Any resumed session should read [`WORKLOG.md`](WORKLOG.md) first, then open the linked plan document.
 
-## Working Rules
+## MCP Policy
 
-- Plan before feature implementation when behavior is not already locked.
-- Keep docs, CI, and code in sync.
-- Rotate and reissue any secret that was ever committed or pasted into the repository.
-- Require `pnpm lint`, `pnpm typecheck`, and `pnpm test` before merging.
+- Active MCP today: `GitHub`, configured through [.mcp.json](.mcp.json).
+- Approved future MCP: `Supabase`, but only in read-oriented mode for schema inspection, SQL review, and environment checks.
+- Do not use MCP to make direct production database writes.
+- Schema changes must go through migration files and manual apply or controlled rollout steps.
+- MCP tokens must be rotated if exposed and must be loaded from local environment variables or secret storage only.
+
+## Skills Policy
+
+- Discovery source: `skills.sh`.
+- First step for a new capability: use the installed `find-skills` helper to identify relevant skills.
+- Official planning skill for this repo: `supercent-io/skills-template@task-planning`.
+- Install repo-required skills at the project level. Do not make global install the default for Rosty workflows.
+- Existing global skills may remain on the machine, but Rosty should not depend on them.
+- Commit repo-local skill artifacts created by the Skills CLI, including `skills-lock.json` and the generated agent skill directories.
+- Preferred categories for this repo:
+  - Expo or React Native UI implementation
+  - React Native data fetching and app integration
+  - Supabase and Postgres best practices
+- Use `skill-installer` only when a skill adds clear recurring value and does not conflict with repo rules, and only when the install target matches the repo policy.
+- Use `skill-creator` only after a workflow repeats enough to justify a project-local skill.
+- Project-local skills are deferred for now.
+
+## Release Gates
+
+- `Testing` is required on every completed feature.
+- `Review` is required before release, release candidate handoff, or any merge treated as release quality.
+- A feature is not release-ready if testing evidence is missing or if review findings leave unresolved high-severity risk.
