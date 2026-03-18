@@ -1,10 +1,19 @@
 import type { ReactNode } from 'react';
 
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { DemoAuthPreset } from '@/features/auth/model/auth-types';
+import { publicEnv } from '@/shared/config/env';
+import { hasSupabaseConfig } from '@/shared/lib/supabase/client';
 
 type AuthLoadingScreenProps = {
   title: string;
@@ -23,6 +32,7 @@ type ActionButtonProps = {
   detail: string;
   onPress: () => void;
   tone?: 'primary' | 'secondary';
+  disabled?: boolean;
 };
 
 const demoPresets: {
@@ -75,33 +85,78 @@ export function AuthLoadingScreen({ title, body }: AuthLoadingScreenProps) {
 }
 
 export function LoginScreen() {
+  const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
   const signInWithDemo = useAuthStore((state) => state.signInWithDemo);
+  const clearError = useAuthStore((state) => state.clearError);
+  const isAuthenticating = useAuthStore((state) => state.isAuthenticating);
+  const errorMessage = useAuthStore((state) => state.errorMessage);
+
+  const showDemoFallback =
+    !hasSupabaseConfig || publicEnv.appEnv !== 'production';
 
   return (
     <AuthFrame
       eyebrow="Auth Shell"
       title="Rosty Sign In"
-      body="Until Google OAuth is wired, this shell uses role-specific demo sessions. Each persona routes through profile setup, approval waiting, suspended, or the correct home screen."
+      body="This build now prefers a real Supabase-backed Google OAuth session. When local auth config is missing, the shell still exposes demo personas so route gating work can continue."
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Demo entry points</Text>
-        {demoPresets.map((demoPreset) => {
-          return (
-            <ActionButton
-              key={demoPreset.preset}
-              label={demoPreset.title}
-              detail={demoPreset.detail}
-              onPress={() => signInWithDemo(demoPreset.preset)}
-            />
-          );
-        })}
+        <Text style={styles.sectionTitle}>Google OAuth</Text>
+        <Text style={styles.sectionBody}>
+          {hasSupabaseConfig
+            ? 'Start the real Google sign-in flow and let Supabase restore the session on the next app launch.'
+            : 'Supabase auth is not configured in this local environment yet. Fill the local env and Supabase redirect settings to enable the real Google flow.'}
+        </Text>
+        <ActionButton
+          label={isAuthenticating ? 'Signing in...' : 'Continue with Google'}
+          detail={
+            hasSupabaseConfig
+              ? 'Opens a secure Google OAuth session and exchanges the callback code with Supabase.'
+              : 'Unavailable until Supabase auth env is configured locally.'
+          }
+          onPress={() => {
+            clearError();
+            void signInWithGoogle();
+          }}
+          disabled={!hasSupabaseConfig || isAuthenticating}
+        />
+        {errorMessage ? (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorTitle}>Sign-in error</Text>
+            <Text style={styles.errorBody}>{errorMessage}</Text>
+          </View>
+        ) : null}
       </View>
+      {showDemoFallback ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Local demo fallback</Text>
+          <Text style={styles.sectionBody}>
+            These entries stay available outside production so route and role
+            screens can still be checked without a live auth provider.
+          </Text>
+          {demoPresets.map((demoPreset) => {
+            return (
+              <ActionButton
+                key={demoPreset.preset}
+                label={demoPreset.title}
+                detail={demoPreset.detail}
+                onPress={() => {
+                  clearError();
+                  signInWithDemo(demoPreset.preset);
+                }}
+                tone="secondary"
+              />
+            );
+          })}
+        </View>
+      ) : null}
     </AuthFrame>
   );
 }
 
 export function ProfileSetupScreen() {
   const session = useAuthStore((state) => state.session);
+  const authSource = useAuthStore((state) => state.authSource);
   const completeProfile = useAuthStore((state) => state.completeProfile);
   const signOut = useAuthStore((state) => state.signOut);
 
@@ -109,26 +164,67 @@ export function ProfileSetupScreen() {
     <AuthFrame
       eyebrow="Profile Setup"
       title="Complete your profile"
-      body="First-time users cannot enter the main app until the required profile fields are complete. This placeholder focuses on the locked route and transition rules."
+      body="Users remain blocked here until the required profile path is complete. Real Supabase sessions stay read-only for now, while the local demo flow still exposes state transitions for route verification."
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{session?.displayName ?? 'New user'} checklist</Text>
+        <Text style={styles.sectionTitle}>
+          {session?.displayName ?? 'New user'} checklist
+        </Text>
         <View style={styles.checklistCard}>
-          <Text style={styles.checkItem}>- Confirm name and contact details</Text>
-          <Text style={styles.checkItem}>- Verify invite or hall membership context</Text>
-          <Text style={styles.checkItem}>- Review baseline work-role details</Text>
+          <Text style={styles.checkItem}>
+            - Confirm name and contact details
+          </Text>
+          <Text style={styles.checkItem}>
+            - Verify invite or hall membership context
+          </Text>
+          <Text style={styles.checkItem}>
+            - Review baseline work-role details
+          </Text>
         </View>
       </View>
-      <View style={styles.actionsRow}>
-        <ActionButton label="Profile complete" detail="Moves this user into the approval waiting state." onPress={completeProfile} />
-        <ActionButton label="Sign out" detail="Returns to the login screen." onPress={signOut} tone="secondary" />
-      </View>
+      {authSource === 'demo' ? (
+        <View style={styles.actionsRow}>
+          <ActionButton
+            label="Profile complete"
+            detail="Moves this demo user into the approval waiting state."
+            onPress={completeProfile}
+          />
+          <ActionButton
+            label="Sign out"
+            detail="Returns to the login screen."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      ) : (
+        <View style={styles.actionsRow}>
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>Profile form still pending</Text>
+            <Text style={styles.noticeBody}>
+              The real session is connected, but the actual profile submission
+              screen is a separate feature. For now this route stays locked and
+              safe.
+            </Text>
+          </View>
+          <ActionButton
+            label="Sign out"
+            detail="Ends the real session and returns to login."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      )}
     </AuthFrame>
   );
 }
 
 export function ApprovalWaitingScreen() {
   const session = useAuthStore((state) => state.session);
+  const authSource = useAuthStore((state) => state.authSource);
   const approveAccess = useAuthStore((state) => state.approveAccess);
   const suspendAccess = useAuthStore((state) => state.suspendAccess);
   const signOut = useAuthStore((state) => state.signOut);
@@ -137,26 +233,70 @@ export function ApprovalWaitingScreen() {
     <AuthFrame
       eyebrow="Approval Waiting"
       title="Approval pending"
-      body="Users in this state cannot open home, schedule, assignment, or payroll screens. The route remains locked until approval or suspension changes the status."
+      body="Users in this state cannot open home, schedule, assignment, or payroll screens. The route stays locked until approval or suspension changes the status."
     >
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{session?.displayName ?? 'Pending user'} status</Text>
+        <Text style={styles.sectionTitle}>
+          {session?.displayName ?? 'Pending user'} status
+        </Text>
         <View style={styles.checklistCard}>
           <Text style={styles.checkItem}>- Status: pending_approval</Text>
-          <Text style={styles.checkItem}>- Role: {session?.role ?? 'employee'}</Text>
-          <Text style={styles.checkItem}>- Next step: admin approval for role home access</Text>
+          <Text style={styles.checkItem}>
+            - Role: {session?.role ?? 'employee'}
+          </Text>
+          <Text style={styles.checkItem}>
+            - Next step: admin approval for role home access
+          </Text>
         </View>
       </View>
-      <View style={styles.actionsRow}>
-        <ActionButton label="Approve demo" detail="Switches to active and routes to the correct home." onPress={approveAccess} />
-        <ActionButton label="Suspend demo" detail="Switches to the suspended guidance screen." onPress={suspendAccess} tone="secondary" />
-        <ActionButton label="Sign out" detail="Returns to the login screen." onPress={signOut} tone="secondary" />
-      </View>
+      {authSource === 'demo' ? (
+        <View style={styles.actionsRow}>
+          <ActionButton
+            label="Approve demo"
+            detail="Switches to active and routes to the correct home."
+            onPress={approveAccess}
+          />
+          <ActionButton
+            label="Suspend demo"
+            detail="Switches to the suspended guidance screen."
+            onPress={suspendAccess}
+            tone="secondary"
+          />
+          <ActionButton
+            label="Sign out"
+            detail="Returns to the login screen."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      ) : (
+        <View style={styles.actionsRow}>
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>Waiting for admin review</Text>
+            <Text style={styles.noticeBody}>
+              This screen is now backed by the real session state. Approval
+              still depends on the profiles record being updated by an admin
+              path.
+            </Text>
+          </View>
+          <ActionButton
+            label="Sign out"
+            detail="Ends the real session and returns to login."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      )}
     </AuthFrame>
   );
 }
 
 export function SuspendedScreen() {
+  const authSource = useAuthStore((state) => state.authSource);
   const reactivateAccess = useAuthStore((state) => state.reactivateAccess);
   const signOut = useAuthStore((state) => state.signOut);
 
@@ -166,10 +306,41 @@ export function SuspendedScreen() {
       title="Access is temporarily paused"
       body="Suspended users keep a session but cannot enter the main operating flows. This screen keeps the blocked state explicit and only exposes safe exit actions."
     >
-      <View style={styles.actionsRow}>
-        <ActionButton label="Reactivate demo" detail="Returns the user to active access for verification." onPress={reactivateAccess} />
-        <ActionButton label="Sign out" detail="Ends the session and returns to login." onPress={signOut} tone="secondary" />
-      </View>
+      {authSource === 'demo' ? (
+        <View style={styles.actionsRow}>
+          <ActionButton
+            label="Reactivate demo"
+            detail="Returns the user to active access for verification."
+            onPress={reactivateAccess}
+          />
+          <ActionButton
+            label="Sign out"
+            detail="Ends the session and returns to login."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      ) : (
+        <View style={styles.actionsRow}>
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>Access remains blocked</Text>
+            <Text style={styles.noticeBody}>
+              A real suspended session can only be reactivated from the
+              management side once the user status changes back to active.
+            </Text>
+          </View>
+          <ActionButton
+            label="Sign out"
+            detail="Ends the session and returns to login."
+            onPress={() => {
+              void signOut();
+            }}
+            tone="secondary"
+          />
+        </View>
+      )}
     </AuthFrame>
   );
 }
@@ -189,13 +360,34 @@ function AuthFrame({ eyebrow, title, body, children }: AuthFrameProps) {
   );
 }
 
-function ActionButton({ label, detail, onPress, tone = 'primary' }: ActionButtonProps) {
-  const containerStyle = tone === 'primary' ? styles.primaryButton : styles.secondaryButton;
-  const labelStyle = tone === 'primary' ? styles.primaryButtonLabel : styles.secondaryButtonLabel;
-  const detailStyle = tone === 'primary' ? styles.primaryButtonDetail : styles.secondaryButtonDetail;
+function ActionButton({
+  label,
+  detail,
+  onPress,
+  tone = 'primary',
+  disabled = false,
+}: ActionButtonProps) {
+  const containerStyle =
+    tone === 'primary'
+      ? [styles.primaryButton, disabled ? styles.disabledButton : null]
+      : [styles.secondaryButton, disabled ? styles.disabledButton : null];
+  const labelStyle =
+    tone === 'primary'
+      ? styles.primaryButtonLabel
+      : styles.secondaryButtonLabel;
+  const detailStyle =
+    tone === 'primary'
+      ? styles.primaryButtonDetail
+      : styles.secondaryButtonDetail;
 
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={containerStyle}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={containerStyle}
+    >
       <Text style={labelStyle}>{label}</Text>
       <Text style={detailStyle}>{detail}</Text>
     </Pressable>
@@ -266,6 +458,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '800',
   },
+  sectionBody: {
+    color: '#56635d',
+    fontSize: 15,
+    lineHeight: 22,
+  },
   checklistCard: {
     borderRadius: 20,
     backgroundColor: '#efe0c8',
@@ -280,6 +477,38 @@ const styles = StyleSheet.create({
   actionsRow: {
     gap: 12,
   },
+  noticeCard: {
+    borderRadius: 22,
+    backgroundColor: '#efe0c8',
+    padding: 18,
+    gap: 6,
+  },
+  noticeTitle: {
+    color: '#17362c',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  noticeBody: {
+    color: '#4e5955',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  errorCard: {
+    borderRadius: 18,
+    backgroundColor: '#f3d2cb',
+    padding: 16,
+    gap: 6,
+  },
+  errorTitle: {
+    color: '#7a2e1f',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  errorBody: {
+    color: '#5b3329',
+    fontSize: 14,
+    lineHeight: 20,
+  },
   primaryButton: {
     borderRadius: 22,
     backgroundColor: '#7a2e1f',
@@ -291,6 +520,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#dfcfb8',
     padding: 18,
     gap: 6,
+  },
+  disabledButton: {
+    opacity: 0.55,
   },
   primaryButtonLabel: {
     color: '#fff8f0',

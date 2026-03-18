@@ -1,6 +1,12 @@
 export type UserRole = 'employee' | 'manager' | 'admin';
 
-export type UserStatus = 'profile_incomplete' | 'pending_approval' | 'active' | 'suspended';
+export type UserStatus =
+  | 'profile_incomplete'
+  | 'pending_approval'
+  | 'active'
+  | 'suspended';
+
+export type AuthSource = 'demo' | 'supabase';
 
 export type AuthSession = {
   userId: string;

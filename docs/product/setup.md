@@ -14,9 +14,17 @@ Copy `.env.example` to `.env` and fill the values below.
 - `EXPO_PUBLIC_APP_ENV`
 - `EXPO_PUBLIC_SUPABASE_URL`
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-- `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID`
 - `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY`
 - `EXPO_PUBLIC_NAVER_CLIENT_ID`
+
+## Supabase Google OAuth Setup
+
+Configure Google sign-in in the Supabase dashboard before testing the real auth flow.
+
+- Enable the Google provider under `Authentication > Providers`.
+- Add the native redirect URL `rosty://auth/callback`.
+- Add the current Expo web callback URL for browser testing, such as `http://localhost:8081/auth/callback` or the active HTTPS localhost origin if you are using a secure web session.
+- Keep the Google client credentials inside Supabase provider settings, not in the Expo public env.
 
 ## Local Run
 
