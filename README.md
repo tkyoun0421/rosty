@@ -1,4 +1,4 @@
-# Rosty
+﻿# Rosty
 
 Rosty is a React Native app for wedding hall operators and staff.
 This repository now starts from a fresh Expo Router baseline with Supabase-ready configuration, CI scaffolding, and local verification commands.
@@ -39,6 +39,9 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 ## Docs
 
 - [PRD](docs/product/prd.md)
+- [Supabase Schema Design](docs/product/supabase-schema.md)
+- [Screen IA](docs/product/screen-ia.md)
+- [State Tables](docs/product/state-tables.md)
 - [Setup Guide](docs/product/setup.md)
 - [Verification Guide](docs/ops/verification.md)
 - [Secrets Policy](docs/ops/secrets.md)
