@@ -1,6 +1,13 @@
 import type { ReactNode } from 'react';
 
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -9,6 +16,7 @@ import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 
 type RoleHomeProps = {
   session: AuthSession;
+  onOpenMembers?: () => void;
 };
 
 type HomeFrameProps = {
@@ -42,29 +50,53 @@ export function EmployeeHomeScreen({ session }: RoleHomeProps) {
   }
 
   return (
-    <HomeFrame badge={session.role.toUpperCase()} title={session.displayName} subtitle={data.headline}>
+    <HomeFrame
+      badge={session.role.toUpperCase()}
+      title={session.displayName}
+      subtitle={data.headline}
+    >
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Upcoming assignments</Text>
         {data.upcomingAssignments.map((item) => {
-          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+          return (
+            <InfoCard
+              key={`${item.title}-${item.meta}`}
+              title={item.title}
+              subtitle={item.subtitle}
+              meta={item.meta}
+            />
+          );
         })}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Open schedules</Text>
         {data.openSchedules.map((item) => {
-          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+          return (
+            <InfoCard
+              key={`${item.title}-${item.meta}`}
+              title={item.title}
+              subtitle={item.subtitle}
+              meta={item.meta}
+            />
+          );
         })}
       </View>
 
-      <Pressable accessibilityRole="button" onPress={signOut} style={styles.signOutButton}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => {
+          void signOut();
+        }}
+        style={styles.signOutButton}
+      >
         <Text style={styles.signOutLabel}>Sign out</Text>
       </Pressable>
     </HomeFrame>
   );
 }
 
-export function ManagerHomeScreen({ session }: RoleHomeProps) {
+export function ManagerHomeScreen({ session, onOpenMembers }: RoleHomeProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const { data, isLoading } = useHomeDashboardQuery(session.role);
 
@@ -73,29 +105,72 @@ export function ManagerHomeScreen({ session }: RoleHomeProps) {
   }
 
   return (
-    <HomeFrame badge={session.role.toUpperCase()} title={session.displayName} subtitle={data.headline}>
+    <HomeFrame
+      badge={session.role.toUpperCase()}
+      title={session.displayName}
+      subtitle={data.headline}
+    >
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Operations queue</Text>
         {data.operationsQueue.map((item) => {
-          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+          return (
+            <InfoCard
+              key={`${item.title}-${item.meta}`}
+              title={item.title}
+              subtitle={item.subtitle}
+              meta={item.meta}
+            />
+          );
         })}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Quick actions</Text>
         {data.quickActions.map((item) => {
-          return <QuickActionCard key={item.title} title={item.title} detail={item.detail} />;
+          return (
+            <QuickActionCard
+              key={item.title}
+              title={item.title}
+              detail={item.detail}
+            />
+          );
         })}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>This week</Text>
         {data.weekSchedule.map((item) => {
-          return <InfoCard key={`${item.title}-${item.meta}`} title={item.title} subtitle={item.subtitle} meta={item.meta} />;
+          return (
+            <InfoCard
+              key={`${item.title}-${item.meta}`}
+              title={item.title}
+              subtitle={item.subtitle}
+              meta={item.meta}
+            />
+          );
         })}
       </View>
 
-      <Pressable accessibilityRole="button" onPress={signOut} style={styles.signOutButton}>
+      {session.role === 'admin' && onOpenMembers ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenMembers}
+          style={styles.adminActionButton}
+        >
+          <Text style={styles.adminActionLabel}>Open members</Text>
+          <Text style={styles.adminActionDetail}>
+            Review pending approvals, role changes, and blocked access.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => {
+          void signOut();
+        }}
+        style={styles.signOutButton}
+      >
         <Text style={styles.signOutLabel}>Sign out</Text>
       </Pressable>
     </HomeFrame>
@@ -245,6 +320,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   quickActionDetail: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  adminActionButton: {
+    borderRadius: 24,
+    backgroundColor: '#d8e5de',
+    padding: 18,
+    gap: 6,
+  },
+  adminActionLabel: {
+    color: '#14342b',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  adminActionDetail: {
     color: '#44514c',
     fontSize: 14,
     lineHeight: 20,

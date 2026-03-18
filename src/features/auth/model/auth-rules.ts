@@ -1,4 +1,8 @@
-import type { AuthSession, DemoAuthPreset, UserRole } from '@/features/auth/model/auth-types';
+import type {
+  AuthSession,
+  DemoAuthPreset,
+  UserRole,
+} from '@/features/auth/model/auth-types';
 
 export const authRoutes = {
   login: '/login',
@@ -7,6 +11,7 @@ export const authRoutes = {
   suspended: '/suspended',
   employeeHome: '/employee-home',
   managerHome: '/manager-home',
+  members: '/members',
 } as const;
 
 export type AppRoute = (typeof authRoutes)[keyof typeof authRoutes];
@@ -75,7 +80,10 @@ export function resolveEntryRoute(session: AuthSession | null): AppRoute {
   }
 }
 
-export function canAccessRoute(session: AuthSession | null, route: AppRoute): boolean {
+export function canAccessRoute(
+  session: AuthSession | null,
+  route: AppRoute,
+): boolean {
   switch (route) {
     case authRoutes.login:
       return session === null;
@@ -89,10 +97,14 @@ export function canAccessRoute(session: AuthSession | null, route: AppRoute): bo
       return session?.status === 'active' && session.role === 'employee';
     case authRoutes.managerHome:
       return session?.status === 'active' && session.role !== 'employee';
+    case authRoutes.members:
+      return session?.status === 'active' && session.role === 'admin';
   }
 }
 
-export function completeProfileSession(session: AuthSession | null): AuthSession | null {
+export function completeProfileSession(
+  session: AuthSession | null,
+): AuthSession | null {
   if (!session || session.status !== 'profile_incomplete') {
     return session;
   }
@@ -103,7 +115,9 @@ export function completeProfileSession(session: AuthSession | null): AuthSession
   };
 }
 
-export function approveSession(session: AuthSession | null): AuthSession | null {
+export function approveSession(
+  session: AuthSession | null,
+): AuthSession | null {
   if (!session || session.status !== 'pending_approval') {
     return session;
   }
@@ -114,7 +128,9 @@ export function approveSession(session: AuthSession | null): AuthSession | null 
   };
 }
 
-export function suspendSession(session: AuthSession | null): AuthSession | null {
+export function suspendSession(
+  session: AuthSession | null,
+): AuthSession | null {
   if (!session || session.status !== 'active') {
     return session;
   }
@@ -125,7 +141,9 @@ export function suspendSession(session: AuthSession | null): AuthSession | null 
   };
 }
 
-export function reactivateSession(session: AuthSession | null): AuthSession | null {
+export function reactivateSession(
+  session: AuthSession | null,
+): AuthSession | null {
   if (!session || session.status !== 'suspended') {
     return session;
   }

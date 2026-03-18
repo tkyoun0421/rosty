@@ -37,24 +37,24 @@ const homeDashboardSeed: Record<UserRole, HomeDashboard> = {
     upcomingAssignments: [
       {
         title: 'Laviebel Grand Hall',
-        subtitle: 'March 23 · Banquet service',
+        subtitle: 'March 23 - Banquet service',
         meta: 'Starts 1:00 PM',
       },
       {
         title: 'Laviebel Garden Hall',
-        subtitle: 'March 29 · Bride room support',
+        subtitle: 'March 29 - Bride room support',
         meta: 'Starts 11:30 AM',
       },
     ],
     openSchedules: [
       {
         title: 'Laviebel Convention Hall',
-        subtitle: 'April 2 · Response window still open',
+        subtitle: 'April 2 - Response window still open',
         meta: 'Response: not submitted',
       },
       {
         title: 'Laviebel Grand Hall',
-        subtitle: 'April 5 · Extra staffing still open',
+        subtitle: 'April 5 - Extra staffing still open',
         meta: 'Response: available',
       },
     ],
@@ -97,7 +97,7 @@ const homeDashboardSeed: Record<UserRole, HomeDashboard> = {
       {
         title: 'March 23 Grand Hall wedding',
         subtitle: 'Assignments confirmed',
-        meta: '8 slots · 0 vacancies',
+        meta: '8 slots - 0 vacancies',
       },
       {
         title: 'March 29 Garden Hall reception',
@@ -144,7 +144,7 @@ const homeDashboardSeed: Record<UserRole, HomeDashboard> = {
       {
         title: 'March 23 Grand Hall wedding',
         subtitle: 'Assignments confirmed',
-        meta: '8 slots · 0 vacancies',
+        meta: '8 slots - 0 vacancies',
       },
       {
         title: 'March 29 Garden Hall reception',
@@ -155,7 +155,9 @@ const homeDashboardSeed: Record<UserRole, HomeDashboard> = {
   },
 };
 
-export async function fetchHomeDashboard(role: UserRole): Promise<HomeDashboard> {
+export async function fetchHomeDashboard(
+  role: UserRole,
+): Promise<HomeDashboard> {
   await Promise.resolve();
 
   const dashboard = homeDashboardSeed[role];
@@ -163,7 +165,9 @@ export async function fetchHomeDashboard(role: UserRole): Promise<HomeDashboard>
   if (dashboard.kind === 'employee') {
     return {
       ...dashboard,
-      upcomingAssignments: dashboard.upcomingAssignments.map((card) => ({ ...card })),
+      upcomingAssignments: dashboard.upcomingAssignments.map((card) => ({
+        ...card,
+      })),
       openSchedules: dashboard.openSchedules.map((card) => ({ ...card })),
     };
   }
