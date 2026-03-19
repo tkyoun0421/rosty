@@ -2,31 +2,31 @@
 
 ## Current Task
 
-Pending the next locked implementation or rollout task after completing the Supabase migration GitHub Actions rollout.
+Pending the next locked implementation or rollout task after completing the member admin RPC rollout.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/supabase-migration-github-actions/summary.md`
-- Archive plan: `docs/development-plans/supabase-migration-github-actions/plan.md`
+- Archive summary: `docs/development-plans/member-admin-rpc-rollout/summary.md`
+- Archive plan: `docs/development-plans/member-admin-rpc-rollout/plan.md`
 
 ## Last Completed
 
-Completed the Supabase migration GitHub Actions rollout task:
+Completed the member admin RPC rollout task:
 
-- Added `.github/workflows/supabase-migrations.yml` as a manual rollout workflow.
-- Reused the repo-local Supabase migration scripts and GitHub secret injection instead of creating a separate CI rollout path.
-- Added a dry-run or apply mode input and blocked real apply unless `confirm_apply=APPLY` is supplied.
-- Updated the setup and secrets docs to list the workflow path and required GitHub secret names.
-- Archived the completed feature plan into `docs/development-plans/supabase-migration-github-actions/` with `plan.md` and `summary.md`.
+- Added `supabase/migrations/20260319203000_member_admin_rpc.sql`.
+- Added `public.admin_manage_member(...)` for the current admin member actions and removed the tracked broad `profiles_admin_update` policy.
+- Added the `manageMemberAccount` client RPC wrapper and switched `use-member-admin-mutation.ts` off direct `profiles` updates.
+- Added focused Jest coverage for the new member admin RPC wrapper.
+- Updated the Supabase schema notes and archived the completed feature plan into `docs/development-plans/member-admin-rpc-rollout/` with `plan.md` and `summary.md`.
 
 ## Next Action
 
-Populate `SUPABASE_PROJECT_ID`, `SUPABASE_ACCESS_TOKEN`, and `SUPABASE_DB_PASSWORD` in GitHub secrets, run the `Supabase Migration Rollout` workflow with `mode=dry-run`, then repeat with `mode=apply` and `confirm_apply=APPLY`, and validate the real Supabase-backed auth, invitation, and admin flows. If rollout secrets still remain unavailable, lock the next unblocked implementation task before changing code.
+Apply the pending auth and member admin migrations to the real Supabase project, then validate admin member actions end to end. If rollout credentials remain unavailable, lock the next unblocked implementation task before changing code.
 
 ## Blockers
 
-- Real workflow rollout still depends on GitHub repository or environment secrets that are not configured from inside the repo.
-- Real remote apply still needs manual dry-run review before the first apply.
+- The new member-admin RPC still depends on the tracked migrations being applied to the real Supabase project.
+- GitHub or local rollout secrets remain required for the first real migration apply.
 - The rest of the schema is still outside the first RLS rollout.
 
 ## Latest Verification
@@ -34,5 +34,5 @@ Populate `SUPABASE_PROJECT_ID`, `SUPABASE_ACCESS_TOKEN`, and `SUPABASE_DB_PASSWO
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test`
-- Manual readback of `.github/workflows/supabase-migrations.yml`, `docs/product/setup.md`, and `docs/ops/secrets.md` after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Added the Supabase migration GitHub Actions workflow on 2026-03-19.
+- Manual UTF-8 readback of `supabase/migrations/20260319203000_member_admin_rpc.sql`, the new member admin RPC wrapper and test, `src/features/members/api/use-member-admin-mutation.ts`, and `docs/product/supabase-schema.md` after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
+- Added the member admin RPC rollout on 2026-03-19.

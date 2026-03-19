@@ -17,6 +17,7 @@
 - 인증 기준은 `auth.users`이고, 앱 사용자 정보는 `profiles.id = auth.users.id` 1:1로 연결한다.
 - 기본 쓰기 경로는 `클라이언트 직접 CRUD + RLS 검증`이다.
 - 단, 직원 join completion은 `complete_employee_join` RPC로 초대 검증, 프로필 upsert, 초대 소모를 하나의 트랜잭션으로 묶는다.
+- Admin 멤버 승인/정지/복구/역할 변경은 `admin_manage_member` RPC로 제한한다.
 - 삭제보다 상태 전환을 우선한다.
 - 사용자 관리와 급여 정책은 `admin`만 쓴다.
 - Manager의 멤버 조회는 Admin 관리용 원본 테이블이 아니라 최소 노출 경로로 제한한다.
@@ -74,13 +75,14 @@
 RLS:
 
 - 본인: 읽기 가능
-- Admin: 전체 읽기/수정 가능
+- Admin: 전체 읽기 가능, 멤버 상태/역할 변경은 제한 RPC 경로 사용
 - Manager: 직접 테이블 읽기 불가
 
 함수 경로:
 
 - `complete_profile_setup` RPC는 `authenticated` 사용자만 호출한다.
 - RPC는 `auth.uid()` 기준으로 onboarding 가능한 프로필만 저장하고, 기존 역할이 있으면 유지한 채 `pending_approval`로 전환한다.
+- `admin_manage_member` RPC는 active admin만 호출하고, 승인/정지/복구/역할 변경을 제한된 액션 집합으로만 처리한다.
 
 ### 4.2 `member_directory`
 
@@ -398,7 +400,7 @@ RLS:
 
 | 리소스 | employee | manager | admin |
 | --- | --- | --- | --- |
-| `profiles` | self read | no | full |
+| `profiles` | self read | no | read + limited RPC |
 | `member_directory` | no | read | read |
 | `invitation_links` | no | no | read/write |
 | `pay_policies` | no | read | read/write |

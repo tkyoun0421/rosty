@@ -3,6 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { authProfileQueryKey } from '@/features/auth/api/fetch-auth-profile';
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession, UserRole } from '@/features/auth/model/auth-types';
+import { membersQueryKey } from '@/features/members/api/fetch-members';
+import { manageMemberAccount } from '@/features/members/api/manage-member-account';
 import {
   canApproveMember,
   canChangeMemberRole,
@@ -11,7 +13,6 @@ import {
   type MemberRecord,
 } from '@/features/members/model/member-management';
 import { queryClient } from '@/shared/lib/react-query/query-client';
-import { supabaseClient } from '@/shared/lib/supabase/client';
 
 export type MemberAdminAction =
   | {
@@ -36,31 +37,6 @@ export type MemberAdminAction =
       nextRole: UserRole;
     };
 
-type MemberPatch = {
-  role?: UserRole;
-  status?: 'pending_approval' | 'active' | 'suspended';
-  approved_at?: string | null;
-  approved_by?: string | null;
-};
-
-async function patchMember(
-  memberId: string,
-  patch: MemberPatch,
-): Promise<void> {
-  if (!supabaseClient) {
-    throw new Error('Supabase members management is not configured.');
-  }
-
-  const { error } = await supabaseClient
-    .from('profiles')
-    .update(patch)
-    .eq('id', memberId);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-}
-
 export function useMemberAdminMutation(adminSession: AuthSession | null) {
   const restoreSession = useAuthStore((state) => state.restoreSession);
 
@@ -76,10 +52,9 @@ export function useMemberAdminMutation(adminSession: AuthSession | null) {
             throw new Error('Only pending users can be approved.');
           }
 
-          await patchMember(action.member.id, {
-            status: 'active',
-            approved_at: new Date().toISOString(),
-            approved_by: adminSession.userId,
+          await manageMemberAccount({
+            memberId: action.member.id,
+            action: 'approve',
           });
           return;
         }
@@ -90,8 +65,9 @@ export function useMemberAdminMutation(adminSession: AuthSession | null) {
             );
           }
 
-          await patchMember(action.member.id, {
-            status: 'suspended',
+          await manageMemberAccount({
+            memberId: action.member.id,
+            action: 'suspend',
           });
           return;
         }
@@ -100,8 +76,9 @@ export function useMemberAdminMutation(adminSession: AuthSession | null) {
             throw new Error('Only suspended users can be reactivated.');
           }
 
-          await patchMember(action.member.id, {
-            status: 'active',
+          await manageMemberAccount({
+            memberId: action.member.id,
+            action: 'reactivate',
           });
           return;
         }
@@ -114,8 +91,10 @@ export function useMemberAdminMutation(adminSession: AuthSession | null) {
             );
           }
 
-          await patchMember(action.member.id, {
-            role: action.nextRole,
+          await manageMemberAccount({
+            memberId: action.member.id,
+            action: 'change-role',
+            nextRole: action.nextRole,
           });
         }
       }
@@ -132,5 +111,3 @@ export function useMemberAdminMutation(adminSession: AuthSession | null) {
     },
   });
 }
-
-const membersQueryKey = ['members'] as const;
