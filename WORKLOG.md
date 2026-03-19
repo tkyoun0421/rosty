@@ -2,38 +2,40 @@
 
 ## Current Task
 
-Pending the next locked implementation or rollout task after completing the admin pay policy rollout.
+Pending the next locked implementation or rollout task after completing the Supabase real rollout hardening pass.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/admin-pay-policy-rollout/summary.md`
-- Archive plan: `docs/development-plans/admin-pay-policy-rollout/plan.md`
+- Archive summary: `docs/development-plans/supabase-real-rollout/summary.md`
+- Archive plan: `docs/development-plans/supabase-real-rollout/plan.md`
 
 ## Last Completed
 
-Completed the admin pay policy rollout task:
+Completed the Supabase real rollout hardening task:
 
-- Added `supabase/migrations/20260319214500_pay_policy_admin_rollout.sql`.
-- Added the tracked `pay_policies` and `pay_rates` tables with read-side RLS plus `is_active_manager_or_admin()`, `admin_upsert_pay_policy(...)`, and `admin_set_pay_rate(...)`.
-- Added the `Pay Policy` admin route, pay-policy feature slice, and admin shell entry points from `Manager Home` and `Members`.
-- Added focused Jest coverage for pay-policy validation and the new RPC wrappers.
-- Updated the product and schema docs and archived the completed feature plan into `docs/development-plans/admin-pay-policy-rollout/` with `plan.md` and `summary.md`.
+- Hardened the repo-local Supabase env loader so placeholder values no longer block `.env.local` or process-level rollout secrets.
+- Hardened the migration wrapper so placeholder rollout secrets fail fast before the Supabase CLI runs.
+- Added focused Jest coverage for the rollout loader and migration prerequisite helpers.
+- Updated the local rollout docs to prefer `.env.local` or CI secret storage for rollout-only credentials.
+- Reached the real Supabase project with `status` and `dry-run`, then identified the remote-only migration history blocker `20260312121000`.
 
 ## Next Action
 
-Apply the pending auth, member-admin, and pay-policy migrations to the real Supabase project, then validate the admin pay-policy flow end to end. If rollout credentials remain unavailable, lock the next unblocked payroll-facing implementation task before changing code.
+Reconcile remote migration version `20260312121000` with the repo history, then rerun `pnpm supabase:migrations:status`, `pnpm supabase:migrations:dry-run`, and `pnpm supabase:migrations:apply`.
 
 ## Blockers
 
-- The tracked Supabase migrations still have not been applied to the real project.
-- GitHub or local rollout secrets remain required for the first real migration apply.
+- The remote project contains migration version `20260312121000`, but no matching file exists under `supabase/migrations/` in the repo.
+- Safe apply now depends on restoring that missing migration to the repo or repairing remote migration history after schema review.
+- Live app validation remains separate from the schema rollout and still needs to be run after apply.
 - The manager-facing payroll and broader payroll calculation surfaces are still unimplemented.
 
 ## Latest Verification
 
+- `pnpm supabase:migrations:status`
+- `pnpm supabase:migrations:dry-run` reached the real project and stopped with a remote migration history mismatch instead of a local secret/config failure.
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test`
-- `git diff --check`
-- Manual UTF-8 readback of the new migration, pay-policy feature files, route changes, and updated docs after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Added the admin pay policy rollout on 2026-03-19.
+- Manual UTF-8 readback of the updated scripts, rollout test file, `.env.example`, README, setup guide, and secrets guide after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
+- Completed the Supabase real rollout hardening task on 2026-03-19.

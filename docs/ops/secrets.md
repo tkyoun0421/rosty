@@ -2,7 +2,7 @@
 
 ## Immediate Action
 
-The existing token stored in `.env` should be treated as compromised and rotated before any GitHub or MCP integration continues.
+Any previously stored real token in `.env` should be treated as compromised and rotated before GitHub or MCP integration continues.
 
 ## Repository Rules
 
@@ -14,8 +14,9 @@ The existing token stored in `.env` should be treated as compromised and rotated
 
 ## Local Development
 
-- Keep `.env` only on developer machines.
-- Reissue credentials if they are copied into screenshots, logs, issues, or chats.
+- Keep public runtime values in `.env` only on developer machines.
+- Keep rollout-only secrets in `.env.local` or shell-level environment variables.
+- Migration scripts treat example placeholders in `.env` as unset and fail fast until real values are supplied.
 - Prefer deriving `SUPABASE_PROJECT_ID` from `EXPO_PUBLIC_SUPABASE_URL`; if you set it explicitly, it can stay local but it is not treated as a secret.
 - Use `pnpm supabase:migrations:dry-run` before `pnpm supabase:migrations:apply` so privileged rollout secrets are not used blindly.
 

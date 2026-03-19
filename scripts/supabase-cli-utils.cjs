@@ -4,6 +4,36 @@ const path = require('node:path');
 
 const repoRoot = path.resolve(process.cwd());
 const envFiles = ['.env', '.env.local'];
+const placeholderPatterns = [
+  /^your[-_]/i,
+  /^https:\/\/your-project\.supabase\.co$/i,
+  /^your-project-ref$/i,
+  /^your-anon-key$/i,
+  /^your-personal-access-token$/i,
+  /^your-db-password$/i,
+  /^change[-_]?me$/i,
+  /^replace[-_]?me$/i,
+];
+
+function normalizeEnvValue(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function isPlaceholderEnvValue(value) {
+  const normalized = normalizeEnvValue(value);
+
+  if (!normalized) {
+    return false;
+  }
+
+  return placeholderPatterns.some((pattern) => pattern.test(normalized));
+}
+
+function hasUsableEnvValue(value) {
+  const normalized = normalizeEnvValue(value);
+
+  return normalized !== '' && !isPlaceholderEnvValue(normalized);
+}
 
 function parseEnvFile(contents) {
   const parsed = {};
@@ -55,9 +85,15 @@ function loadProjectEnv(baseEnv = process.env) {
     const fileEnv = parseEnvFile(readFileSync(filePath, 'utf8'));
 
     for (const [key, value] of Object.entries(fileEnv)) {
-      if (env[key] === undefined || env[key] === '') {
-        env[key] = value;
+      if (hasUsableEnvValue(env[key])) {
+        continue;
       }
+
+      if (value === undefined || value === null || value === '') {
+        continue;
+      }
+
+      env[key] = value;
     }
   }
 
@@ -199,8 +235,11 @@ function runSupabase(args, options = {}) {
 module.exports = {
   ensureSupabaseCli,
   getSupabaseBinaryPath,
+  hasUsableEnvValue,
   installSupabaseCli,
+  isPlaceholderEnvValue,
   loadProjectEnv,
+  normalizeEnvValue,
   repoRoot,
   runSupabase,
 };

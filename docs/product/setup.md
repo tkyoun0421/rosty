@@ -9,7 +9,8 @@
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill the values below.
+Copy `.env.example` to `.env` and fill the public runtime values below.
+Keep rollout-only secrets in `.env.local` or shell-level environment variables so the tracked example placeholders in `.env` do not shadow real credentials.
 
 Runtime app values:
 
@@ -50,7 +51,7 @@ The repo now carries a local Supabase CLI wrapper and checked-in `supabase/confi
 
 1. Run `pnpm install`.
 2. Confirm the local CLI is ready with `pnpm supabase -- --version`.
-3. Fill `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` in `.env`.
+3. Put `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` in `.env.local` or the current shell environment.
 4. Run `pnpm supabase:migrations:status` to link the project and inspect pending migrations.
 5. Run `pnpm supabase:migrations:dry-run` before any real apply.
 6. Run `pnpm supabase:migrations:apply` only after reviewing the dry-run output and any remote schema drift.
@@ -59,6 +60,8 @@ Notes:
 
 - The migration scripts run `supabase link --project-ref ... --password ...` first and keep link metadata under `supabase/.temp/`.
 - `SUPABASE_PROJECT_ID` is optional when the standard Supabase project ref can be derived from `EXPO_PUBLIC_SUPABASE_URL`.
+- Example placeholders such as `your-personal-access-token` and `your-db-password` are rejected before the Supabase CLI runs.
+- `.env.local` can override placeholder rollout values left in `.env` from `.env.example`.
 - If the CLI binary is missing after install, rerun `pnpm supabase:install`.
 
 ### GitHub Actions path

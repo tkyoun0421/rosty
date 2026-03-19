@@ -17,9 +17,10 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 ## Quick Start
 
 1. Copy `.env.example` to `.env` and fill the public keys.
-2. Run `pnpm install`.
-3. Run `pnpm start` or `pnpm android`.
-4. Run `pnpm verify`.
+2. Put rollout-only Supabase migration secrets in `.env.local` or CI secret storage.
+3. Run `pnpm install`.
+4. Run `pnpm start` or `pnpm android`.
+5. Run `pnpm verify`.
 
 ## Scripts
 
@@ -58,4 +59,4 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 - Android can be verified locally on Windows.
 - iOS native builds and Detox execution require macOS with Xcode.
 - `pnpm install` now bootstraps the repo-local Supabase CLI binary used by the migration scripts.
-- The existing `.env` token should be rotated before any remote integration work continues.
+- Migration scripts reject example placeholder secrets before the Supabase CLI runs and let `.env.local` override placeholder rollout values from `.env`.
