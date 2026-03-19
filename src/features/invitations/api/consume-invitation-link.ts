@@ -1,72 +1,45 @@
+import type { ProfileGender } from '@/features/auth/model/auth-types';
 import { supabaseClient } from '@/shared/lib/supabase/client';
 
-type ClaimInvitationLinkInput = {
-  token: string;
-  userId: string;
-  consumedAt?: string;
+type CompleteEmployeeJoinInput = {
+  invitationToken: string;
+  fullName: string;
+  phoneNumber: string;
+  gender: ProfileGender;
 };
 
-type ReleaseInvitationLinkInput = {
-  token: string;
-  userId: string;
-  consumedAt: string;
+type CompleteEmployeeJoinRow = {
+  profile_id: string;
+  consumed_at: string;
 };
 
-type InvitationClaimRow = {
-  id: string;
-};
-
-export async function claimInvitationLink(
-  input: ClaimInvitationLinkInput,
-): Promise<{ consumedAt: string }> {
+export async function completeEmployeeJoin(
+  input: CompleteEmployeeJoinInput,
+): Promise<{ profileId: string; consumedAt: string }> {
   if (!supabaseClient) {
     throw new Error('Supabase invitation management is not configured.');
   }
 
-  const consumedAt = input.consumedAt ?? new Date().toISOString();
   const { data, error } = await supabaseClient
-    .from('invitation_links')
-    .update({
-      consumed_by: input.userId,
-      consumed_at: consumedAt,
+    .rpc('complete_employee_join', {
+      p_invitation_token: input.invitationToken,
+      p_full_name: input.fullName,
+      p_phone_number: input.phoneNumber,
+      p_gender: input.gender,
     })
-    .eq('token', input.token)
-    .eq('target_role', 'employee')
-    .is('consumed_at', null)
-    .is('disabled_at', null)
-    .gt('expires_at', consumedAt)
-    .select('id')
-    .maybeSingle<InvitationClaimRow>();
+    .returns<CompleteEmployeeJoinRow[]>()
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
 
   if (!data) {
-    throw new Error('This invitation link is no longer valid.');
+    throw new Error('Employee join could not be completed.');
   }
 
-  return { consumedAt };
-}
-
-export async function releaseClaimedInvitationLink(
-  input: ReleaseInvitationLinkInput,
-): Promise<void> {
-  if (!supabaseClient) {
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from('invitation_links')
-    .update({
-      consumed_by: null,
-      consumed_at: null,
-    })
-    .eq('token', input.token)
-    .eq('consumed_by', input.userId)
-    .eq('consumed_at', input.consumedAt);
-
-  if (error) {
-    throw new Error(error.message);
-  }
+  return {
+    profileId: data.profile_id,
+    consumedAt: data.consumed_at,
+  };
 }

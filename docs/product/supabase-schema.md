@@ -1,9 +1,9 @@
-﻿# Rosty Supabase Schema Design
+# Rosty Supabase Schema Design
 
 ## 1. 목적
 
 이 문서는 Rosty V1의 단일 홀 운영 규칙을 Supabase 테이블 구조와 RLS 기준으로 정리한다.
-현재 범위는 `문서 설계`까지이며, 실제 SQL migration과 policy 적용은 후속 구현 단계에서 진행한다.
+이 문서는 `문서 설계`를 기준으로 유지하되, 실제 구현에 필요한 SQL migration 초안과 함수 계약은 repo에 함께 보관한다.
 
 관련 문서:
 
@@ -16,6 +16,7 @@
 - 앱은 단일 홀 전용이므로 `halls`, `memberships`, `current_hall` 계열 테이블은 만들지 않는다.
 - 인증 기준은 `auth.users`이고, 앱 사용자 정보는 `profiles.id = auth.users.id` 1:1로 연결한다.
 - 기본 쓰기 경로는 `클라이언트 직접 CRUD + RLS 검증`이다.
+- 단, 직원 join completion은 `complete_employee_join` RPC로 초대 검증, 프로필 upsert, 초대 소모를 하나의 트랜잭션으로 묶는다.
 - 삭제보다 상태 전환을 우선한다.
 - 사용자 관리와 급여 정책은 `admin`만 쓴다.
 - Manager의 멤버 조회는 Admin 관리용 원본 테이블이 아니라 최소 노출 경로로 제한한다.
@@ -115,13 +116,18 @@ RLS:
 
 - V1에서 `target_role` 허용값은 `employee`만 사용한다.
 - `consumed_at is null`인 활성 링크만 가입에 사용할 수 있다.
-- 직원 join-validation 플로우는 `Profile Setup` 성공 시 `consumed_by`, `consumed_at`를 채운다.
+- 직원 join-validation 플로우는 `complete_employee_join` RPC 성공 시 `consumed_by`, `consumed_at`를 채운다.
 - 재발급은 기존 활성 링크의 `disabled_at`을 먼저 채운 뒤 새 토큰 행을 추가하는 흐름으로 맞춘다.
 
 RLS:
 
 - Admin: 읽기/쓰기
 - 기타 사용자: 직접 접근 불가
+
+함수 경로:
+
+- `complete_employee_join` RPC는 `authenticated` 사용자만 호출한다.
+- RPC 내부에서 `auth.uid()` 기준으로 대상 프로필과 초대 링크를 검증하고, 짧은 트랜잭션 안에서 `profiles` upsert와 invite consume을 함께 처리한다.
 
 ### 4.4 `pay_policies`
 
@@ -402,9 +408,8 @@ RLS:
 | `device_tokens` | own read/write | own read/write | own read/write |
 
 ## 7. 후속 구현 작업
-
+이 문서를 기준으로 남아 있는 구현 작업은 아래 두 가지다.
 이 문서를 기준으로 다음 턴에서 바로 이어질 작업은 아래 두 가지다.
-
-- Supabase migration SQL 초안 작성
+- `complete_employee_join` migration을 실제 Supabase 프로젝트에 적용하고 검증하기
 - 정책별 RLS SQL 작성과 seed Admin 초기화 스크립트 정의
-
+- 정책별 RLS SQL 작성과 seed Admin 초기화 스크립트 정의

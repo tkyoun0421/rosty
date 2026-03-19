@@ -110,6 +110,7 @@ V1의 핵심은 두 가지다.
 - 로그인 직후 필수 프로필이 비어 있으면 `profile_incomplete` 상태로 `Profile Setup`으로 보낸다.
 - 직원은 유효한 `초대 링크`를 통해 가입한다.
 - 직원 초대 링크는 `Login` 진입 시 토큰 컨텍스트를 전달하고 `Profile Setup` 제출 직전에 다시 검증한다.
+- 직원 `Profile Setup` 제출은 초대 링크 검증, `profiles` 저장, 초대 링크 소모를 서버 검증 경로에서 한 번에 처리한다.
 - 관리자/운영진 후보는 로그인 후 프로필을 완료하면 `pending_approval` 상태로 진입한다.
 - 초대 링크로 가입한 직원도 최종 활성화 전에는 `pending_approval`를 거친다.
 - `active` 사용자만 메인 앱으로 진입한다.

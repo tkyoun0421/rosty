@@ -5,10 +5,7 @@ import { upsertAuthProfile } from '@/features/auth/api/upsert-auth-profile';
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import type { ProfileSetupSubmission } from '@/features/auth/model/profile-setup';
-import {
-  claimInvitationLink,
-  releaseClaimedInvitationLink,
-} from '@/features/invitations/api/consume-invitation-link';
+import { completeEmployeeJoin } from '@/features/invitations/api/consume-invitation-link';
 import { invitationJoinQueryKey } from '@/features/invitations/api/fetch-invitation-join';
 import { invitationLinksQueryKey } from '@/features/invitations/api/fetch-invitation-links';
 import { requiresEmployeeInvitation } from '@/features/invitations/model/invitation-join';
@@ -29,44 +26,29 @@ export function useProfileSetupMutation(
         throw new Error('No active session was available for profile setup.');
       }
 
-      let claimedInvitation: { consumedAt: string } | null = null;
-
-      try {
-        if (requiresEmployeeInvitation(session)) {
-          if (!invitationToken) {
-            throw new Error(
-              'Open the employee invitation link again before submitting your profile.',
-            );
-          }
-
-          claimedInvitation = await claimInvitationLink({
-            token: invitationToken,
-            userId: session.userId,
-          });
+      if (requiresEmployeeInvitation(session)) {
+        if (!invitationToken) {
+          throw new Error(
+            'Open the employee invitation link again before submitting your profile.',
+          );
         }
 
-        await upsertAuthProfile({
-          userId: session.userId,
+        await completeEmployeeJoin({
+          invitationToken,
           fullName: values.fullName,
           phoneNumber: values.phoneNumber,
           gender: values.gender,
-          role: session.role,
         });
-      } catch (error) {
-        if (session && invitationToken && claimedInvitation) {
-          try {
-            await releaseClaimedInvitationLink({
-              token: invitationToken,
-              userId: session.userId,
-              consumedAt: claimedInvitation.consumedAt,
-            });
-          } catch {
-            // Best effort rollback only. The admin can still reissue if needed.
-          }
-        }
-
-        throw error;
+        return;
       }
+
+      await upsertAuthProfile({
+        userId: session.userId,
+        fullName: values.fullName,
+        phoneNumber: values.phoneNumber,
+        gender: values.gender,
+        role: session.role,
+      });
     },
     onSuccess: async () => {
       if (session) {

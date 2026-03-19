@@ -35,7 +35,7 @@
 - V1 앱 발급 플로우는 초대 링크를 발급 시점부터 7일 동안 유효하게 만든다.
 - 재발급은 기존 `active` 링크를 `disabled`로 전환하고 새 `active` 링크를 추가하는 방식으로 처리한다.
 - Admin UI의 복사/공유 액션은 `active` 링크에만 노출되고 나머지 이력 상태는 읽기 전용이다.
-- 직원 온보딩에서는 `Profile Setup` 제출 성공 시 초대 링크가 `consumed`로 전환된다.
+- 직원 온보딩에서는 `complete_employee_join` RPC가 성공하면 초대 링크가 `consumed`로 전환된다.
 
 ## 4. ScheduleStatus
 
