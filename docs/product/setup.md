@@ -46,6 +46,8 @@ Use `pnpm ios` only on macOS with the required Apple tooling.
 
 The repo now carries a local Supabase CLI wrapper and checked-in `supabase/config.toml` so rollout commands do not depend on ad hoc machine setup.
 
+### Local machine path
+
 1. Run `pnpm install`.
 2. Confirm the local CLI is ready with `pnpm supabase -- --version`.
 3. Fill `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` in `.env`.
@@ -58,6 +60,15 @@ Notes:
 - The migration scripts run `supabase link --project-ref ... --password ...` first and keep link metadata under `supabase/.temp/`.
 - `SUPABASE_PROJECT_ID` is optional when the standard Supabase project ref can be derived from `EXPO_PUBLIC_SUPABASE_URL`.
 - If the CLI binary is missing after install, rerun `pnpm supabase:install`.
+
+### GitHub Actions path
+
+Use `.github/workflows/supabase-migrations.yml` when local privileged credentials are unavailable.
+
+1. Add repository secrets: `SUPABASE_PROJECT_ID`, `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`.
+2. Open `Actions > Supabase Migration Rollout`.
+3. Run the workflow with `mode=dry-run` first.
+4. Only use `mode=apply` after reviewing the dry-run output and setting `confirm_apply=APPLY`.
 
 ## Native Project Policy
 

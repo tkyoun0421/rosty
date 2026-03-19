@@ -19,6 +19,12 @@ The existing token stored in `.env` should be treated as compromised and rotated
 - Prefer deriving `SUPABASE_PROJECT_ID` from `EXPO_PUBLIC_SUPABASE_URL`; if you set it explicitly, it can stay local but it is not treated as a secret.
 - Use `pnpm supabase:migrations:dry-run` before `pnpm supabase:migrations:apply` so privileged rollout secrets are not used blindly.
 
+## GitHub Actions
+
+- The manual rollout workflow is `.github/workflows/supabase-migrations.yml`.
+- Configure `SUPABASE_PROJECT_ID`, `SUPABASE_ACCESS_TOKEN`, and `SUPABASE_DB_PASSWORD` as repository or environment secrets before running it.
+- Keep the workflow manual; do not convert real migration apply into an automatic push-triggered path without an explicit review gate.
+
 ## CI / CD
 
 - GitHub Actions should read tokens from repository or environment secrets.

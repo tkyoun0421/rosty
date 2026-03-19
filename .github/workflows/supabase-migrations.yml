@@ -1,0 +1,64 @@
+name: Supabase Migration Rollout
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Select dry-run or apply.
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - apply
+      confirm_apply:
+        description: Type APPLY to allow a real migration apply when mode=apply.
+        required: false
+        type: string
+
+jobs:
+  rollout:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      ROSTY_SKIP_DOTENV: '1'
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify local Supabase CLI bootstrap
+        run: pnpm supabase -- --version
+
+      - name: Check linked migration status
+        run: pnpm supabase:migrations:status
+
+      - name: Preview pending migrations
+        run: pnpm supabase:migrations:dry-run
+
+      - name: Require apply confirmation
+        if: ${{ github.event.inputs.mode == 'apply' && github.event.inputs.confirm_apply != 'APPLY' }}
+        run: |
+          echo 'Set confirm_apply to APPLY to run a real migration apply.'
+          exit 1
+
+      - name: Apply pending migrations
+        if: ${{ github.event.inputs.mode == 'apply' && github.event.inputs.confirm_apply == 'APPLY' }}
+        run: pnpm supabase:migrations:apply
