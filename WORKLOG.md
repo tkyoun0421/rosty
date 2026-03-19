@@ -2,40 +2,43 @@
 
 ## Current Task
 
-Pending the next locked implementation or rollout task after completing the Supabase real rollout hardening pass.
+Pending the next locked validation or feature task after completing the real Supabase migration rollout.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/supabase-real-rollout/summary.md`
-- Archive plan: `docs/development-plans/supabase-real-rollout/plan.md`
+- Archive summary: `docs/development-plans/supabase-migration-history-reconciliation/summary.md`
+- Archive plan: `docs/development-plans/supabase-migration-history-reconciliation/plan.md`
 
 ## Last Completed
 
-Completed the Supabase real rollout hardening task:
+Completed the Supabase migration history reconciliation task:
 
-- Hardened the repo-local Supabase env loader so placeholder values no longer block `.env.local` or process-level rollout secrets.
-- Hardened the migration wrapper so placeholder rollout secrets fail fast before the Supabase CLI runs.
-- Added focused Jest coverage for the rollout loader and migration prerequisite helpers.
-- Updated the local rollout docs to prefer `.env.local` or CI secret storage for rollout-only credentials.
-- Reached the real Supabase project with `status` and `dry-run`, then identified the remote-only migration history blocker `20260312121000`.
+- Fetched the remote-only migration `20260312121000_init_rosty_schema.sql` into the repo.
+- Added `20260319183000_auth_invitation_base_schema.sql` to bridge the fetched legacy baseline to the current auth/invitation base schema.
+- Applied the remaining tracked migration chain to the real Supabase project, including the auth/invitation RLS rollout, last-admin SQL guard, member-admin RPC, and pay-policy rollout.
+- Verified post-apply status alignment and an empty dry-run against the real project.
 
 ## Next Action
 
-Reconcile remote migration version `20260312121000` with the repo history, then rerun `pnpm supabase:migrations:status`, `pnpm supabase:migrations:dry-run`, and `pnpm supabase:migrations:apply`.
+Validate login, employee invite onboarding, admin member actions, admin invitation actions, and admin pay-policy actions against the real Supabase project before locking the next feature task.
 
 ## Blockers
 
-- The remote project contains migration version `20260312121000`, but no matching file exists under `supabase/migrations/` in the repo.
-- Safe apply now depends on restoring that missing migration to the repo or repairing remote migration history after schema review.
-- Live app validation remains separate from the schema rollout and still needs to be run after apply.
+- Real app flow QA against the migrated Supabase project is still pending.
+- The first admin account still depends on an out-of-band seed or manual promotion path.
+- The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
 - The manager-facing payroll and broader payroll calculation surfaces are still unimplemented.
 
 ## Latest Verification
 
+- `pnpm supabase -- migration fetch`
 - `pnpm supabase:migrations:status`
-- `pnpm supabase:migrations:dry-run` reached the real project and stopped with a remote migration history mismatch instead of a local secret/config failure.
+- `pnpm supabase:migrations:dry-run`
+- `pnpm supabase:migrations:apply`
+- Post-apply `pnpm supabase:migrations:status`
+- Post-apply `pnpm supabase:migrations:dry-run`
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test`
-- Manual UTF-8 readback of the updated scripts, rollout test file, `.env.example`, README, setup guide, and secrets guide after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Completed the Supabase real rollout hardening task on 2026-03-19.
+- Manual UTF-8 readback of the fetched migration, bridging migration, archive summary, and `WORKLOG.md` after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
+- Completed the real Supabase migration rollout on 2026-03-19.
