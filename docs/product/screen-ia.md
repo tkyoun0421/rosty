@@ -10,6 +10,7 @@
 - 앱은 라비에벨 웨딩홀 단일 홀 전용이다.
 - `Hall Selector`, `플랫폼 운영`, `Super Admin` 화면은 없다.
 - 활성 사용자만 메인 앱 영역에 진입한다.
+- 직원 초대 링크는 `Login`에 invite 토큰 컨텍스트를 싣고 진입할 수 있다.
 
 ## 2. 진입 상태 화면
 
@@ -20,6 +21,11 @@
 | `Profile Setup` | `profile_incomplete` | Approval Waiting |
 | `Approval Waiting` | `pending_approval` | Active 승인 후 역할별 Home |
 | `Suspended` | `suspended` | 로그아웃 |
+
+메모:
+
+- 직원 초대 링크로 열린 `Login`은 invite 토큰을 유지한 채 Google 로그인 이후 `Profile Setup`까지 연결된다.
+- 신규 직원의 `Profile Setup` 제출은 유효한 invite 토큰이 있을 때만 완료된다.
 
 ## 3. Employee 영역
 
@@ -105,6 +111,7 @@
 - Hall Directory
 - Guest Contact Detail
 - Notification Settings
+
 
 
 

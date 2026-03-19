@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 
+import { useLocalSearchParams } from 'expo-router';
+
 import {
   ActivityIndicator,
   Pressable,
@@ -13,6 +15,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useProfileSetupMutation } from '@/features/auth/api/use-profile-setup-mutation';
 import { useAuthStore } from '@/features/auth/model/auth-store';
+import { useInvitationJoinQuery } from '@/features/invitations/api/fetch-invitation-join';
+import {
+  canCompleteEmployeeJoin,
+  getInvitationJoinMessage,
+  requiresEmployeeInvitation,
+  resolveInvitationTokenParam,
+} from '@/features/invitations/model/invitation-join';
+import { getInvitationLinkState } from '@/features/invitations/model/invitation-management';
 import {
   createInitialProfileSetupValues,
   profileGenderOptions,
@@ -97,14 +107,39 @@ export function AuthLoadingScreen({ title, body }: AuthLoadingScreenProps) {
 }
 
 export function LoginScreen() {
+  const params = useLocalSearchParams<{ invite?: string | string[] }>();
   const signInWithGoogle = useAuthStore((state) => state.signInWithGoogle);
   const signInWithDemo = useAuthStore((state) => state.signInWithDemo);
   const clearError = useAuthStore((state) => state.clearError);
+  const setPendingInvitationToken = useAuthStore(
+    (state) => state.setPendingInvitationToken,
+  );
+  const pendingInvitationToken = useAuthStore(
+    (state) => state.pendingInvitationToken,
+  );
   const isAuthenticating = useAuthStore((state) => state.isAuthenticating);
   const errorMessage = useAuthStore((state) => state.errorMessage);
 
+  const routeInvitationToken = resolveInvitationTokenParam(params.invite);
+  const invitationToken = routeInvitationToken ?? pendingInvitationToken;
+  const invitationQuery = useInvitationJoinQuery(invitationToken);
+  const invitationState = invitationQuery.data
+    ? getInvitationLinkState(invitationQuery.data)
+    : null;
   const showDemoFallback =
     !hasSupabaseConfig || publicEnv.appEnv !== 'production';
+  const inviteGateBlocked =
+    !!invitationToken &&
+    (!hasSupabaseConfig ||
+      invitationQuery.isLoading ||
+      invitationQuery.isError ||
+      invitationState !== 'active');
+
+  useEffect(() => {
+    if (routeInvitationToken) {
+      setPendingInvitationToken(routeInvitationToken);
+    }
+  }, [routeInvitationToken, setPendingInvitationToken]);
 
   return (
     <AuthFrame
@@ -112,6 +147,54 @@ export function LoginScreen() {
       title="Rosty Sign In"
       body="This build now prefers a real Supabase-backed Google OAuth session. When local auth config is missing, the shell still exposes demo personas so route gating work can continue."
     >
+      {invitationToken ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Employee invitation</Text>
+          <Text style={styles.sectionBody}>
+            Employee onboarding keeps this invite token through Google sign-in
+            and checks it again before profile submission.
+          </Text>
+          {!hasSupabaseConfig ? (
+            <View style={styles.noticeCard}>
+              <Text style={styles.noticeTitle}>Invite validation unavailable</Text>
+              <Text style={styles.noticeBody}>
+                Fill the local Supabase env before testing employee invite
+                onboarding in this build.
+              </Text>
+            </View>
+          ) : invitationQuery.isLoading ? (
+            <View style={styles.noticeCard}>
+              <Text style={styles.noticeTitle}>Checking invitation</Text>
+              <Text style={styles.noticeBody}>
+                Validating that this employee invite link is still active.
+              </Text>
+            </View>
+          ) : invitationQuery.isError ? (
+            <View style={styles.errorCard}>
+              <Text style={styles.errorTitle}>Invitation check failed</Text>
+              <Text style={styles.errorBody}>{invitationQuery.error.message}</Text>
+            </View>
+          ) : invitationQuery.data && invitationState === 'active' ? (
+            <View style={styles.noticeCard}>
+              <Text style={styles.noticeTitle}>Invitation ready</Text>
+              <Text style={styles.noticeBody}>
+                This employee invite is valid until{' '}
+                {formatTimestamp(invitationQuery.data.expiresAt)}.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.errorCard}>
+              <Text style={styles.errorTitle}>Invitation blocked</Text>
+              <Text style={styles.errorBody}>
+                {getInvitationJoinMessage(
+                  invitationToken,
+                  invitationQuery.data ?? null,
+                )}
+              </Text>
+            </View>
+          )}
+        </View>
+      ) : null}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Google OAuth</Text>
         <Text style={styles.sectionBody}>
@@ -122,15 +205,17 @@ export function LoginScreen() {
         <ActionButton
           label={isAuthenticating ? 'Signing in...' : 'Continue with Google'}
           detail={
-            hasSupabaseConfig
-              ? 'Opens a secure Google OAuth session and exchanges the callback code with Supabase.'
-              : 'Unavailable until Supabase auth env is configured locally.'
+            !hasSupabaseConfig
+              ? 'Unavailable until Supabase auth env is configured locally.'
+              : inviteGateBlocked
+                ? 'Employee onboarding stays locked until this invite link is valid.'
+                : 'Opens a secure Google OAuth session and exchanges the callback code with Supabase.'
           }
           onPress={() => {
             clearError();
-            void signInWithGoogle();
+            void signInWithGoogle(invitationToken);
           }}
-          disabled={!hasSupabaseConfig || isAuthenticating}
+          disabled={!hasSupabaseConfig || isAuthenticating || inviteGateBlocked}
         />
         {errorMessage ? (
           <View style={styles.errorCard}>
@@ -165,20 +250,49 @@ export function LoginScreen() {
     </AuthFrame>
   );
 }
-
 export function ProfileSetupScreen() {
+  const params = useLocalSearchParams<{ invite?: string | string[] }>();
   const session = useAuthStore((state) => state.session);
   const authSource = useAuthStore((state) => state.authSource);
+  const pendingInvitationToken = useAuthStore(
+    (state) => state.pendingInvitationToken,
+  );
+  const setPendingInvitationToken = useAuthStore(
+    (state) => state.setPendingInvitationToken,
+  );
   const completeProfile = useAuthStore((state) => state.completeProfile);
   const signOut = useAuthStore((state) => state.signOut);
+  const routeInvitationToken = resolveInvitationTokenParam(params.invite);
+  const invitationToken = routeInvitationToken ?? pendingInvitationToken;
+  const requiresInvitation =
+    authSource === 'supabase' && requiresEmployeeInvitation(session);
+  const invitationQuery = useInvitationJoinQuery(
+    invitationToken,
+    requiresInvitation,
+  );
+  const invitationState = invitationQuery.data
+    ? getInvitationLinkState(invitationQuery.data)
+    : null;
+  const canSubmitWithInvitation = canCompleteEmployeeJoin(
+    session,
+    invitationToken,
+    invitationQuery.data ?? null,
+  );
   const mutation = useProfileSetupMutation(
     authSource === 'supabase' ? session : null,
+    authSource === 'supabase' ? invitationToken : null,
   );
 
   const [formValues, setFormValues] = useState<ProfileSetupFormValues>(() =>
     createInitialProfileSetupValues(session?.displayName),
   );
   const [fieldErrors, setFieldErrors] = useState<ProfileSetupFieldErrors>({});
+
+  useEffect(() => {
+    if (routeInvitationToken) {
+      setPendingInvitationToken(routeInvitationToken);
+    }
+  }, [routeInvitationToken, setPendingInvitationToken]);
 
   useEffect(() => {
     setFormValues((current) => {
@@ -229,6 +343,15 @@ export function ProfileSetupScreen() {
   };
 
   const handleSubmitProfile = () => {
+    if (
+      requiresInvitation &&
+      (invitationQuery.isLoading ||
+        invitationQuery.isError ||
+        !canSubmitWithInvitation)
+    ) {
+      return;
+    }
+
     const validation = validateProfileSetup(formValues);
 
     if (!validation.success) {
@@ -279,11 +402,60 @@ export function ProfileSetupScreen() {
         </View>
       ) : (
         <View style={styles.actionsRow}>
+          {requiresInvitation ? (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Employee invitation</Text>
+              <Text style={styles.sectionBody}>
+                This onboarding flow stays locked until the employee invite link
+                is valid and unused.
+              </Text>
+              {!invitationToken ? (
+                <View style={styles.errorCard}>
+                  <Text style={styles.errorTitle}>Invitation required</Text>
+                  <Text style={styles.errorBody}>
+                    {getInvitationJoinMessage(null, null)}
+                  </Text>
+                </View>
+              ) : invitationQuery.isLoading ? (
+                <View style={styles.noticeCard}>
+                  <Text style={styles.noticeTitle}>Checking invitation</Text>
+                  <Text style={styles.noticeBody}>
+                    Validating the employee invite link before profile
+                    submission opens.
+                  </Text>
+                </View>
+              ) : invitationQuery.isError ? (
+                <View style={styles.errorCard}>
+                  <Text style={styles.errorTitle}>Invitation check failed</Text>
+                  <Text style={styles.errorBody}>{invitationQuery.error.message}</Text>
+                </View>
+              ) : invitationQuery.data && invitationState === 'active' ? (
+                <View style={styles.noticeCard}>
+                  <Text style={styles.noticeTitle}>Invitation ready</Text>
+                  <Text style={styles.noticeBody}>
+                    This employee invite stays valid until{' '}
+                    {formatTimestamp(invitationQuery.data.expiresAt)}.
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.errorCard}>
+                  <Text style={styles.errorTitle}>Invitation blocked</Text>
+                  <Text style={styles.errorBody}>
+                    {getInvitationJoinMessage(
+                      invitationToken,
+                      invitationQuery.data ?? null,
+                    )}
+                  </Text>
+                </View>
+              )}
+            </View>
+          ) : null}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Required profile fields</Text>
             <Text style={styles.sectionBody}>
-              This submission writes your `profiles` record and moves the app
-              state to `pending_approval`.
+              {requiresInvitation
+                ? 'This submission writes your `profiles` record, consumes the current employee invite, and moves the app state to `pending_approval`.'
+                : 'This submission writes your `profiles` record and moves the app state to `pending_approval`.'}
             </Text>
             <View style={styles.inputGroup}>
               <Text style={styles.fieldLabel}>Full name</Text>
@@ -361,6 +533,9 @@ export function ProfileSetupScreen() {
               <Text style={styles.noticeBody}>
                 After submission, this account stays signed in but moves to the
                 approval waiting route until an admin activates it.
+                {requiresInvitation
+                  ? ' The invite link is marked used as part of this handoff.'
+                  : ''}
               </Text>
             </View>
             {mutation.isError ? (
@@ -375,9 +550,21 @@ export function ProfileSetupScreen() {
               label={
                 mutation.isPending ? 'Submitting profile...' : 'Submit profile'
               }
-              detail="Creates or updates your profile row, then routes to approval waiting."
+              detail={
+                requiresInvitation && !canSubmitWithInvitation
+                  ? 'Open a valid employee invitation link before submitting your profile.'
+                  : requiresInvitation
+                    ? 'Creates your profile row, consumes the invite link, then routes to approval waiting.'
+                    : 'Creates or updates your profile row, then routes to approval waiting.'
+              }
               onPress={handleSubmitProfile}
-              disabled={mutation.isPending}
+              disabled={
+                mutation.isPending ||
+                (requiresInvitation &&
+                  (invitationQuery.isLoading ||
+                    invitationQuery.isError ||
+                    !canSubmitWithInvitation))
+              }
             />
             <ActionButton
               label="Sign out"
@@ -516,6 +703,20 @@ export function SuspendedScreen() {
       )}
     </AuthFrame>
   );
+}
+
+function formatTimestamp(value: string | null) {
+  if (!value) {
+    return 'Not recorded';
+  }
+
+  const parsed = new Date(value);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return `${parsed.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
 }
 
 function AuthFrame({ eyebrow, title, body, children }: AuthFrameProps) {
@@ -771,3 +972,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+
+
+
+
+

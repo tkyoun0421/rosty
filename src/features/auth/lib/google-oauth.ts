@@ -3,6 +3,7 @@ import 'react-native-url-polyfill/auto';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
+import { invitationTokenParam } from '@/features/invitations/model/invitation-join';
 import { supabaseClient } from '@/shared/lib/supabase/client';
 
 export const authCallbackPath = 'auth/callback';
@@ -13,8 +14,23 @@ export type GoogleOAuthResult =
   | { type: 'dismiss'; message: string }
   | { type: 'error'; message: string };
 
-export function createGoogleOAuthRedirectUrl(): string {
-  return Linking.createURL(authCallbackPath);
+export function createGoogleOAuthRedirectUrl(
+  invitationToken?: string | null,
+): string {
+  const redirectUrl = Linking.createURL(authCallbackPath);
+
+  if (!invitationToken) {
+    return redirectUrl;
+  }
+
+  try {
+    const parsed = new URL(redirectUrl);
+    parsed.searchParams.set(invitationTokenParam, invitationToken);
+    return parsed.toString();
+  } catch {
+    const separator = redirectUrl.includes('?') ? '&' : '?';
+    return `${redirectUrl}${separator}${invitationTokenParam}=${encodeURIComponent(invitationToken)}`;
+  }
 }
 
 export function extractOAuthCode(url: string): string | null {
@@ -25,7 +41,17 @@ export function extractOAuthCode(url: string): string | null {
   }
 }
 
-export async function startGoogleOAuth(): Promise<GoogleOAuthResult> {
+export function extractInvitationToken(url: string): string | null {
+  try {
+    return new URL(url).searchParams.get(invitationTokenParam);
+  } catch {
+    return null;
+  }
+}
+
+export async function startGoogleOAuth(
+  invitationToken?: string | null,
+): Promise<GoogleOAuthResult> {
   if (!supabaseClient) {
     return {
       type: 'error',
@@ -33,7 +59,7 @@ export async function startGoogleOAuth(): Promise<GoogleOAuthResult> {
     };
   }
 
-  const redirectTo = createGoogleOAuthRedirectUrl();
+  const redirectTo = createGoogleOAuthRedirectUrl(invitationToken);
   const { data, error } = await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
     options: {

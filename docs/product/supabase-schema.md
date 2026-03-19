@@ -115,6 +115,7 @@ RLS:
 
 - V1에서 `target_role` 허용값은 `employee`만 사용한다.
 - `consumed_at is null`인 활성 링크만 가입에 사용할 수 있다.
+- 직원 join-validation 플로우는 `Profile Setup` 성공 시 `consumed_by`, `consumed_at`를 채운다.
 - 재발급은 기존 활성 링크의 `disabled_at`을 먼저 채운 뒤 새 토큰 행을 추가하는 흐름으로 맞춘다.
 
 RLS:
@@ -406,3 +407,4 @@ RLS:
 
 - Supabase migration SQL 초안 작성
 - 정책별 RLS SQL 작성과 seed Admin 초기화 스크립트 정의
+

@@ -2,8 +2,9 @@ import type { Session } from '@supabase/supabase-js';
 import { create } from 'zustand';
 
 import {
-  startGoogleOAuth,
+  extractInvitationToken,
   extractOAuthCode,
+  startGoogleOAuth,
 } from '@/features/auth/lib/google-oauth';
 import {
   approveSession,
@@ -29,12 +30,15 @@ type AuthStore = {
   isAuthenticating: boolean;
   session: AuthSession | null;
   authSource: AuthSource | null;
+  pendingInvitationToken: string | null;
   errorMessage: string | null;
   clearError: () => void;
+  setPendingInvitationToken: (token: string | null) => void;
+  clearPendingInvitationToken: () => void;
   restoreSession: () => Promise<void>;
   syncSessionFromAuthChange: (session: Session | null) => Promise<void>;
   completeOAuthRedirect: (url: string) => Promise<boolean>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGoogle: (invitationToken?: string | null) => Promise<void>;
   signInWithDemo: (preset: DemoAuthPreset) => void;
   completeProfile: () => void;
   approveAccess: () => void;
@@ -64,13 +68,27 @@ function isDemoSource(authSource: AuthSource | null): authSource is 'demo' {
   return authSource === 'demo';
 }
 
+function normalizeInvitationToken(token: string | null | undefined): string | null {
+  if (typeof token !== 'string') {
+    return null;
+  }
+
+  const trimmed = token.trim();
+
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export const useAuthStore = create<AuthStore>()((set, get) => ({
   isHydrated: false,
   isAuthenticating: false,
   session: null,
   authSource: null,
+  pendingInvitationToken: null,
   errorMessage: null,
   clearError: () => set({ errorMessage: null }),
+  setPendingInvitationToken: (token) =>
+    set({ pendingInvitationToken: normalizeInvitationToken(token) }),
+  clearPendingInvitationToken: () => set({ pendingInvitationToken: null }),
   restoreSession: async () => {
     if (!hasSupabaseConfig || !supabaseClient) {
       set({ isHydrated: true, isAuthenticating: false, errorMessage: null });
@@ -124,6 +142,12 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       return false;
     }
 
+    const invitationToken = normalizeInvitationToken(extractInvitationToken(url));
+
+    if (invitationToken) {
+      set({ pendingInvitationToken: invitationToken });
+    }
+
     const code = extractOAuthCode(url);
 
     if (!code) {
@@ -150,7 +174,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
     return true;
   },
-  signInWithGoogle: async () => {
+  signInWithGoogle: async (invitationToken) => {
     if (!hasSupabaseConfig || !supabaseClient) {
       set({
         errorMessage: 'Supabase auth is not configured for this build.',
@@ -160,13 +184,17 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       return;
     }
 
+    const normalizedInvitationToken =
+      normalizeInvitationToken(invitationToken) ?? get().pendingInvitationToken;
+
     set({
       isAuthenticating: true,
       errorMessage: null,
       isHydrated: true,
+      pendingInvitationToken: normalizedInvitationToken,
     });
 
-    const result = await startGoogleOAuth();
+    const result = await startGoogleOAuth(normalizedInvitationToken);
 
     if (result.type === 'success') {
       await get().completeOAuthRedirect(result.url);
@@ -183,6 +211,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     set({
       session: createDemoSession(preset),
       authSource: 'demo',
+      pendingInvitationToken: null,
       errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
@@ -249,9 +278,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
     set({
       session: null,
       authSource: null,
+      pendingInvitationToken: null,
       errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
     });
   },
 }));
+
