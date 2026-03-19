@@ -1,4 +1,14 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+
+import * as Clipboard from 'expo-clipboard';
+import {
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -14,6 +24,10 @@ import {
   getInvitationLinkState,
   type InvitationLinkRecord,
 } from '@/features/invitations/model/invitation-management';
+import {
+  buildInvitationLoginUrl,
+  buildInvitationShareContent,
+} from '@/features/invitations/model/invitation-share';
 import { hasSupabaseConfig } from '@/shared/lib/supabase/client';
 
 type InvitationScreenProps = {
@@ -27,12 +41,28 @@ type InvitationSectionProps = {
   invitations: InvitationLinkRecord[];
   now: Date;
   mutation: ReturnType<typeof useInvitationAdminMutation>;
+  onCopyLink: (token: string) => Promise<void>;
+  onShareLink: (token: string) => Promise<void>;
 };
 
 type InvitationCardProps = {
   invitation: InvitationLinkRecord;
   now: Date;
   mutation: ReturnType<typeof useInvitationAdminMutation>;
+  onCopyLink: (token: string) => Promise<void>;
+  onShareLink: (token: string) => Promise<void>;
+};
+
+type InvitationLinkActionsProps = {
+  token: string;
+  onCopyLink: (token: string) => Promise<void>;
+  onShareLink: (token: string) => Promise<void>;
+};
+
+type InvitationActionNotice = {
+  tone: 'notice' | 'error';
+  title: string;
+  body: string;
 };
 
 export function InvitationScreen({
@@ -42,6 +72,8 @@ export function InvitationScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const invitationsQuery = useInvitationLinksQuery();
   const mutation = useInvitationAdminMutation(session);
+  const [actionNotice, setActionNotice] =
+    useState<InvitationActionNotice | null>(null);
 
   if (!hasSupabaseConfig) {
     return (
@@ -86,7 +118,9 @@ export function InvitationScreen({
       >
         <View style={styles.errorCard}>
           <Text style={styles.errorTitle}>Invitation query failed</Text>
-          <Text style={styles.errorBody}>{invitationsQuery.error.message}</Text>
+          <Text selectable style={styles.errorBody}>
+            {invitationsQuery.error.message}
+          </Text>
         </View>
         <FooterActions onBackMembers={onBackMembers} onSignOut={signOut} />
       </InvitationFrame>
@@ -98,11 +132,55 @@ export function InvitationScreen({
   const counts = getInvitationCounts(invitations, now);
   const activeInvitations = getActiveInvitationLinks(invitations, now);
   const historicalInvitations = getHistoricalInvitationLinks(invitations, now);
+  const latestInvitation =
+    mutation.isSuccess && mutation.data.kind !== 'disable' ? mutation.data : null;
+
+  async function handleCopyLink(token: string) {
+    const url = buildInvitationLoginUrl(token);
+
+    try {
+      await Clipboard.setStringAsync(url);
+      setActionNotice({
+        tone: 'notice',
+        title: 'Invitation link copied',
+        body: 'The employee login URL is ready to paste into chat or email.',
+      });
+    } catch (error) {
+      setActionNotice({
+        tone: 'error',
+        title: 'Invitation copy failed',
+        body: formatActionError(error, 'Could not copy the invitation link.'),
+      });
+    }
+  }
+
+  async function handleShareLink(token: string) {
+    try {
+      const result = await Share.share(buildInvitationShareContent(token));
+
+      if (result.action === Share.dismissedAction) {
+        setActionNotice(null);
+        return;
+      }
+
+      setActionNotice({
+        tone: 'notice',
+        title: 'Share sheet opened',
+        body: 'The current employee login URL is ready to hand off from the native share sheet.',
+      });
+    } catch (error) {
+      setActionNotice({
+        tone: 'error',
+        title: 'Invitation share failed',
+        body: formatActionError(error, 'Could not open the native share sheet.'),
+      });
+    }
+  }
 
   return (
     <InvitationFrame
       title="Invitation"
-      subtitle="Issue, reissue, and disable employee invite links without leaving the admin shell."
+      subtitle="Issue, reissue, copy, and share employee invite links without leaving the admin shell."
     >
       <Pressable
         accessibilityRole="button"
@@ -132,23 +210,36 @@ export function InvitationScreen({
       {mutation.isError ? (
         <View style={styles.errorCard}>
           <Text style={styles.errorTitle}>Invitation update failed</Text>
-          <Text style={styles.errorBody}>{mutation.error.message}</Text>
+          <Text selectable style={styles.errorBody}>
+            {mutation.error.message}
+          </Text>
         </View>
       ) : null}
 
-      {mutation.isSuccess && mutation.data.kind !== 'disable' ? (
+      {latestInvitation ? (
         <View style={styles.noticeCard}>
           <Text style={styles.noticeTitle}>
-            {mutation.data.kind === 'reissue'
+            {latestInvitation.kind === 'reissue'
               ? 'Replacement invitation ready'
               : 'New invitation ready'}
           </Text>
-          <Text selectable style={styles.tokenValue}>
-            Token: {mutation.data.token}
-          </Text>
           <Text style={styles.noticeBody}>
-            Expires: {formatTimestamp(mutation.data.expiresAt)}
+            Copy the employee login URL directly or hand it off from the native
+            share sheet.
           </Text>
+          <ValueBlock
+            label="Login URL"
+            value={buildInvitationLoginUrl(latestInvitation.token)}
+          />
+          <ValueBlock label="Token" value={latestInvitation.token} />
+          <Text style={styles.noticeBody}>
+            Expires: {formatTimestamp(latestInvitation.expiresAt)}
+          </Text>
+          <InvitationLinkActions
+            token={latestInvitation.token}
+            onCopyLink={handleCopyLink}
+            onShareLink={handleShareLink}
+          />
         </View>
       ) : null}
 
@@ -161,12 +252,30 @@ export function InvitationScreen({
         </View>
       ) : null}
 
+      {actionNotice ? (
+        actionNotice.tone === 'error' ? (
+          <View style={styles.errorCard}>
+            <Text style={styles.errorTitle}>{actionNotice.title}</Text>
+            <Text selectable style={styles.errorBody}>
+              {actionNotice.body}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.noticeCard}>
+            <Text style={styles.noticeTitle}>{actionNotice.title}</Text>
+            <Text style={styles.noticeBody}>{actionNotice.body}</Text>
+          </View>
+        )
+      ) : null}
+
       <InvitationSection
         title="Active links"
         body="Currently usable employee invitation tokens. Reissue keeps the old row as disabled history."
         invitations={activeInvitations}
         now={now}
         mutation={mutation}
+        onCopyLink={handleCopyLink}
+        onShareLink={handleShareLink}
       />
 
       <InvitationSection
@@ -175,6 +284,8 @@ export function InvitationScreen({
         invitations={historicalInvitations}
         now={now}
         mutation={mutation}
+        onCopyLink={handleCopyLink}
+        onShareLink={handleShareLink}
       />
 
       <FooterActions onBackMembers={onBackMembers} onSignOut={signOut} />
@@ -193,7 +304,10 @@ function InvitationFrame({
 }) {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.content}
+      >
         <View style={styles.hero}>
           <View style={styles.heroBadge}>
             <Text style={styles.heroBadgeLabel}>ADMIN</Text>
@@ -222,6 +336,8 @@ function InvitationSection({
   invitations,
   now,
   mutation,
+  onCopyLink,
+  onShareLink,
 }: InvitationSectionProps) {
   return (
     <View style={styles.section}>
@@ -241,6 +357,8 @@ function InvitationSection({
             invitation={invitation}
             now={now}
             mutation={mutation}
+            onCopyLink={onCopyLink}
+            onShareLink={onShareLink}
           />
         ))
       )}
@@ -248,11 +366,19 @@ function InvitationSection({
   );
 }
 
-function InvitationCard({ invitation, now, mutation }: InvitationCardProps) {
+function InvitationCard({
+  invitation,
+  now,
+  mutation,
+  onCopyLink,
+  onShareLink,
+}: InvitationCardProps) {
   const state = getInvitationLinkState(invitation, now);
   const disableAllowed = canDisableInvitation(invitation, now);
   const reissueAllowed = canReissueInvitation(invitation, now);
   const isBusy = mutation.isPending;
+  const loginUrl =
+    state === 'active' ? buildInvitationLoginUrl(invitation.token) : null;
 
   return (
     <View style={styles.invitationCard}>
@@ -266,12 +392,22 @@ function InvitationCard({ invitation, now, mutation }: InvitationCardProps) {
         </View>
       </View>
 
-      <View style={styles.tokenWrap}>
-        <Text style={styles.tokenLabel}>Token</Text>
-        <Text selectable style={styles.tokenValue}>
-          {invitation.token}
-        </Text>
-      </View>
+      <ValueBlock label="Token" value={invitation.token} />
+
+      {loginUrl ? (
+        <>
+          <ValueBlock label="Login URL" value={loginUrl} />
+          <Text style={styles.linkHint}>
+            Copy the current login URL or send it through the native share
+            sheet.
+          </Text>
+          <InvitationLinkActions
+            token={invitation.token}
+            onCopyLink={onCopyLink}
+            onShareLink={onShareLink}
+          />
+        </>
+      ) : null}
 
       <Text style={styles.invitationMeta}>
         Created: {formatTimestamp(invitation.createdAt)}
@@ -325,6 +461,46 @@ function InvitationCard({ invitation, now, mutation }: InvitationCardProps) {
           />
         </View>
       ) : null}
+    </View>
+  );
+}
+
+function ValueBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.valueBlock}>
+      <Text style={styles.valueLabel}>{label}</Text>
+      <Text selectable style={styles.valueText}>
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+function InvitationLinkActions({
+  token,
+  onCopyLink,
+  onShareLink,
+}: InvitationLinkActionsProps) {
+  return (
+    <View style={styles.linkActionRow}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => {
+          void onCopyLink(token);
+        }}
+        style={styles.linkActionButtonPrimary}
+      >
+        <Text style={styles.linkActionButtonPrimaryLabel}>Copy link</Text>
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => {
+          void onShareLink(token);
+        }}
+        style={styles.linkActionButtonSecondary}
+      >
+        <Text style={styles.linkActionButtonSecondaryLabel}>Share link</Text>
+      </Pressable>
     </View>
   );
 }
@@ -430,6 +606,14 @@ function formatTimestamp(value: string | null) {
   }
 
   return `${parsed.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+}
+
+function formatActionError(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+
+  return fallback;
 }
 
 const styles = StyleSheet.create({
@@ -581,24 +765,56 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '800',
   },
-  tokenWrap: {
+  valueBlock: {
     borderRadius: 16,
     backgroundColor: '#fff8ef',
     padding: 12,
     gap: 6,
   },
-  tokenLabel: {
+  valueLabel: {
     color: '#56635d',
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  tokenValue: {
+  valueText: {
     color: '#14342b',
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
+  },
+  linkHint: {
+    color: '#44514c',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  linkActionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  linkActionButtonPrimary: {
+    borderRadius: 999,
+    backgroundColor: '#14342b',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  linkActionButtonSecondary: {
+    borderRadius: 999,
+    backgroundColor: '#dfcfb8',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  linkActionButtonPrimaryLabel: {
+    color: '#fff8ef',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  linkActionButtonSecondaryLabel: {
+    color: '#14342b',
+    fontSize: 13,
+    fontWeight: '800',
   },
   actionRow: {
     gap: 10,
@@ -639,7 +855,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: '#d8e5de',
     padding: 14,
-    gap: 4,
+    gap: 8,
   },
   noticeTitle: {
     color: '#14342b',

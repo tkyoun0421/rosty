@@ -1,38 +1,37 @@
-﻿# WORKLOG
+# WORKLOG
 
 ## Current Task
 
-Plan admin invite copy or share affordances on top of the completed employee join-validation workflow.
+Pending the next locked implementation task after completing admin invite sharing.
 
 ## Plan Doc
 
-- Pending. Create the next active plan under `docs/development-plans/` before implementation starts.
-- Recovery reference: `docs/development-plans/employee-join-validation/summary.md`
+- Archive summary: `docs/development-plans/admin-invite-sharing/summary.md`
+- Archive plan: `docs/development-plans/admin-invite-sharing/plan.md`
 
 ## Last Completed
 
-Completed the employee join-validation task:
+Completed the admin invite sharing task:
 
-- Captured invite tokens from the login route and preserved them through the Google OAuth redirect round-trip.
-- Added `invitation_links` token validation for login and profile-setup onboarding guidance.
-- Blocked employee profile submission when the invite token is missing, invalid, expired, disabled, or already consumed.
-- Consumed the invite link during successful employee profile submission with a best-effort rollback if the profile write fails.
-- Locked the login and profile-setup invite validation rules in the product docs.
-- Added unit coverage for invite token parsing, onboarding gating, and blocking messages.
-- Archived the completed feature plan into `docs/development-plans/employee-join-validation/` with `plan.md` and `summary.md`.
+- Added a shared helper for the employee login invite URL and native share payload.
+- Added direct copy and share actions for fresh invitation results and active invitation cards.
+- Exposed the full login URL alongside the raw invite token in the admin `Invitation` screen.
+- Locked the admin invite sharing behavior in the PRD, screen IA, and invitation state-table notes.
+- Added unit coverage for the invite sharing helper and mocked `expo-clipboard` in Jest setup.
+- Archived the completed feature plan into `docs/development-plans/admin-invite-sharing/` with `plan.md` and `summary.md`.
 
 ## Next Action
 
-Lock the admin invite sharing scope and create the next development plan before code changes continue.
+Decide the next invite-management follow-up, then create a new active plan before code changes continue. The current leading options are device-level QA for the shared invite URL flow or a server-enforced transactional invite-claim path.
 
 ## Blockers
 
-Real join validation still depends on the `invitation_links` table and matching RLS policies existing in Supabase.
+Real invite usability still depends on the `invitation_links` table and matching RLS policies existing in Supabase.
 
 ## Latest Verification
 
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm test`
-- Manual readback of archived plan, summary, and edited auth or invitation files after shell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Manual readback of updated product docs and `WORKLOG.md` after the PowerShell here-string fallback edits on 2026-03-19.
+- Manual readback of the new plan archive, `WORKLOG.md`, and edited invitation UI or doc files after shell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
+- Added `expo-clipboard` with `pnpm add expo-clipboard` on 2026-03-19.

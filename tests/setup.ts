@@ -28,6 +28,12 @@ jest.mock('expo-secure-store', () => {
   };
 });
 
+jest.mock('expo-clipboard', () => {
+  return {
+    setStringAsync: jest.fn(async () => true),
+  };
+});
+
 jest.mock('expo-web-browser', () => {
   return {
     maybeCompleteAuthSession: jest.fn(() => ({ type: 'success' })),
