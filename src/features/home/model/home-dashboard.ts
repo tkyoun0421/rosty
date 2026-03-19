@@ -136,8 +136,8 @@ const homeDashboardSeed: Record<UserRole, HomeDashboard> = {
         detail: 'Create or reissue employee invite links.',
       },
       {
-        title: 'Create schedule',
-        detail: 'Open a new event from the standard slot preset.',
+        title: 'Review pay policy',
+        detail: 'Adjust default hourly rates and member overrides.',
       },
     ],
     weekSchedule: [

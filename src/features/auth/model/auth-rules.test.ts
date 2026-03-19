@@ -48,6 +48,7 @@ describe('auth route access', () => {
     expect(canAccessRoute(null, authRoutes.managerHome)).toBe(false);
     expect(canAccessRoute(null, authRoutes.members)).toBe(false);
     expect(canAccessRoute(null, authRoutes.invitation)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.payPolicy)).toBe(false);
   });
 
   it('allows only the matching status screen', () => {
@@ -98,12 +99,15 @@ describe('auth route access', () => {
     ).toBe(true);
   });
 
-  it('allows members and invitation only for active admins', () => {
+  it('allows admin-only routes only for active admins', () => {
     expect(
       canAccessRoute(createDemoSession('admin-active'), authRoutes.members),
     ).toBe(true);
     expect(
       canAccessRoute(createDemoSession('admin-active'), authRoutes.invitation),
+    ).toBe(true);
+    expect(
+      canAccessRoute(createDemoSession('admin-active'), authRoutes.payPolicy),
     ).toBe(true);
     expect(
       canAccessRoute(createDemoSession('manager-active'), authRoutes.members),
@@ -112,10 +116,16 @@ describe('auth route access', () => {
       canAccessRoute(createDemoSession('manager-active'), authRoutes.invitation),
     ).toBe(false);
     expect(
+      canAccessRoute(createDemoSession('manager-active'), authRoutes.payPolicy),
+    ).toBe(false);
+    expect(
       canAccessRoute(createDemoSession('employee-active'), authRoutes.members),
     ).toBe(false);
     expect(
       canAccessRoute(createDemoSession('employee-active'), authRoutes.invitation),
+    ).toBe(false);
+    expect(
+      canAccessRoute(createDemoSession('employee-active'), authRoutes.payPolicy),
     ).toBe(false);
   });
 });

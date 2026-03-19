@@ -17,6 +17,7 @@ import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 type RoleHomeProps = {
   session: AuthSession;
   onOpenMembers?: () => void;
+  onOpenPayPolicy?: () => void;
 };
 
 type HomeFrameProps = {
@@ -96,7 +97,11 @@ export function EmployeeHomeScreen({ session }: RoleHomeProps) {
   );
 }
 
-export function ManagerHomeScreen({ session, onOpenMembers }: RoleHomeProps) {
+export function ManagerHomeScreen({
+  session,
+  onOpenMembers,
+  onOpenPayPolicy,
+}: RoleHomeProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const { data, isLoading } = useHomeDashboardQuery(session.role);
 
@@ -151,17 +156,24 @@ export function ManagerHomeScreen({ session, onOpenMembers }: RoleHomeProps) {
         })}
       </View>
 
-      {session.role === 'admin' && onOpenMembers ? (
-        <Pressable
-          accessibilityRole="button"
-          onPress={onOpenMembers}
-          style={styles.adminActionButton}
-        >
-          <Text style={styles.adminActionLabel}>Open members</Text>
-          <Text style={styles.adminActionDetail}>
-            Review pending approvals, role changes, and blocked access.
-          </Text>
-        </Pressable>
+      {session.role === 'admin' && (onOpenMembers || onOpenPayPolicy) ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Admin shortcuts</Text>
+          {onOpenMembers ? (
+            <AdminShortcutButton
+              label="Open members"
+              detail="Review pending approvals, role changes, and blocked access."
+              onPress={onOpenMembers}
+            />
+          ) : null}
+          {onOpenPayPolicy ? (
+            <AdminShortcutButton
+              label="Open pay policy"
+              detail="Adjust the hall default hourly policy and member rate overrides."
+              onPress={onOpenPayPolicy}
+            />
+          ) : null}
+        </View>
       ) : null}
 
       <Pressable
@@ -221,6 +233,27 @@ function QuickActionCard({ title, detail }: QuickActionCardProps) {
       <Text style={styles.quickActionTitle}>{title}</Text>
       <Text style={styles.quickActionDetail}>{detail}</Text>
     </View>
+  );
+}
+
+function AdminShortcutButton({
+  label,
+  detail,
+  onPress,
+}: {
+  label: string;
+  detail: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={styles.adminActionButton}
+    >
+      <Text style={styles.adminActionLabel}>{label}</Text>
+      <Text style={styles.adminActionDetail}>{detail}</Text>
+    </Pressable>
   );
 }
 

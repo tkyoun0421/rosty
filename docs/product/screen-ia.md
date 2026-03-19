@@ -1,4 +1,4 @@
-﻿# Rosty Screen IA
+# Rosty Screen IA
 
 ## 1. 목적과 전제
 
@@ -83,7 +83,8 @@
 
 - `Members` 안에서 승인, 역할 변경, 정지/복구가 이루어진다.
 - `Invitation`은 활성, 사용됨, 만료, 비활성 링크를 함께 보여주고 재발급 시 기존 활성 링크를 비활성 이력으로 남긴다.
-- `Invitation`은 방금 발급한 링크와 현재 활성 링크를 바로 복사하거나 네이티브 공유 시트로 전달할 수 있다.
+- Invitation은 방금 발급한 링크와 현재 활성 링크를 바로 복사하거나 네이티브 공유 시트로 전달할 수 있다.
+- Pay Policy는 Members와 Manager Home에서 바로 열 수 있고, 직원별 override를 비우고 저장하면 홀 기본 시급 fallback으로 복귀한다.
 - 마지막 Admin 보호 규칙은 `Members`에서 반드시 반영된다.
 
 ## 6. 공통 보조 화면

@@ -22,6 +22,13 @@ function ManagerHomeRouteContent() {
             }
           : undefined
       }
+      onOpenPayPolicy={
+        session.role === 'admin'
+          ? () => {
+              router.push(authRoutes.payPolicy);
+            }
+          : undefined
+      }
     />
   );
 }

@@ -2,9 +2,9 @@ import { useRouter } from 'expo-router';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import { GuardedRoute, authRoutes } from '@/features/auth/ui/auth-route';
-import { MembersScreen } from '@/features/members/ui/members-screen';
+import { PayPolicyScreen } from '@/features/payroll/ui/pay-policy-screen';
 
-function MembersRouteContent() {
+function PayPolicyRouteContent() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
 
@@ -13,25 +13,22 @@ function MembersRouteContent() {
   }
 
   return (
-    <MembersScreen
+    <PayPolicyScreen
       session={session}
       onBackHome={() => {
         router.replace(authRoutes.managerHome);
       }}
-      onOpenInvitation={() => {
-        router.push(authRoutes.invitation);
-      }}
-      onOpenPayPolicy={() => {
-        router.push(authRoutes.payPolicy);
+      onBackMembers={() => {
+        router.replace(authRoutes.members);
       }}
     />
   );
 }
 
-export default function MembersRoute() {
+export default function PayPolicyRoute() {
   return (
-    <GuardedRoute route={authRoutes.members}>
-      <MembersRouteContent />
+    <GuardedRoute route={authRoutes.payPolicy}>
+      <PayPolicyRouteContent />
     </GuardedRoute>
   );
 }

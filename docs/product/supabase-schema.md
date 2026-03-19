@@ -15,9 +15,10 @@
 
 - 앱은 단일 홀 전용이므로 `halls`, `memberships`, `current_hall` 계열 테이블은 만들지 않는다.
 - 인증 기준은 `auth.users`이고, 앱 사용자 정보는 `profiles.id = auth.users.id` 1:1로 연결한다.
-- 기본 쓰기 경로는 `클라이언트 직접 CRUD + RLS 검증`이다.
+- 기본 쓰기 경로는 `클라이언트 직접 CRUD + RLS 검증`이지만, 고위험 쓰기는 제한 RPC로 수렴한다.
 - 단, 직원 join completion은 `complete_employee_join` RPC로 초대 검증, 프로필 upsert, 초대 소모를 하나의 트랜잭션으로 묶는다.
-- Admin 멤버 승인/정지/복구/역할 변경은 `admin_manage_member` RPC로 제한한다.
+- Admin 멤버 승인/정지/복구/역할 변경은 dmin_manage_member RPC로 제한한다.
+- Admin pay-policy 쓰기는 dmin_upsert_pay_policy, dmin_set_pay_rate RPC로 제한한다.
 - 삭제보다 상태 전환을 우선한다.
 - 사용자 관리와 급여 정책은 `admin`만 쓴다.
 - Manager의 멤버 조회는 Admin 관리용 원본 테이블이 아니라 최소 노출 경로로 제한한다.
@@ -153,16 +154,23 @@ RLS:
 제약:
 
 - `id = 1` 한 행만 허용한다.
+- 싱글톤 row는 첫 admin 저장 시점에 생성될 수 있다.
 
 RLS:
 
 - Employee: 읽기 불가
 - Manager: 읽기 가능
-- Admin: 읽기/수정 가능
+- Admin: 읽기 가능
+- 직접 쓰기는 제한 RPC 경로만 사용한다.
+
+함수 경로:
+
+- `is_active_manager_or_admin`은 manager/admin pay-policy read 정책에서 사용한다.
+- `admin_upsert_pay_policy` RPC는 active admin만 호출하고 싱글톤 row 생성/수정을 함께 처리한다.
 
 ### 4.5 `pay_rates`
 
-직원별 시급을 저장한다.
+직원별 시급 override를 저장한다.
 
 핵심 컬럼:
 
@@ -175,7 +183,13 @@ RLS:
 
 - Employee: 본인 rate 직접 조회 불필요, 급여 계산 결과만 조회
 - Manager: 읽기 불가
-- Admin: 읽기/쓰기 가능
+- Admin: 읽기 가능
+- 직접 쓰기는 제한 RPC 경로만 사용한다.
+
+함수 경로:
+
+- `admin_set_pay_rate` RPC는 active admin만 호출하고 직원별 override 생성, 수정, 삭제를 처리한다.
+- override row가 없으면 급여 계산은 `pay_policies.default_hourly_rate` fallback을 사용한다.
 
 ### 4.6 `slot_presets`
 
@@ -403,8 +417,8 @@ RLS:
 | `profiles` | self read | no | read + limited RPC |
 | `member_directory` | no | read | read |
 | `invitation_links` | no | no | read/write |
-| `pay_policies` | no | read | read/write |
-| `pay_rates` | no | no | read/write |
+| `pay_policies` | no | read | read + limited RPC |
+| `pay_rates` | no | no | read + limited RPC |
 | `slot_presets` | read | read | read/write |
 | `schedules` | read | read/write | read/write |
 | `schedule_slots` | read | read/write | read/write |

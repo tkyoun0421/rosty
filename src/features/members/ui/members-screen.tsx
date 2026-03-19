@@ -22,6 +22,7 @@ type MembersScreenProps = {
   session: AuthSession;
   onBackHome: () => void;
   onOpenInvitation: () => void;
+  onOpenPayPolicy: () => void;
 };
 
 type MemberSectionProps = {
@@ -44,6 +45,7 @@ export function MembersScreen({
   session,
   onBackHome,
   onOpenInvitation,
+  onOpenPayPolicy,
 }: MembersScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const membersQuery = useMembersQuery();
@@ -66,6 +68,11 @@ export function MembersScreen({
           title="Open invitation links"
           body="Issue, reissue, or disable 7 day employee invite links."
           onPress={onOpenInvitation}
+        />
+        <AdminShortcutCard
+          title="Open pay policy"
+          body="Adjust the hall default hourly rate and member-specific overrides."
+          onPress={onOpenPayPolicy}
         />
         <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
       </MembersFrame>
@@ -103,6 +110,11 @@ export function MembersScreen({
           body="Issue, reissue, or disable 7 day employee invite links."
           onPress={onOpenInvitation}
         />
+        <AdminShortcutCard
+          title="Open pay policy"
+          body="Adjust the hall default hourly rate and member-specific overrides."
+          onPress={onOpenPayPolicy}
+        />
         <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
       </MembersFrame>
     );
@@ -134,6 +146,12 @@ export function MembersScreen({
         title="Open invitation links"
         body="Issue, reissue, or disable 7 day employee invite links."
         onPress={onOpenInvitation}
+      />
+
+      <AdminShortcutCard
+        title="Open pay policy"
+        body="Adjust the hall default hourly rate and member-specific overrides."
+        onPress={onOpenPayPolicy}
       />
 
       {mutation.isError ? (
@@ -283,7 +301,7 @@ function MemberCard({ member, allMembers, mutation }: MemberCardProps) {
         <View style={styles.memberTitleWrap}>
           <Text style={styles.memberName}>{member.fullName}</Text>
           <Text style={styles.memberMeta}>
-            {member.phoneNumber} 쨌 {member.gender}
+            {member.phoneNumber} - {member.gender}
           </Text>
         </View>
         <View style={styles.statusBadge}>
