@@ -43,11 +43,9 @@ export function useProfileSetupMutation(
       }
 
       await upsertAuthProfile({
-        userId: session.userId,
         fullName: values.fullName,
         phoneNumber: values.phoneNumber,
         gender: values.gender,
-        role: session.role,
       });
     },
     onSuccess: async () => {

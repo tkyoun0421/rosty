@@ -29,31 +29,34 @@ export async function fetchInvitationForJoin(
     return null;
   }
 
-  const { data, error } = await supabaseClient
-    .from('invitation_links')
-    .select(
-      'id, token, target_role, created_by, expires_at, consumed_at, disabled_at, created_at',
-    )
-    .eq('token', token)
-    .maybeSingle<InvitationJoinRow>();
+  const { data, error } = await supabaseClient.rpc(
+    'get_employee_invitation_status',
+    {
+      p_invitation_token: token,
+    },
+  );
 
   if (error) {
     throw new Error(error.message);
   }
 
-  if (!data) {
+  const invitation = Array.isArray(data)
+    ? (data[0] as InvitationJoinRow | undefined)
+    : undefined;
+
+  if (!invitation) {
     return null;
   }
 
   return {
-    id: data.id,
-    token: data.token,
-    targetRole: data.target_role,
-    createdBy: data.created_by,
-    expiresAt: data.expires_at,
-    consumedAt: data.consumed_at,
-    disabledAt: data.disabled_at,
-    createdAt: data.created_at,
+    id: invitation.id,
+    token: invitation.token,
+    targetRole: invitation.target_role,
+    createdBy: invitation.created_by,
+    expiresAt: invitation.expires_at,
+    consumedAt: invitation.consumed_at,
+    disabledAt: invitation.disabled_at,
+    createdAt: invitation.created_at,
   };
 }
 

@@ -73,9 +73,14 @@
 
 RLS:
 
-- 본인: 읽기/수정 가능
+- 본인: 읽기 가능
 - Admin: 전체 읽기/수정 가능
 - Manager: 직접 테이블 읽기 불가
+
+함수 경로:
+
+- `complete_profile_setup` RPC는 `authenticated` 사용자만 호출한다.
+- RPC는 `auth.uid()` 기준으로 onboarding 가능한 프로필만 저장하고, 기존 역할이 있으면 유지한 채 `pending_approval`로 전환한다.
 
 ### 4.2 `member_directory`
 
@@ -126,6 +131,7 @@ RLS:
 
 함수 경로:
 
+- `get_employee_invitation_status` RPC는 `anon`, `authenticated` 사용자에게 제한된 상태 조회만 연다.
 - `complete_employee_join` RPC는 `authenticated` 사용자만 호출한다.
 - RPC 내부에서 `auth.uid()` 기준으로 대상 프로필과 초대 링크를 검증하고, 짧은 트랜잭션 안에서 `profiles` upsert와 invite consume을 함께 처리한다.
 
@@ -392,7 +398,7 @@ RLS:
 
 | 리소스 | employee | manager | admin |
 | --- | --- | --- | --- |
-| `profiles` | self read/update | no | full |
+| `profiles` | self read | no | full |
 | `member_directory` | no | read | read |
 | `invitation_links` | no | no | read/write |
 | `pay_policies` | no | read | read/write |
@@ -409,7 +415,5 @@ RLS:
 
 ## 7. 후속 구현 작업
 이 문서를 기준으로 남아 있는 구현 작업은 아래 두 가지다.
-이 문서를 기준으로 다음 턴에서 바로 이어질 작업은 아래 두 가지다.
-- `complete_employee_join` migration을 실제 Supabase 프로젝트에 적용하고 검증하기
-- 정책별 RLS SQL 작성과 seed Admin 초기화 스크립트 정의
+- 새 RLS 및 RPC migrations를 실제 Supabase 프로젝트에 적용하고 검증하기
 - 정책별 RLS SQL 작성과 seed Admin 초기화 스크립트 정의

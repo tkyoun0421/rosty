@@ -1,12 +1,16 @@
-import type { ProfileGender, UserRole } from '@/features/auth/model/auth-types';
+import type { ProfileGender, UserRole, UserStatus } from '@/features/auth/model/auth-types';
 import { supabaseClient } from '@/shared/lib/supabase/client';
 
 type UpsertAuthProfileInput = {
-  userId: string;
   fullName: string;
   phoneNumber: string;
   gender: ProfileGender;
+};
+
+type CompleteProfileSetupRow = {
+  profile_id: string;
   role: UserRole;
+  status: UserStatus;
 };
 
 export async function upsertAuthProfile(
@@ -16,21 +20,20 @@ export async function upsertAuthProfile(
     throw new Error('Supabase auth is not configured for this build.');
   }
 
-  const { error } = await supabaseClient.from('profiles').upsert(
-    {
-      id: input.userId,
-      full_name: input.fullName,
-      phone_number: input.phoneNumber,
-      gender: input.gender,
-      role: input.role,
-      status: 'pending_approval',
-    },
-    {
-      onConflict: 'id',
-    },
-  );
+  const { data, error } = await supabaseClient
+    .rpc('complete_profile_setup', {
+      p_full_name: input.fullName,
+      p_phone_number: input.phoneNumber,
+      p_gender: input.gender,
+    })
+    .returns<CompleteProfileSetupRow[]>()
+    .single();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  if (!data) {
+    throw new Error('Profile setup could not be completed.');
   }
 }
