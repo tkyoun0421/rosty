@@ -6,6 +6,7 @@
   "packageManager": "pnpm@10.32.1",
   "main": "expo-router/entry",
   "scripts": {
+    "postinstall": "node scripts/install-supabase-cli.cjs",
     "start": "node scripts/run-expo.cjs start",
     "android": "node scripts/run-expo.cjs start --android",
     "ios": "node scripts/run-expo.cjs start --ios",
@@ -23,7 +24,13 @@
     "test:e2e:android:build": "node scripts/run-e2e.cjs android --build",
     "test:e2e:ios": "node scripts/run-e2e.cjs ios",
     "test:e2e:ios:run": "node scripts/run-e2e.cjs ios",
-    "test:e2e:ios:build": "node scripts/run-e2e.cjs ios --build"
+    "test:e2e:ios:build": "node scripts/run-e2e.cjs ios --build",
+    "supabase:install": "node scripts/install-supabase-cli.cjs --required",
+    "supabase": "node scripts/run-supabase.cjs",
+    "supabase:migrations:link": "node scripts/run-supabase-migrations.cjs link",
+    "supabase:migrations:status": "node scripts/run-supabase-migrations.cjs status",
+    "supabase:migrations:dry-run": "node scripts/run-supabase-migrations.cjs dry-run",
+    "supabase:migrations:apply": "node scripts/run-supabase-migrations.cjs apply"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.6",
@@ -63,6 +70,7 @@
     "jest-expo": "^55.0.9",
     "prettier": "^3.6.2",
     "react-test-renderer": "19.2.0",
+    "supabase": "^2.81.3",
     "typescript": "^5.9.3"
   }
 }

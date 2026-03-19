@@ -1,4 +1,4 @@
-﻿# Rosty
+# Rosty
 
 Rosty is a React Native app for wedding hall operators and staff.
 This repository now starts from a fresh Expo Router baseline with Supabase-ready configuration, CI scaffolding, and local verification commands.
@@ -35,6 +35,10 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 - `pnpm prebuild:ios`
 - `pnpm test:e2e:android`
 - `pnpm test:e2e:ios`
+- `pnpm supabase -- --version`
+- `pnpm supabase:migrations:status`
+- `pnpm supabase:migrations:dry-run`
+- `pnpm supabase:migrations:apply`
 
 ## Docs
 
@@ -53,6 +57,5 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 
 - Android can be verified locally on Windows.
 - iOS native builds and Detox execution require macOS with Xcode.
+- `pnpm install` now bootstraps the repo-local Supabase CLI binary used by the migration scripts.
 - The existing `.env` token should be rotated before any remote integration work continues.
-
-

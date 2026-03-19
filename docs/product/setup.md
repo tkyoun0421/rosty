@@ -11,11 +11,19 @@
 
 Copy `.env.example` to `.env` and fill the values below.
 
+Runtime app values:
+
 - `EXPO_PUBLIC_APP_ENV`
 - `EXPO_PUBLIC_SUPABASE_URL`
 - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 - `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY`
 - `EXPO_PUBLIC_NAVER_CLIENT_ID`
+
+Migration rollout values:
+
+- `SUPABASE_PROJECT_ID` (optional when `EXPO_PUBLIC_SUPABASE_URL` uses the default project host)
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_DB_PASSWORD`
 
 ## Supabase Google OAuth Setup
 
@@ -33,6 +41,23 @@ Configure Google sign-in in the Supabase dashboard before testing the real auth 
 3. `pnpm android`
 
 Use `pnpm ios` only on macOS with the required Apple tooling.
+
+## Supabase Migration Rollout
+
+The repo now carries a local Supabase CLI wrapper and checked-in `supabase/config.toml` so rollout commands do not depend on ad hoc machine setup.
+
+1. Run `pnpm install`.
+2. Confirm the local CLI is ready with `pnpm supabase -- --version`.
+3. Fill `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` in `.env`.
+4. Run `pnpm supabase:migrations:status` to link the project and inspect pending migrations.
+5. Run `pnpm supabase:migrations:dry-run` before any real apply.
+6. Run `pnpm supabase:migrations:apply` only after reviewing the dry-run output and any remote schema drift.
+
+Notes:
+
+- The migration scripts run `supabase link --project-ref ... --password ...` first and keep link metadata under `supabase/.temp/`.
+- `SUPABASE_PROJECT_ID` is optional when the standard Supabase project ref can be derived from `EXPO_PUBLIC_SUPABASE_URL`.
+- If the CLI binary is missing after install, rerun `pnpm supabase:install`.
 
 ## Native Project Policy
 

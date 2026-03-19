@@ -2,37 +2,41 @@
 
 ## Current Task
 
-Pending the next locked implementation or rollout task after completing the server-enforced last-admin SQL guard.
+Pending the next locked implementation or rollout task after completing the Supabase migration CLI rollout configuration.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/last-admin-sql-guard/summary.md`
-- Archive plan: `docs/development-plans/last-admin-sql-guard/plan.md`
+- Archive summary: `docs/development-plans/supabase-migration-cli-rollout/summary.md`
+- Archive plan: `docs/development-plans/supabase-migration-cli-rollout/plan.md`
 
 ## Last Completed
 
-Completed the last-admin SQL guard task:
+Completed the Supabase migration CLI rollout task:
 
-- Added `supabase/migrations/20260319194500_last_active_admin_guard.sql`.
-- Added `public.enforce_last_active_admin_guard()` and the `profiles_last_active_admin_guard` trigger on `public.profiles`.
-- Serialized last-admin downgrade checks with `pg_advisory_xact_lock(...)` so concurrent updates cannot remove the final active admin.
-- Updated the Supabase schema notes to record that `profiles` now has a repo-tracked SQL guard for the last active admin.
-- Archived the completed feature plan into `docs/development-plans/last-admin-sql-guard/` with `plan.md` and `summary.md`.
+- Added the `supabase` dev dependency and checked in `supabase/config.toml`, `supabase/.gitignore`, and `supabase/seed.sql`.
+- Added repo-local CLI bootstrap and wrapper scripts for `supabase` version checks, migration link, status, dry-run, and apply flows.
+- Added rollout env placeholders to `.env.example` and updated README, setup, and secrets docs for the new non-interactive migration path.
+- Verified that `pnpm install` restores the local CLI binary and that missing rollout secrets now fail with an explicit prerequisite message.
+- Archived the completed feature plan into `docs/development-plans/supabase-migration-cli-rollout/` with `plan.md` and `summary.md`.
 
 ## Next Action
 
-Apply `supabase/migrations/20260319190000_complete_employee_join.sql`, `supabase/migrations/20260319193000_auth_and_invitation_rls.sql`, and `supabase/migrations/20260319194500_last_active_admin_guard.sql` to the real Supabase project, then validate login, employee invite onboarding, admin members, and admin invitation flows end to end. If rollout access is still unavailable, lock the next unblocked implementation task before changing code.
+Populate valid `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` values, run `pnpm supabase:migrations:dry-run`, then `pnpm supabase:migrations:apply`, and validate the auth, invitation, and admin flows against the real Supabase project. If rollout credentials remain unavailable, lock the next unblocked implementation task before changing code.
 
 ## Blockers
 
-- The real Supabase project still needs all three repo-tracked auth and invitation migrations applied before the current server access paths and last-admin SQL guard can succeed in practice.
-- No repo-local Supabase CLI configuration or privileged rollout credential is available yet for real environment apply or validation.
+- Real Supabase apply still depends on valid privileged rollout credentials that are not stored in the repo.
+- Remote schema drift, if any, still needs review before the first real `db push`.
 - The rest of the schema is still outside the first RLS rollout.
 
 ## Latest Verification
 
+- `pnpm install --frozen-lockfile`
+- `pnpm supabase:install`
+- `pnpm supabase -- --version`
+- `ROSTY_SKIP_DOTENV=1` plus empty rollout vars with `pnpm supabase:migrations:status` to confirm explicit prerequisite failure
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test`
-- Manual UTF-8 readback of `supabase/migrations/20260319194500_last_active_admin_guard.sql`, `docs/product/supabase-schema.md`, the archived plan, and the archived summary after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
-- Added `supabase/migrations/20260319194500_last_active_admin_guard.sql` on 2026-03-19.
+- Manual UTF-8 readback of the new scripts, `supabase/config.toml`, `.env.example`, README, setup guide, and secrets guide after PowerShell-based writes because `apply_patch` continued failing with the Windows sandbox refresh error.
+- Added the repo-local Supabase CLI rollout scripts and config on 2026-03-19.
