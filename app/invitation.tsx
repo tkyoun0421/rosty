@@ -2,9 +2,9 @@ import { useRouter } from 'expo-router';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import { GuardedRoute, authRoutes } from '@/features/auth/ui/auth-route';
-import { MembersScreen } from '@/features/members/ui/members-screen';
+import { InvitationScreen } from '@/features/invitations/ui/invitation-screen';
 
-function MembersRouteContent() {
+function InvitationRouteContent() {
   const router = useRouter();
   const session = useAuthStore((state) => state.session);
 
@@ -13,22 +13,19 @@ function MembersRouteContent() {
   }
 
   return (
-    <MembersScreen
+    <InvitationScreen
       session={session}
-      onBackHome={() => {
-        router.replace(authRoutes.managerHome);
-      }}
-      onOpenInvitation={() => {
-        router.push(authRoutes.invitation);
+      onBackMembers={() => {
+        router.replace(authRoutes.members);
       }}
     />
   );
 }
 
-export default function MembersRoute() {
+export default function InvitationRoute() {
   return (
-    <GuardedRoute route={authRoutes.members}>
-      <MembersRouteContent />
+    <GuardedRoute route={authRoutes.invitation}>
+      <InvitationRouteContent />
     </GuardedRoute>
   );
 }

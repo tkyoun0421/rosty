@@ -21,6 +21,7 @@ import { hasSupabaseConfig } from '@/shared/lib/supabase/client';
 type MembersScreenProps = {
   session: AuthSession;
   onBackHome: () => void;
+  onOpenInvitation: () => void;
 };
 
 type MemberSectionProps = {
@@ -39,7 +40,11 @@ type MemberCardProps = {
 
 const roleOptions: UserRole[] = ['employee', 'manager', 'admin'];
 
-export function MembersScreen({ session, onBackHome }: MembersScreenProps) {
+export function MembersScreen({
+  session,
+  onBackHome,
+  onOpenInvitation,
+}: MembersScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const membersQuery = useMembersQuery();
   const mutation = useMemberAdminMutation(session);
@@ -57,6 +62,11 @@ export function MembersScreen({ session, onBackHome }: MembersScreenProps) {
             member rows.
           </Text>
         </View>
+        <AdminShortcutCard
+          title="Open invitation links"
+          body="Issue, reissue, or disable 7 day employee invite links."
+          onPress={onOpenInvitation}
+        />
         <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
       </MembersFrame>
     );
@@ -88,6 +98,11 @@ export function MembersScreen({ session, onBackHome }: MembersScreenProps) {
           <Text style={styles.errorTitle}>Members query failed</Text>
           <Text style={styles.errorBody}>{membersQuery.error.message}</Text>
         </View>
+        <AdminShortcutCard
+          title="Open invitation links"
+          body="Issue, reissue, or disable 7 day employee invite links."
+          onPress={onOpenInvitation}
+        />
         <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
       </MembersFrame>
     );
@@ -114,6 +129,12 @@ export function MembersScreen({ session, onBackHome }: MembersScreenProps) {
         <SummaryCard label="Active" value={activeMembers.length} />
         <SummaryCard label="Suspended" value={suspendedMembers.length} />
       </View>
+
+      <AdminShortcutCard
+        title="Open invitation links"
+        body="Issue, reissue, or disable 7 day employee invite links."
+        onPress={onOpenInvitation}
+      />
 
       {mutation.isError ? (
         <View style={styles.errorCard}>
@@ -195,6 +216,27 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
   );
 }
 
+function AdminShortcutCard({
+  title,
+  body,
+  onPress,
+}: {
+  title: string;
+  body: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={styles.shortcutCard}
+    >
+      <Text style={styles.shortcutTitle}>{title}</Text>
+      <Text style={styles.shortcutBody}>{body}</Text>
+    </Pressable>
+  );
+}
+
 function MemberSection({
   title,
   body,
@@ -241,7 +283,7 @@ function MemberCard({ member, allMembers, mutation }: MemberCardProps) {
         <View style={styles.memberTitleWrap}>
           <Text style={styles.memberName}>{member.fullName}</Text>
           <Text style={styles.memberMeta}>
-            {member.phoneNumber} · {member.gender}
+            {member.phoneNumber} 쨌 {member.gender}
           </Text>
         </View>
         <View style={styles.statusBadge}>
@@ -514,6 +556,22 @@ const styles = StyleSheet.create({
     padding: 18,
     gap: 6,
   },
+  shortcutCard: {
+    borderRadius: 24,
+    backgroundColor: '#d8e5de',
+    padding: 18,
+    gap: 6,
+  },
+  shortcutTitle: {
+    color: '#14342b',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  shortcutBody: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 20,
+  },
   summaryLabel: {
     color: '#56635d',
     fontSize: 13,
@@ -716,3 +774,4 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+

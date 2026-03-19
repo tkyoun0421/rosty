@@ -42,6 +42,7 @@
 메모:
 
 - `InvitationLink`는 별도 enum 대신 `disabled_at`, `expires_at`, `consumed_at` 조합으로 상태를 판정한다.
+- V1 앱 발급 플로우는 `expires_at = created_at + 7 days`를 기본값으로 사용한다.
 - `vacant`는 assignment 상태가 아니라 빈 슬롯 상태이므로 enum에 넣지 않는다.
 
 ## 4. 테이블 설계
@@ -114,6 +115,7 @@ RLS:
 
 - V1에서 `target_role` 허용값은 `employee`만 사용한다.
 - `consumed_at is null`인 활성 링크만 가입에 사용할 수 있다.
+- 재발급은 기존 활성 링크의 `disabled_at`을 먼저 채운 뒤 새 토큰 행을 추가하는 흐름으로 맞춘다.
 
 RLS:
 

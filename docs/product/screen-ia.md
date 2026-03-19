@@ -76,6 +76,7 @@
 메모:
 
 - `Members` 안에서 승인, 역할 변경, 정지/복구가 이루어진다.
+- `Invitation`은 활성, 사용됨, 만료, 비활성 링크를 함께 보여주고 재발급 시 기존 활성 링크를 비활성 이력으로 남긴다.
 - 마지막 Admin 보호 규칙은 `Members`에서 반드시 반영된다.
 
 ## 6. 공통 보조 화면
@@ -104,5 +105,6 @@
 - Hall Directory
 - Guest Contact Detail
 - Notification Settings
+
 
 

@@ -20,13 +20,20 @@
 - `manager`는 사용자 상태를 변경할 수 없다.
 - 마지막 남은 `admin`은 `suspended` 또는 `deactivated`로 전환할 수 없다.
 - 사용자는 설정 화면에서 본인 계정을 `deactivated` 상태로 전환할 수 있다.
+
 ## 3. InvitationLinkState
 
 | 상태 | 의미 | 전이 |
 | --- | --- | --- |
-| `active` | 사용 가능한 초대 링크 | `disabled`, `expired` |
+| `active` | 사용 가능한 초대 링크 | `disabled`, `expired`, `consumed` |
 | `disabled` | Admin이 비활성화한 링크 | 없음 |
 | `expired` | 만료된 링크 | 없음 |
+| `consumed` | 직원 가입 검증에 이미 사용된 링크 | 없음 |
+
+메모:
+
+- V1 앱 발급 플로우는 초대 링크를 발급 시점부터 7일 동안 유효하게 만든다.
+- 재발급은 기존 `active` 링크를 `disabled`로 전환하고 새 `active` 링크를 추가하는 방식으로 처리한다.
 
 ## 4. ScheduleStatus
 
@@ -125,6 +132,8 @@
 - 기록성 데이터: `최신순` 기본 정렬
 - 필터 UI: `상단 탭 + 간단 칩`
 - 전역 검색 결과: `일정`, `내 배정`, `멤버` 섹션 분리
+
+
 
 
 

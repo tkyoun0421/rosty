@@ -12,6 +12,7 @@ export const authRoutes = {
   employeeHome: '/employee-home',
   managerHome: '/manager-home',
   members: '/members',
+  invitation: '/invitation',
 } as const;
 
 export type AppRoute = (typeof authRoutes)[keyof typeof authRoutes];
@@ -98,6 +99,7 @@ export function canAccessRoute(
     case authRoutes.managerHome:
       return session?.status === 'active' && session.role !== 'employee';
     case authRoutes.members:
+    case authRoutes.invitation:
       return session?.status === 'active' && session.role === 'admin';
   }
 }
