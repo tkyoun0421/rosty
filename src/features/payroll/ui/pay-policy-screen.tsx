@@ -33,6 +33,7 @@ type PayPolicyScreenProps = {
   session: AuthSession;
   onBackHome: () => void;
   onBackMembers: () => void;
+  onOpenTeamPayroll?: () => void;
 };
 
 type PayPolicyFrameProps = {
@@ -67,6 +68,7 @@ export function PayPolicyScreen({
   session,
   onBackHome,
   onBackMembers,
+  onOpenTeamPayroll,
 }: PayPolicyScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const payPolicyQuery = usePayPolicyQuery();
@@ -107,6 +109,7 @@ export function PayPolicyScreen({
         <FooterActions
           onBackHome={onBackHome}
           onBackMembers={onBackMembers}
+          onOpenTeamPayroll={onOpenTeamPayroll}
           onSignOut={signOut}
         />
       </PayPolicyFrame>
@@ -145,6 +148,7 @@ export function PayPolicyScreen({
         <FooterActions
           onBackHome={onBackHome}
           onBackMembers={onBackMembers}
+          onOpenTeamPayroll={onOpenTeamPayroll}
           onSignOut={signOut}
         />
       </PayPolicyFrame>
@@ -430,6 +434,7 @@ export function PayPolicyScreen({
       <FooterActions
         onBackHome={onBackHome}
         onBackMembers={onBackMembers}
+        onOpenTeamPayroll={onOpenTeamPayroll}
         onSignOut={signOut}
       />
     </PayPolicyFrame>
@@ -586,14 +591,25 @@ function MemberRateCard({
 function FooterActions({
   onBackHome,
   onBackMembers,
+  onOpenTeamPayroll,
   onSignOut,
 }: {
   onBackHome: () => void;
   onBackMembers: () => void;
+  onOpenTeamPayroll?: () => void;
   onSignOut: () => Promise<void>;
 }) {
   return (
     <View style={styles.footerActions}>
+      {onOpenTeamPayroll ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenTeamPayroll}
+          style={styles.footerButtonSecondary}
+        >
+          <Text style={styles.footerButtonSecondaryLabel}>Open team payroll</Text>
+        </Pressable>
+      ) : null}
       <Pressable
         accessibilityRole="button"
         onPress={onBackMembers}

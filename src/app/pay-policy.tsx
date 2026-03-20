@@ -18,6 +18,9 @@ function PayPolicyRouteContent() {
       onBackHome={() => {
         router.replace(authRoutes.managerHome);
       }}
+      onOpenTeamPayroll={() => {
+        router.push(authRoutes.teamPayroll);
+      }}
       onBackMembers={() => {
         router.replace(authRoutes.members);
       }}

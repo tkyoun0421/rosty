@@ -403,6 +403,7 @@ RLS:
 - 저장형 `pay_estimates` 테이블은 V1에서 만들지 않는다.
 - `schedule_time_records`의 실제 시간과 `pay_rates` 또는 `pay_policies.default_hourly_rate`를 조합해 계산형 조회로 시작한다.
 - 같은 일정에서 같은 사용자가 여러 포지션을 맡아도 시간 계산은 1회만 한다.
+- 현재 repo의 첫 `Team Payroll` UI slice는 tracked schema에 필요한 assignment/work-time 테이블이 아직 없어서 deterministic server-shaped seed snapshot으로 계산 규칙을 먼저 검증한다.
 
 ### 멤버 검색
 

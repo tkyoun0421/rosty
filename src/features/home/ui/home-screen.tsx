@@ -15,7 +15,13 @@ import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 
 type RoleHomeProps = {
+  onOpenNotifications?: () => void;
+  onOpenScheduleList?: () => void;
   session: AuthSession;
+  onOpenMyAssignments?: () => void;
+  onOpenMyPayroll?: () => void;
+  onOpenCancellationQueue?: () => void;
+  onOpenTeamPayroll?: () => void;
   onOpenMembers?: () => void;
   onOpenPayPolicy?: () => void;
 };
@@ -42,7 +48,13 @@ type LoadingStateProps = {
   title: string;
 };
 
-export function EmployeeHomeScreen({ session }: RoleHomeProps) {
+export function EmployeeHomeScreen({
+  onOpenNotifications,
+  onOpenScheduleList,
+  session,
+  onOpenMyAssignments,
+  onOpenMyPayroll,
+}: RoleHomeProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const { data, isLoading } = useHomeDashboardQuery(session.role);
 
@@ -84,6 +96,58 @@ export function EmployeeHomeScreen({ session }: RoleHomeProps) {
         })}
       </View>
 
+      {onOpenMyPayroll ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenMyPayroll}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open my payroll</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review your current estimated pay and pending work-time records.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenMyAssignments ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenMyAssignments}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open my assignments</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review your grouped schedule assignments and upcoming staffing details.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenNotifications ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenNotifications}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open notifications</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review unread assignment and cancellation updates in one inbox.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenScheduleList ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenScheduleList}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open schedules</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Browse the current event schedule list and open the shared detail view.
+          </Text>
+        </Pressable>
+      ) : null}
+
       <Pressable
         accessibilityRole="button"
         onPress={() => {
@@ -98,7 +162,11 @@ export function EmployeeHomeScreen({ session }: RoleHomeProps) {
 }
 
 export function ManagerHomeScreen({
+  onOpenNotifications,
+  onOpenScheduleList,
   session,
+  onOpenCancellationQueue,
+  onOpenTeamPayroll,
   onOpenMembers,
   onOpenPayPolicy,
 }: RoleHomeProps) {
@@ -174,6 +242,58 @@ export function ManagerHomeScreen({
             />
           ) : null}
         </View>
+      ) : null}
+
+      {onOpenTeamPayroll ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenTeamPayroll}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open team payroll</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review the current team payroll estimate before the next payout run.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenCancellationQueue ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenCancellationQueue}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open cancellation queue</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review pending employee cancellation requests and restore or cancel assignments.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenNotifications ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenNotifications}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open notifications</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review inbox items linked to queue, assignment, and approval events.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenScheduleList ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenScheduleList}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open schedules</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review tracked schedules before availability, assignment, or work-time actions.
+          </Text>
+        </Pressable>
       ) : null}
 
       <Pressable
@@ -353,6 +473,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   quickActionDetail: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  quickActionButton: {
+    borderRadius: 24,
+    backgroundColor: '#d8e5de',
+    padding: 18,
+    gap: 6,
+  },
+  quickActionButtonLabel: {
+    color: '#14342b',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  quickActionButtonBody: {
     color: '#44514c',
     fontSize: 14,
     lineHeight: 20,

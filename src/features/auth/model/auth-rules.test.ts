@@ -44,8 +44,18 @@ describe('auth route resolution', () => {
 
 describe('auth route access', () => {
   it('blocks signed-out users from protected routes', () => {
+    expect(canAccessRoute(null, authRoutes.notifications)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.scheduleList)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.scheduleDetail)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.availabilityOverview)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.assignmentWorkspace)).toBe(false);
     expect(canAccessRoute(null, authRoutes.employeeHome)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.myAssignments)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.assignmentDetail)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.myPayroll)).toBe(false);
     expect(canAccessRoute(null, authRoutes.managerHome)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.cancellationQueue)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.teamPayroll)).toBe(false);
     expect(canAccessRoute(null, authRoutes.members)).toBe(false);
     expect(canAccessRoute(null, authRoutes.invitation)).toBe(false);
     expect(canAccessRoute(null, authRoutes.payPolicy)).toBe(false);
@@ -76,13 +86,85 @@ describe('auth route access', () => {
         authRoutes.suspended,
       ),
     ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
+        authRoutes.notifications,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
+        authRoutes.scheduleList,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
+        authRoutes.availabilityOverview,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
+        authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(false);
   });
 
   it('separates employee and manager home access', () => {
     expect(
       canAccessRoute(
         createDemoSession('employee-active'),
+        authRoutes.notifications,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.scheduleList,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.scheduleDetail,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.availabilityOverview,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
         authRoutes.employeeHome,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.myAssignments,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.assignmentDetail,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.myPayroll,
       ),
     ).toBe(true);
     expect(
@@ -94,12 +176,93 @@ describe('auth route access', () => {
     expect(
       canAccessRoute(
         createDemoSession('manager-active'),
+        authRoutes.notifications,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.scheduleList,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.scheduleDetail,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.availabilityOverview,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.myAssignments,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.assignmentDetail,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.myPayroll,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
         authRoutes.managerHome,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.cancellationQueue,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.teamPayroll,
       ),
     ).toBe(true);
   });
 
   it('allows admin-only routes only for active admins', () => {
+    expect(
+      canAccessRoute(createDemoSession('admin-active'), authRoutes.teamPayroll),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('admin-active'),
+        authRoutes.cancellationQueue,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.cancellationQueue,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.teamPayroll,
+      ),
+    ).toBe(false);
     expect(
       canAccessRoute(createDemoSession('admin-active'), authRoutes.members),
     ).toBe(true);

@@ -2,30 +2,36 @@
 
 ## Current Task
 
-Pending manual Google OAuth retest and first-admin bootstrap execution after completing the callback redirect bug fix.
+Pending the real scheduling migration apply and the next locked staffing/scheduling follow-up after completing the first Assignment Workspace slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/oauth-callback-redirect-fix/summary.md`
-- Archive plan: `docs/development-plans/oauth-callback-redirect-fix/plan.md`
+- Archive summary: `docs/development-plans/assignment-workspace-slice/summary.md`
+- Archive plan: `docs/development-plans/assignment-workspace-slice/plan.md`
 
 ## Last Completed
 
-Completed the Google OAuth callback redirect fix task:
+Completed the Assignment Workspace slice:
 
-- Updated `src/app/auth/callback.tsx` so the callback route actively processes the returned deep-link URL instead of rendering a passive loading screen only.
-- Made `completeOAuthRedirect(...)` idempotent in `src/features/auth/model/auth-store.ts` so repeated handling of the same auth code does not trigger duplicate session exchanges.
-- Hardened OAuth code and invite token parsing in `src/features/auth/lib/google-oauth.ts` for query-string and hash-fragment callbacks.
-- Added focused regression coverage in `tests/auth/callback-route.test.tsx` and `src/features/auth/lib/google-oauth.test.ts`.
+- Added `src/app/assignment-workspace.tsx` and manager/admin route access.
+- Added the workspace query, fallback state, draft save/clear, and confirm helpers under `src/features/assignments/`.
+- Added `supabase/migrations/20260320153000_confirm_schedule_assignments_rpc.sql` for the limited confirm write path.
+- Updated `Schedule Detail` and `Availability Overview` so manager/admin users can open the workspace from the current schedule flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Re-run Google sign-in on the target device or emulator, confirm the app exits `auth/callback` cleanly, then bootstrap the first persistent admin and continue app-level admin QA.
+Apply the shared scheduling/payroll migration plus the staffing/notifications migrations to the real Supabase project, then lock `Work Time` or the next scheduling write slice.
 
 ## Blockers
 
-- The callback fix is verified locally by tests and export builds, but the live Google OAuth round-trip still needs manual device or emulator confirmation.
+- The shared scheduling/payroll read migration is repo-tracked but not yet applied to the real Supabase project, so assignments and payroll routes will still show the seeded fallback there.
+- The new availability migration is also not yet applied to the real Supabase project, so the live employee availability RPC cannot work there yet.
+- The new confirm-schedule migration is also not yet applied to the real Supabase project, so the live assignment workspace confirm RPC cannot work there yet.
+- The new cancellation-request migration is also not yet applied to the real Supabase project, so the live employee cancellation RPC cannot work there yet.
+- The new cancellation-review migration is also not yet applied to the real Supabase project, so the live manager/admin queue review RPC cannot work there yet.
+- The new notifications migration is also not yet applied to the real Supabase project, so the live inbox cannot receive the new cancellation notifications there yet.
+- Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
 - The manager-facing payroll and broader payroll calculation surfaces are still unimplemented.
@@ -36,4 +42,4 @@ Re-run Google sign-in on the target device or emulator, confirm the app exits `a
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Google OAuth callback redirect fix task on 2026-03-20.
+- Completed the Assignment Workspace slice task on 2026-03-20.

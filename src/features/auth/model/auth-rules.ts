@@ -9,8 +9,18 @@ export const authRoutes = {
   profileSetup: '/profile-setup',
   approvalWaiting: '/approval-waiting',
   suspended: '/suspended',
+  notifications: '/notifications',
+  scheduleList: '/schedules',
+  scheduleDetail: '/schedule-detail',
+  availabilityOverview: '/availability-overview',
+  assignmentWorkspace: '/assignment-workspace',
   employeeHome: '/employee-home',
+  myAssignments: '/my-assignments',
+  assignmentDetail: '/assignment-detail',
   managerHome: '/manager-home',
+  cancellationQueue: '/cancellation-queue',
+  myPayroll: '/my-payroll',
+  teamPayroll: '/team-payroll',
   members: '/members',
   invitation: '/invitation',
   payPolicy: '/pay-policy',
@@ -95,9 +105,24 @@ export function canAccessRoute(
       return session?.status === 'pending_approval';
     case authRoutes.suspended:
       return session?.status === 'suspended';
+    case authRoutes.notifications:
+    case authRoutes.scheduleList:
+    case authRoutes.scheduleDetail:
+      return session?.status === 'active';
+    case authRoutes.availabilityOverview:
+    case authRoutes.assignmentWorkspace:
+      return session?.status === 'active' && session.role !== 'employee';
     case authRoutes.employeeHome:
       return session?.status === 'active' && session.role === 'employee';
+    case authRoutes.myAssignments:
+    case authRoutes.assignmentDetail:
+      return session?.status === 'active' && session.role === 'employee';
+    case authRoutes.myPayroll:
+      return session?.status === 'active' && session.role === 'employee';
     case authRoutes.managerHome:
+      return session?.status === 'active' && session.role !== 'employee';
+    case authRoutes.cancellationQueue:
+    case authRoutes.teamPayroll:
       return session?.status === 'active' && session.role !== 'employee';
     case authRoutes.members:
     case authRoutes.invitation:

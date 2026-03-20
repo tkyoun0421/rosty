@@ -15,6 +15,18 @@ function ManagerHomeRouteContent() {
   return (
     <ManagerHomeScreen
       session={session}
+      onOpenNotifications={() => {
+        router.push(authRoutes.notifications);
+      }}
+      onOpenScheduleList={() => {
+        router.push(authRoutes.scheduleList);
+      }}
+      onOpenCancellationQueue={() => {
+        router.push(authRoutes.cancellationQueue);
+      }}
+      onOpenTeamPayroll={() => {
+        router.push(authRoutes.teamPayroll);
+      }}
       onOpenMembers={
         session.role === 'admin'
           ? () => {
