@@ -1,12 +1,15 @@
 import 'react-native-url-polyfill/auto';
 
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
+import { Platform } from 'react-native';
 
 import { invitationTokenParam } from '@/features/invitations/model/invitation-join';
 import { supabaseClient } from '@/shared/lib/supabase/client';
 
 export const authCallbackPath = 'auth/callback';
+export const nativeAuthCallbackUrl = `rosty://${authCallbackPath}`;
 
 export type GoogleOAuthResult =
   | { type: 'success'; url: string }
@@ -14,11 +17,10 @@ export type GoogleOAuthResult =
   | { type: 'dismiss'; message: string }
   | { type: 'error'; message: string };
 
-export function createGoogleOAuthRedirectUrl(
+function appendInvitationTokenToRedirectUrl(
+  redirectUrl: string,
   invitationToken?: string | null,
 ): string {
-  const redirectUrl = Linking.createURL(authCallbackPath);
-
   if (!invitationToken) {
     return redirectUrl;
   }
@@ -33,9 +35,25 @@ export function createGoogleOAuthRedirectUrl(
   }
 }
 
+export function createGoogleOAuthRedirectUrl(
+  invitationToken?: string | null,
+): string {
+  const redirectUrl =
+    Platform.OS === 'web'
+      ? Linking.createURL(authCallbackPath)
+      : nativeAuthCallbackUrl;
+
+  return appendInvitationTokenToRedirectUrl(redirectUrl, invitationToken);
+}
+
 export function extractOAuthCode(url: string): string | null {
   try {
-    return new URL(url).searchParams.get('code');
+    const parsed = new URL(url);
+
+    return (
+      parsed.searchParams.get('code') ??
+      new URLSearchParams(parsed.hash.replace(/^#/, '')).get('code')
+    );
   } catch {
     return null;
   }
@@ -43,7 +61,14 @@ export function extractOAuthCode(url: string): string | null {
 
 export function extractInvitationToken(url: string): string | null {
   try {
-    return new URL(url).searchParams.get(invitationTokenParam);
+    const parsed = new URL(url);
+
+    return (
+      parsed.searchParams.get(invitationTokenParam) ??
+      new URLSearchParams(parsed.hash.replace(/^#/, '')).get(
+        invitationTokenParam,
+      )
+    );
   } catch {
     return null;
   }
@@ -56,6 +81,17 @@ export async function startGoogleOAuth(
     return {
       type: 'error',
       message: 'Supabase auth is not configured for this build.',
+    };
+  }
+
+  if (
+    Platform.OS !== 'web' &&
+    Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+  ) {
+    return {
+      type: 'error',
+      message:
+        'Real Google sign-in requires a development build or standalone app. Expo Go cannot reopen the custom rosty:// callback.',
     };
   }
 

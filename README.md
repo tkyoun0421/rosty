@@ -14,6 +14,15 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 - Jest + React Native Testing Library
 - Detox
 
+## Project Layout
+
+- `src/app/`: Expo Router route files, layouts, and route-only entry modules
+- `src/features/`: feature slices for auth, home, invitations, members, and payroll
+- `src/shared/`: shared providers, config, and reusable library code
+- `supabase/`: tracked migrations, CLI config, and seed baseline
+
+Route files now live under `src/app` only. Keep non-route modules outside the Expo Router tree so they are not treated as routes by accident.
+
 ## Quick Start
 
 1. Copy `.env.example` to `.env` and fill the public keys.
@@ -40,6 +49,7 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 - `pnpm supabase:migrations:status`
 - `pnpm supabase:migrations:dry-run`
 - `pnpm supabase:migrations:apply`
+- `pnpm supabase:first-admin -- --email <email>`
 
 ## Docs
 
@@ -60,3 +70,5 @@ This repository now starts from a fresh Expo Router baseline with Supabase-ready
 - iOS native builds and Detox execution require macOS with Xcode.
 - `pnpm install` now bootstraps the repo-local Supabase CLI binary used by the migration scripts.
 - Migration scripts reject example placeholder secrets before the Supabase CLI runs and let `.env.local` override placeholder rollout values from `.env`.
+- The first persistent admin is promoted out of band with `pnpm supabase:first-admin` after the target user exists in Supabase Auth.
+- Real native Google OAuth testing requires a development build or standalone app. Expo Go cannot reopen the custom `rosty://auth/callback` URL.

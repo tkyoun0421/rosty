@@ -43,6 +43,12 @@ Configure Google sign-in in the Supabase dashboard before testing the real auth 
 
 Use `pnpm ios` only on macOS with the required Apple tooling.
 
+Project structure note:
+
+- Expo Router route files are under `src/app/`.
+- Shared providers and non-route modules stay outside the router tree, typically under `src/shared/` or `src/features/`.
+- Real native Google OAuth testing requires a development build or standalone app. Expo Go cannot reopen the custom `rosty://auth/callback` URL used by this project.
+
 ## Supabase Migration Rollout
 
 The repo now carries a local Supabase CLI wrapper and checked-in `supabase/config.toml` so rollout commands do not depend on ad hoc machine setup.
@@ -55,6 +61,7 @@ The repo now carries a local Supabase CLI wrapper and checked-in `supabase/confi
 4. Run `pnpm supabase:migrations:status` to link the project and inspect pending migrations.
 5. Run `pnpm supabase:migrations:dry-run` before any real apply.
 6. Run `pnpm supabase:migrations:apply` only after reviewing the dry-run output and any remote schema drift.
+7. After the target user has signed in once and exists in Supabase Auth, run `pnpm supabase:first-admin -- --email <email>` or `pnpm supabase:first-admin -- --user-id <uuid>` to promote the first persistent admin.
 
 Notes:
 
@@ -63,6 +70,8 @@ Notes:
 - Example placeholders such as `your-personal-access-token` and `your-db-password` are rejected before the Supabase CLI runs.
 - `.env.local` can override placeholder rollout values left in `.env` from `.env.example`.
 - If the CLI binary is missing after install, rerun `pnpm supabase:install`.
+- The first-admin bootstrap command accepts the target from CLI args or from `SUPABASE_FIRST_ADMIN_EMAIL` or `SUPABASE_FIRST_ADMIN_USER_ID` in `.env.local` or the shell.
+- The bootstrap path is intentionally limited to the first active admin. If an active admin already exists, the command refuses to promote a different user.
 
 ### GitHub Actions path
 

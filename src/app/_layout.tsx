@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { RootProviders } from '@/app/providers/root-providers';
+import { RootProviders } from '@/shared/providers/root-providers';
 
 export default function RootLayout() {
   return (

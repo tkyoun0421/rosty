@@ -30,6 +30,7 @@ Implement the mobile app and Supabase-backed backend changes required by approve
 - Implement against the plan document, not against ad hoc memory.
 - Update the plan document before continuing if scope, sequence, or acceptance behavior changes.
 - Keep mobile and Supabase changes aligned when a feature spans both.
+- Keep Expo Router route files under `src/app/` only. Put providers, reusable components, and other non-route modules under `src/shared/` or the relevant feature tree instead of the router directory.
 - Use migration files for schema changes instead of ad hoc remote edits.
 - Prepare a clean testing handoff with affected flows and commands.
 - After testing, update [`WORKLOG.md`](../../WORKLOG.md) with completion state, next action, blockers, and latest verification.

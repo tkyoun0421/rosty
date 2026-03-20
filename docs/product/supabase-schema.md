@@ -23,7 +23,7 @@
 - 사용자 관리와 급여 정책은 `admin`만 쓴다.
 - Manager의 멤버 조회는 Admin 관리용 원본 테이블이 아니라 최소 노출 경로로 제한한다.
 - 직원 초대 링크는 `1회성`으로 설계한다.
-- 첫 번째 Admin 계정은 앱 바깥에서 `SQL seed 1회 부여`로 초기화한다.
+- 첫 번째 Admin 계정은 앱 바깥에서 repo-tracked `pnpm supabase:first-admin` SQL bootstrap 경로로 1회 초기화한다.
 
 ## 3. 공통 enum 초안
 

@@ -3,10 +3,19 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     },
     "strict": true,
-    "types": ["jest"]
+    "types": [
+      "jest"
+    ]
   },
-  "include": ["app", "src", "tests", "expo-env.d.ts"]
+  "include": [
+    "src",
+    "tests",
+    "expo-env.d.ts",
+    ".expo/types/**/*.ts"
+  ]
 }

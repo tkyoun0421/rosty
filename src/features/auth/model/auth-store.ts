@@ -31,6 +31,8 @@ type AuthStore = {
   session: AuthSession | null;
   authSource: AuthSource | null;
   pendingInvitationToken: string | null;
+  processingOAuthCode: string | null;
+  handledOAuthCode: string | null;
   errorMessage: string | null;
   clearError: () => void;
   setPendingInvitationToken: (token: string | null) => void;
@@ -84,6 +86,8 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
   session: null,
   authSource: null,
   pendingInvitationToken: null,
+  processingOAuthCode: null,
+  handledOAuthCode: null,
   errorMessage: null,
   clearError: () => set({ errorMessage: null }),
   setPendingInvitationToken: (token) =>
@@ -159,6 +163,28 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       return false;
     }
 
+    const { processingOAuthCode, handledOAuthCode } = get();
+
+    if (handledOAuthCode === code) {
+      set({
+        errorMessage: null,
+        isAuthenticating: false,
+        isHydrated: true,
+      });
+      return true;
+    }
+
+    if (processingOAuthCode === code) {
+      return false;
+    }
+
+    set({
+      processingOAuthCode: code,
+      isAuthenticating: true,
+      errorMessage: null,
+      isHydrated: true,
+    });
+
     const { error } = await supabaseClient.auth.exchangeCodeForSession(code);
 
     if (error) {
@@ -166,11 +192,20 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
         errorMessage: error.message,
         isAuthenticating: false,
         isHydrated: true,
+        processingOAuthCode: null,
       });
       return false;
     }
 
     await get().restoreSession();
+
+    set({
+      handledOAuthCode: code,
+      processingOAuthCode: null,
+      errorMessage: null,
+      isAuthenticating: false,
+      isHydrated: true,
+    });
 
     return true;
   },
@@ -212,6 +247,7 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       session: createDemoSession(preset),
       authSource: 'demo',
       pendingInvitationToken: null,
+      processingOAuthCode: null,
       errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
@@ -279,10 +315,11 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       session: null,
       authSource: null,
       pendingInvitationToken: null,
+      processingOAuthCode: null,
+      handledOAuthCode: null,
       errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
     });
   },
 }));
-
