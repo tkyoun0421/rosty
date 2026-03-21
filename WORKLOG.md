@@ -2,19 +2,19 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Schedule-created notifications slice.
+Pending the next locked staffing or scheduling feature after completing the User-approved notifications slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-created-notifications-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-created-notifications-slice/plan.md`
+- Archive summary: `docs/development-plans/user-approved-notifications-slice/summary.md`
+- Archive plan: `docs/development-plans/user-approved-notifications-slice/plan.md`
 
 ## Last Completed
 
-Completed the Schedule-created notifications slice:
+Completed the User-approved notifications slice:
 
-- Added `supabase/migrations/20260321120000_schedule_created_notifications.sql` so schedule creation enqueues employee inbox notifications.
-- Updated `src/features/notifications/api/fetch-notifications.ts` so the fallback inbox also shows the schedule-created notification type.
+- Added `supabase/migrations/20260321123000_user_approved_notifications.sql` so admin approval enqueues inbox notifications for the approved user.
+- Updated `src/features/notifications/api/fetch-notifications.ts` so the fallback inbox also shows the user-approved notification type.
 - Updated IA/worklog references for the richer staffing notification flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
@@ -31,7 +31,7 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - The new confirm-schedule migration is also not yet applied to the real Supabase project, so the live assignment workspace confirm RPC cannot work there yet.
 - The new cancellation-request migration is also not yet applied to the real Supabase project, so the live employee cancellation RPC cannot work there yet.
 - The new cancellation-review migration is also not yet applied to the real Supabase project, so the live manager/admin queue review RPC cannot work there yet.
-- The new notifications migrations are also not yet applied to the real Supabase project, so the live inbox cannot receive the new cancellation, assignment-confirmed, or schedule-created notifications there yet.
+- The new notifications migrations are also not yet applied to the real Supabase project, so the live inbox cannot receive the new cancellation, assignment-confirmed, schedule-created, or user-approved notifications there yet.
 - Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
@@ -43,4 +43,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Schedule-created notifications slice task on 2026-03-21.
+- Completed the User-approved notifications slice task on 2026-03-21.

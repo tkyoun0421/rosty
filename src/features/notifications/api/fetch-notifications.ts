@@ -48,6 +48,16 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
       items: [
         {
           id: 'seed-notification-employee-1',
+          type: 'user_approved',
+          title: 'Access approved',
+          body: 'Your access was approved. You can now enter Rosty.',
+          targetRoute: '/employee-home',
+          targetId: null,
+          isRead: true,
+          createdAt: '2026-03-19T09:00:00.000Z',
+        },
+        {
+          id: 'seed-notification-employee-2',
           type: 'schedule_created',
           title: 'Schedule created',
           body: `A new schedule for ${createdSchedule?.eventDate ?? '2026-03-29'} · ${createdSchedule?.memo ?? 'Convention Hall banquet'} was created.`,
@@ -57,7 +67,7 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
           createdAt: '2026-03-21T08:00:00.000Z',
         },
         {
-          id: 'seed-notification-employee-2',
+          id: 'seed-notification-employee-3',
           type: 'assignment_confirmed',
           title: 'Assignment confirmed',
           body: `Your assignment for ${confirmedSchedule?.eventDate ?? '2026-03-22'} · ${confirmedSchedule?.memo ?? 'Grand Hall wedding'} was confirmed.`,
@@ -67,7 +77,7 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
           createdAt: '2026-03-21T09:00:00.000Z',
         },
         {
-          id: 'seed-notification-employee-3',
+          id: 'seed-notification-employee-4',
           type: 'cancellation_approved',
           title: 'Cancellation approved',
           body: 'Your cancellation request was approved.',
