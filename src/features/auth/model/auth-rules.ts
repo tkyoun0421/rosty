@@ -11,6 +11,7 @@ export const authRoutes = {
   suspended: '/suspended',
   notifications: '/notifications',
   globalSearch: '/search',
+  settings: '/settings',
   scheduleList: '/schedules',
   scheduleDetail: '/schedule-detail',
   scheduleEdit: '/schedule-edit',
@@ -110,6 +111,7 @@ export function canAccessRoute(
       return session?.status === 'suspended';
     case authRoutes.notifications:
     case authRoutes.globalSearch:
+    case authRoutes.settings:
     case authRoutes.scheduleList:
     case authRoutes.scheduleDetail:
       return session?.status === 'active';

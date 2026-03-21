@@ -18,6 +18,9 @@ function EmployeeHomeRouteContent() {
       onOpenGlobalSearch={() => {
         router.push(authRoutes.globalSearch);
       }}
+      onOpenSettings={() => {
+        router.push(authRoutes.settings);
+      }}
       onOpenNotifications={() => {
         router.push(authRoutes.notifications);
       }}

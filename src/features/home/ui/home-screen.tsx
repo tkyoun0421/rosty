@@ -17,6 +17,7 @@ import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 type RoleHomeProps = {
   onOpenGlobalSearch?: () => void;
   onOpenNotifications?: () => void;
+  onOpenSettings?: () => void;
   onOpenScheduleEdit?: () => void;
   onOpenScheduleList?: () => void;
   session: AuthSession;
@@ -53,6 +54,7 @@ type LoadingStateProps = {
 export function EmployeeHomeScreen({
   onOpenGlobalSearch,
   onOpenNotifications,
+  onOpenSettings,
   onOpenScheduleList,
   session,
   onOpenMyAssignments,
@@ -151,6 +153,19 @@ export function EmployeeHomeScreen({
         </Pressable>
       ) : null}
 
+      {onOpenSettings ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenSettings}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open settings</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review your core profile fields and update them from one screen.
+          </Text>
+        </Pressable>
+      ) : null}
+
       {onOpenScheduleList ? (
         <Pressable
           accessibilityRole="button"
@@ -180,6 +195,7 @@ export function EmployeeHomeScreen({
 export function ManagerHomeScreen({
   onOpenGlobalSearch,
   onOpenNotifications,
+  onOpenSettings,
   onOpenScheduleEdit,
   onOpenScheduleList,
   session,
@@ -310,6 +326,19 @@ export function ManagerHomeScreen({
           <Text style={styles.quickActionButtonLabel}>Open search</Text>
           <Text style={styles.quickActionButtonBody}>
             Search schedules, assignments, and member results from one screen.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenSettings ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenSettings}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open settings</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Review your profile and session-level account details.
           </Text>
         </Pressable>
       ) : null}

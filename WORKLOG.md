@@ -2,30 +2,31 @@
 
 ## Current Task
 
-Pending the next locked cross-cutting or staffing feature after completing the Global Search slice.
+Pending the next locked cross-cutting or staffing feature after completing the Settings slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/global-search-slice/summary.md`
-- Archive plan: `docs/development-plans/global-search-slice/plan.md`
+- Archive summary: `docs/development-plans/settings-slice/summary.md`
+- Archive plan: `docs/development-plans/settings-slice/plan.md`
 
 ## Last Completed
 
-Completed the Global Search slice:
+Completed the Settings slice:
 
-- Added `src/app/search.tsx` and active-user access for the new search route.
-- Added the search query/model/UI under `src/features/search/`.
-- Added `supabase/migrations/20260320160000_member_directory_search_rpc.sql` for manager/admin member search.
+- Added `src/app/settings.tsx` and active-user access for the new settings route.
+- Added the settings query/mutation/model/UI under `src/features/settings/`.
+- Added `supabase/migrations/20260321103000_update_my_profile_rpc.sql` for the limited self profile-update path.
 - Added employee and manager/admin home entry points for the route.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration plus the member-directory search migration to the real Supabase project, then lock the next cross-cutting or staffing feature.
+Apply the new settings migration plus the shared scheduling/payroll migration to the real Supabase project, then lock the next cross-cutting or staffing feature.
 
 ## Blockers
 
 - The shared scheduling/payroll read migration is repo-tracked but not yet applied to the real Supabase project, so assignments and payroll routes will still show the seeded fallback there.
+- The new settings migration is also not yet applied to the real Supabase project, so live self profile updates cannot work there yet.
 - The member-directory search migration is also not yet applied to the real Supabase project, so live manager/admin member search cannot work there yet.
 - The new availability migration is also not yet applied to the real Supabase project, so the live employee availability RPC cannot work there yet.
 - The new confirm-schedule migration is also not yet applied to the real Supabase project, so the live assignment workspace confirm RPC cannot work there yet.
@@ -43,4 +44,4 @@ Apply the shared scheduling/payroll migration plus the member-directory search m
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Global Search slice task on 2026-03-21.
+- Completed the Settings slice task on 2026-03-21.
