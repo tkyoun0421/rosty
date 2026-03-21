@@ -40,6 +40,17 @@ describe('auth route resolution', () => {
       authRoutes.managerHome,
     );
   });
+
+  it('sends deactivated sessions back to login', () => {
+    expect(
+      resolveEntryRoute({
+        userId: 'user-deactivated',
+        displayName: 'Blocked User',
+        role: 'employee',
+        status: 'deactivated',
+      }),
+    ).toBe(authRoutes.login);
+  });
 });
 
 describe('auth route access', () => {
@@ -63,6 +74,21 @@ describe('auth route access', () => {
     expect(canAccessRoute(null, authRoutes.members)).toBe(false);
     expect(canAccessRoute(null, authRoutes.invitation)).toBe(false);
     expect(canAccessRoute(null, authRoutes.payPolicy)).toBe(false);
+  });
+
+  it('allows the login route for deactivated sessions but blocks protected screens', () => {
+    const deactivatedSession = {
+      userId: 'user-deactivated',
+      displayName: 'Blocked User',
+      role: 'employee' as const,
+      status: 'deactivated' as const,
+    };
+
+    expect(canAccessRoute(deactivatedSession, authRoutes.login)).toBe(true);
+    expect(canAccessRoute(deactivatedSession, authRoutes.employeeHome)).toBe(
+      false,
+    );
+    expect(canAccessRoute(deactivatedSession, authRoutes.settings)).toBe(false);
   });
 
   it('allows only the matching status screen', () => {

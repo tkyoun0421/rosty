@@ -20,6 +20,7 @@ const userStatuses: UserStatus[] = [
   'pending_approval',
   'active',
   'suspended',
+  'deactivated',
 ];
 
 function isNonEmptyString(value: unknown): value is string {

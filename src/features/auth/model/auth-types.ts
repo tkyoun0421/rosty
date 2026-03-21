@@ -4,7 +4,8 @@ export type UserStatus =
   | 'profile_incomplete'
   | 'pending_approval'
   | 'active'
-  | 'suspended';
+  | 'suspended'
+  | 'deactivated';
 
 export type ProfileGender = 'male' | 'female' | 'unspecified';
 

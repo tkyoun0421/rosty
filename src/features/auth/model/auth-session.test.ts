@@ -54,6 +54,27 @@ describe('profile merge', () => {
     });
   });
 
+  it('accepts deactivated as a valid profile status', () => {
+    const baseSession = createFallbackAuthSession({
+      id: 'user-5',
+      email: 'blocked@rosty.app',
+      user_metadata: {},
+    } as never);
+
+    expect(
+      mergeAuthProfile(baseSession, {
+        fullName: 'Blocked User',
+        role: 'employee',
+        status: 'deactivated',
+      }),
+    ).toEqual({
+      userId: 'user-5',
+      displayName: 'Blocked User',
+      role: 'employee',
+      status: 'deactivated',
+    });
+  });
+
   it('ignores invalid profile role and status values', () => {
     const baseSession = createFallbackAuthSession({
       id: 'user-4',

@@ -66,6 +66,27 @@ async function resolveStoreSession(session: Session | null): Promise<{
   };
 }
 
+export const DEACTIVATED_ACCOUNT_MESSAGE =
+  'This account is deactivated. Sign in with a different account or contact an administrator.';
+
+export function normalizeResolvedAuthState(input: {
+  session: AuthSession | null;
+  authSource: AuthSource | null;
+}) {
+  if (input.session?.status === 'deactivated') {
+    return {
+      session: null,
+      authSource: null,
+      errorMessage: DEACTIVATED_ACCOUNT_MESSAGE,
+    };
+  }
+
+  return {
+    ...input,
+    errorMessage: null,
+  };
+}
+
 function isDemoSource(authSource: AuthSource | null): authSource is 'demo' {
   return authSource === 'demo';
 }
@@ -112,11 +133,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       return;
     }
 
-    const nextState = await resolveStoreSession(data.session);
+    const nextState = normalizeResolvedAuthState(
+      await resolveStoreSession(data.session),
+    );
+
+    if (nextState.errorMessage === DEACTIVATED_ACCOUNT_MESSAGE) {
+      queryClient.removeQueries({ queryKey: ['auth', 'profile'] });
+    }
 
     set({
       ...nextState,
-      errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
     });
@@ -127,11 +153,16 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
       return;
     }
 
-    const nextState = await resolveStoreSession(session);
+    const nextState = normalizeResolvedAuthState(
+      await resolveStoreSession(session),
+    );
+
+    if (nextState.errorMessage === DEACTIVATED_ACCOUNT_MESSAGE) {
+      queryClient.removeQueries({ queryKey: ['auth', 'profile'] });
+    }
 
     set({
       ...nextState,
-      errorMessage: null,
       isHydrated: true,
       isAuthenticating: false,
     });
@@ -199,15 +230,18 @@ export const useAuthStore = create<AuthStore>()((set, get) => ({
 
     await get().restoreSession();
 
+    const resolvedSession = get().session;
+    const resolvedError = get().errorMessage;
+
     set({
       handledOAuthCode: code,
       processingOAuthCode: null,
-      errorMessage: null,
+      errorMessage: resolvedSession ? null : resolvedError,
       isAuthenticating: false,
       isHydrated: true,
     });
 
-    return true;
+    return !!resolvedSession;
   },
   signInWithGoogle: async (invitationToken) => {
     if (!hasSupabaseConfig || !supabaseClient) {

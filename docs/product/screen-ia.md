@@ -26,6 +26,7 @@
 
 - 직원 초대 링크로 열린 `Login`은 invite 토큰을 유지한 채 Google 로그인 이후 `Profile Setup`까지 연결된다.
 - 신규 직원의 `Profile Setup` 제출은 유효한 invite 토큰이 있을 때만 완료된다.
+- `deactivated` 계정은 세션이 남아 있어도 로그인 셸로 되돌아가며 메인 앱 영역에 재진입할 수 없다.
 
 ## 3. Employee 영역
 

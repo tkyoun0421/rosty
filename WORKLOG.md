@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Payroll filter-tabs slice.
+Pending the next locked staffing or scheduling feature after completing the Deactivated auth lockout slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/payroll-filter-tabs-slice/summary.md`
-- Archive plan: `docs/development-plans/payroll-filter-tabs-slice/plan.md`
+- Archive summary: `docs/development-plans/deactivated-auth-lockout-slice/summary.md`
+- Archive plan: `docs/development-plans/deactivated-auth-lockout-slice/plan.md`
 
 ## Last Completed
 
-Completed the Payroll filter-tabs slice:
+Completed the Deactivated auth lockout slice:
 
-- Added view-layer payroll filter helpers for `all`, `estimated`, and `pending actual time`.
-- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with top tabs and filtered summaries.
-- Updated worklog archive references for the richer payroll navigation flow.
+- Extended auth status parsing so `deactivated` is treated as a valid profile state.
+- Updated auth routing and store normalization so restored deactivated sessions return to the login shell with a blocked message.
+- Updated worklog archive references for the stronger account-deactivation lockout behavior.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Payroll filter-tabs slice task on 2026-03-21.
+- Completed the Deactivated auth lockout slice task on 2026-03-21.

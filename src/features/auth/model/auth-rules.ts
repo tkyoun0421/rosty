@@ -93,6 +93,8 @@ export function resolveEntryRoute(session: AuthSession | null): AppRoute {
       return resolveHomeRoute(session.role);
     case 'suspended':
       return authRoutes.suspended;
+    case 'deactivated':
+      return authRoutes.login;
   }
 }
 
@@ -102,7 +104,7 @@ export function canAccessRoute(
 ): boolean {
   switch (route) {
     case authRoutes.login:
-      return session === null;
+      return session === null || session?.status === 'deactivated';
     case authRoutes.profileSetup:
       return session?.status === 'profile_incomplete';
     case authRoutes.approvalWaiting:
