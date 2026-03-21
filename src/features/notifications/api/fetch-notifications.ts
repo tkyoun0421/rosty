@@ -34,6 +34,10 @@ export function notificationsQueryKey(userId: string) {
 
 function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
   if (session.role === 'employee') {
+    const confirmedSchedule = myAssignmentsSeedSource.schedules.find(
+      (schedule) => schedule.id === 'schedule-1',
+    );
+
     return {
       source: 'seed',
       sourceMessage:
@@ -41,12 +45,22 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
       items: [
         {
           id: 'seed-notification-employee-1',
+          type: 'assignment_confirmed',
+          title: 'Assignment confirmed',
+          body: `Your assignment for ${confirmedSchedule?.eventDate ?? '2026-03-22'} · ${confirmedSchedule?.memo ?? 'Grand Hall wedding'} was confirmed.`,
+          targetRoute: '/assignment-detail?scheduleId=schedule-1',
+          targetId: 'schedule-1',
+          isRead: false,
+          createdAt: '2026-03-21T09:00:00.000Z',
+        },
+        {
+          id: 'seed-notification-employee-2',
           type: 'cancellation_approved',
           title: 'Cancellation approved',
           body: 'Your cancellation request was approved.',
           targetRoute: '/assignment-detail?scheduleId=schedule-3',
           targetId: 'assignment-4',
-          isRead: false,
+          isRead: true,
           createdAt: '2026-03-20T11:00:00.000Z',
         },
       ],
