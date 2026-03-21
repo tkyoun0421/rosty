@@ -23,7 +23,7 @@ type SeedWorkspaceAssignment = {
   id: string;
   schedule_id: string;
   slot_id: string;
-  status: 'proposed' | 'confirmed';
+  status: 'proposed' | 'confirmed' | 'cancelled';
   assignee_user_id: string | null;
   guest_name: string | null;
   is_exception_case: boolean;
@@ -119,6 +119,35 @@ export function confirmWorkspaceSeedSchedule(scheduleId: string) {
     }));
 
   myAssignmentsSeedSource.assignments = [...assignmentsForSchedule, ...projected];
+}
+
+export function cancelWorkspaceSeedSchedule(scheduleId: string) {
+  let cancelledCount = 0;
+
+  workspaceSeedAssignments = workspaceSeedAssignments.map((assignment) => {
+    if (
+      assignment.schedule_id === scheduleId &&
+      (assignment.status === 'proposed' || assignment.status === 'confirmed')
+    ) {
+      const mirroredAssignment = myAssignmentsSeedSource.assignments.find(
+        (entry) =>
+          entry.id === assignment.id && entry.scheduleId === assignment.schedule_id,
+      );
+
+      if (!mirroredAssignment) {
+        cancelledCount += 1;
+      }
+
+      return {
+        ...assignment,
+        status: 'cancelled',
+      };
+    }
+
+    return assignment;
+  });
+
+  return cancelledCount;
 }
 
 export function readWorkspaceSeedSource(scheduleId: string) {

@@ -55,3 +55,7 @@ export function formatCollectionState(
 ): string {
   return state === 'open' ? 'Open' : 'Locked';
 }
+
+export function canCancelScheduleOperation(status: ScheduleStatus): boolean {
+  return status === 'collecting' || status === 'assigned';
+}

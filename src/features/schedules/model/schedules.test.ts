@@ -1,5 +1,6 @@
 import {
   buildScheduleTitle,
+  canCancelScheduleOperation,
   formatCollectionState,
   formatScheduleStatus,
 } from '@/features/schedules/model/schedules';
@@ -28,5 +29,12 @@ describe('schedule read helpers', () => {
   it('formats status and collection state labels', () => {
     expect(formatScheduleStatus('collecting')).toBe('Collecting');
     expect(formatCollectionState('locked')).toBe('Locked');
+  });
+
+  it('allows schedule cancellation only for collecting or assigned schedules', () => {
+    expect(canCancelScheduleOperation('collecting')).toBe(true);
+    expect(canCancelScheduleOperation('assigned')).toBe(true);
+    expect(canCancelScheduleOperation('completed')).toBe(false);
+    expect(canCancelScheduleOperation('cancelled')).toBe(false);
   });
 });

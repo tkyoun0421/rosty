@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,7 +20,9 @@ import {
   formatAvailabilityResponseState,
 } from '@/features/availability/model/availability-submission';
 import { useScheduleDetailQuery } from '@/features/schedules/api/fetch-schedule-detail';
+import { useScheduleCancellationMutation } from '@/features/schedules/api/use-schedule-cancellation-mutation';
 import {
+  canCancelScheduleOperation,
   formatCollectionState,
   formatScheduleStatus,
 } from '@/features/schedules/model/schedules';
@@ -56,6 +60,8 @@ export function ScheduleDetailScreen({
     scheduleId,
     session.userId,
   );
+  const cancellationMutation = useScheduleCancellationMutation(scheduleId);
+  const [isCancelConfirming, setIsCancelConfirming] = useState(false);
 
   if (detailQuery.isLoading || !detailQuery.data) {
     return (
@@ -271,6 +277,81 @@ export function ScheduleDetailScreen({
                   <Text style={styles.secondaryButtonLabel}>Open work time</Text>
                 </Pressable>
               ) : null}
+              {canCancelScheduleOperation(detail.status) ? (
+                isCancelConfirming ? (
+                  <View style={styles.warningCard}>
+                    <Text style={styles.warningTitle}>Cancel schedule</Text>
+                    <Text style={styles.warningBody}>
+                      This moves the schedule to cancelled and cancels proposed
+                      or confirmed assignments. Pending cancellation requests
+                      must be resolved first.
+                    </Text>
+                    <View style={styles.warningActions}>
+                      <Pressable
+                        accessibilityRole="button"
+                        disabled={cancellationMutation.isPending}
+                        onPress={() => {
+                          void cancellationMutation.mutateAsync().then(() => {
+                            setIsCancelConfirming(false);
+                          });
+                        }}
+                        style={[
+                          styles.primaryButton,
+                          cancellationMutation.isPending
+                            ? styles.disabledButton
+                            : null,
+                        ]}
+                      >
+                        <Text style={styles.primaryButtonLabel}>
+                          {cancellationMutation.isPending
+                            ? 'Cancelling schedule...'
+                            : 'Confirm cancellation'}
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        accessibilityRole="button"
+                        disabled={cancellationMutation.isPending}
+                        onPress={() => {
+                          setIsCancelConfirming(false);
+                        }}
+                        style={[
+                          styles.secondaryButton,
+                          cancellationMutation.isPending
+                            ? styles.disabledButton
+                            : null,
+                        ]}
+                      >
+                        <Text style={styles.secondaryButtonLabel}>
+                          Keep schedule
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                ) : (
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={cancellationMutation.isPending}
+                    onPress={() => {
+                      setIsCancelConfirming(true);
+                    }}
+                    style={[
+                      styles.primaryButton,
+                      cancellationMutation.isPending
+                        ? styles.disabledButton
+                        : null,
+                    ]}
+                  >
+                    <Text style={styles.primaryButtonLabel}>
+                      Review cancellation
+                    </Text>
+                  </Pressable>
+                )
+              ) : null}
+              {cancellationMutation.error instanceof Error ? (
+                <Text style={styles.errorText}>
+                  {cancellationMutation.error.message}
+                </Text>
+              ) : null}
             </View>
           ) : null}
         </>
@@ -418,6 +499,26 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  warningCard: {
+    borderRadius: 18,
+    backgroundColor: '#faece8',
+    padding: 14,
+    gap: 8,
+  },
+  warningTitle: {
+    color: '#7a2e1f',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  warningBody: {
+    color: '#7a2e1f',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  warningActions: {
+    flexDirection: 'row',
+    gap: 10,
   },
   errorText: {
     color: '#7a2e1f',

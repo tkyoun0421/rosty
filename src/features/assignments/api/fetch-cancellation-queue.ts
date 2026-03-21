@@ -67,28 +67,30 @@ function createSeedQueueSnapshot(message: string | null): CancellationQueueSnaps
   return {
     source: 'seed',
     sourceMessage: message,
-    items: assignmentRequestSeedSource.map((request) => {
-      const assignment = myAssignmentsSeedSource.assignments.find(
-        (entry) => entry.id === request.assignmentId,
-      )!;
-      const schedule = schedulesById.get(assignment.scheduleId)!;
-      const slot = slotsById.get(assignment.slotId)!;
+    items: assignmentRequestSeedSource
+      .filter((request) => request.status === 'requested')
+      .map((request) => {
+        const assignment = myAssignmentsSeedSource.assignments.find(
+          (entry) => entry.id === request.assignmentId,
+        )!;
+        const schedule = schedulesById.get(assignment.scheduleId)!;
+        const slot = slotsById.get(assignment.slotId)!;
 
-      return {
-        requestId: `seed-${request.assignmentId}`,
-        assignmentId: request.assignmentId,
-        requesterName: 'Mina Staff',
-        scheduleId: assignment.scheduleId,
-        scheduleTitle:
-          schedule.memo && schedule.memo.trim().length > 0
-            ? `${schedule.eventDate} · ${schedule.memo.trim()}`
-            : `${schedule.eventDate} · ${schedule.packageCount} packages`,
-        eventDate: schedule.eventDate,
-        positionName: slot.positionName,
-        reason: request.reason,
-        status: request.status,
-      };
-    }),
+        return {
+          requestId: `seed-${request.assignmentId}`,
+          assignmentId: request.assignmentId,
+          requesterName: 'Mina Staff',
+          scheduleId: assignment.scheduleId,
+          scheduleTitle:
+            schedule.memo && schedule.memo.trim().length > 0
+              ? `${schedule.eventDate} · ${schedule.memo.trim()}`
+              : `${schedule.eventDate} · ${schedule.packageCount} packages`,
+          eventDate: schedule.eventDate,
+          positionName: slot.positionName,
+          reason: request.reason,
+          status: request.status,
+        };
+      }),
   };
 }
 
