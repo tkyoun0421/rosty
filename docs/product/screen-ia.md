@@ -49,6 +49,7 @@
 - 첫 shipped `Availability` slice는 employee가 `Schedule Detail` 안에서 자신의 `available`/`unavailable` 응답만 제출/수정한다.
 - 첫 shipped `Availability Overview` slice는 manager/admin이 slot별 available/support 후보와 vacancy를 읽는 read-only 화면으로 시작한다.
 - `Assignment Detail`에서만 취소 요청을 생성할 수 있다.
+- 현재 shipped `Assignment Detail`은 schedule-level work time도 read-only로 함께 보여준다.
 - `My Assignments`는 `다가오는 일정`, `지난 일정` 탭으로 나뉜다.
 - 첫 shipped `My Assignments` slice는 shared scheduling read schema를 기준으로 같은 일정의 다중 포지션을 하나의 일정 카드로 묶어 보여준다.
 - 첫 shipped `Assignment Detail` slice는 grouped schedule 안의 포지션별 assignment를 보여주고, `confirmed` 상태 포지션에만 개별 취소 요청을 보낸다.

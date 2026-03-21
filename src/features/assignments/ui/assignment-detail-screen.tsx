@@ -11,6 +11,11 @@ import {
   formatCancellationRequestStatus,
 } from '@/features/assignments/model/assignment-detail';
 import { formatAssignmentStatus } from '@/features/assignments/model/my-assignments';
+import { useWorkTimeQuery } from '@/features/work-time/api/fetch-work-time';
+import {
+  formatWorkTimeStatus,
+  formatWorkTimeValue,
+} from '@/features/work-time/model/work-time';
 
 type AssignmentDetailScreenProps = {
   session: AuthSession;
@@ -25,6 +30,7 @@ export function AssignmentDetailScreen({
 }: AssignmentDetailScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const detailQuery = useAssignmentDetailQuery(session.userId, scheduleId);
+  const workTimeQuery = useWorkTimeQuery(scheduleId);
   const mutation = useAssignmentCancellationMutation(session.userId, scheduleId);
   const [reasons, setReasons] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<string | null>(null);
@@ -95,6 +101,42 @@ export function AssignmentDetailScreen({
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{detail.title}</Text>
             <Text style={styles.sectionBody}>Event date {detail.eventDate}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Work time</Text>
+            {workTimeQuery.isLoading ? (
+              <Text style={styles.sectionBody}>
+                Loading the current schedule-level work time record.
+              </Text>
+            ) : !workTimeQuery.data?.record ? (
+              <Text style={styles.sectionBody}>
+                No planned or actual work time has been recorded for this
+                schedule yet.
+              </Text>
+            ) : (
+              <View style={styles.workTimeCard}>
+                <Text style={styles.workTimeTitle}>
+                  {formatWorkTimeStatus(workTimeQuery.data.record.status)}
+                </Text>
+                <Text style={styles.workTimeBody}>
+                  Planned start{' '}
+                  {formatWorkTimeValue(workTimeQuery.data.record.plannedStartAt)}
+                </Text>
+                <Text style={styles.workTimeBody}>
+                  Planned end{' '}
+                  {formatWorkTimeValue(workTimeQuery.data.record.plannedEndAt)}
+                </Text>
+                <Text style={styles.workTimeBody}>
+                  Actual start{' '}
+                  {formatWorkTimeValue(workTimeQuery.data.record.actualStartAt)}
+                </Text>
+                <Text style={styles.workTimeBody}>
+                  Actual end{' '}
+                  {formatWorkTimeValue(workTimeQuery.data.record.actualEndAt)}
+                </Text>
+              </View>
+            )}
           </View>
 
           {notice ? <NoticeCard title="Request sent" body={notice} /> : null}
@@ -312,6 +354,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff8ef',
     padding: 14,
     gap: 4,
+  },
+  workTimeCard: {
+    borderRadius: 16,
+    backgroundColor: '#efe0c8',
+    padding: 14,
+    gap: 6,
+  },
+  workTimeTitle: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  workTimeBody: {
+    color: '#44514c',
+    fontSize: 13,
+    lineHeight: 18,
   },
   requestTitle: {
     color: '#14342b',

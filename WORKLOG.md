@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Schedule cancellation slice.
+Pending the next locked staffing or scheduling feature after completing the Employee work-time read slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-cancellation-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-cancellation-slice/plan.md`
+- Archive summary: `docs/development-plans/employee-work-time-read-slice/summary.md`
+- Archive plan: `docs/development-plans/employee-work-time-read-slice/plan.md`
 
 ## Last Completed
 
-Completed the Schedule cancellation slice:
+Completed the Employee work-time read slice:
 
-- Added `supabase/migrations/20260321133000_cancel_schedule_operation_rpc.sql` for the limited schedule-cancellation path.
-- Added the schedule cancellation API, seed fallback, and inline `Schedule Detail` action so collecting or assigned schedules can be cancelled.
-- Updated IA/worklog references for the richer scheduling interruption flow.
+- Added read-only work-time display helpers under `src/features/work-time/model/`.
+- Updated `src/features/assignments/ui/assignment-detail-screen.tsx` so employees can review schedule-level planned and actual work time.
+- Updated IA/worklog references for the richer employee assignment detail flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Schedule cancellation slice task on 2026-03-21.
+- Completed the Employee work-time read slice task on 2026-03-21.

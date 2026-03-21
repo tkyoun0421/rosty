@@ -1,6 +1,8 @@
 import {
   canCompleteScheduleOperation,
   createWorkTimeFormValues,
+  formatWorkTimeStatus,
+  formatWorkTimeValue,
   validateWorkTimeForm,
 } from '@/features/work-time/model/work-time';
 
@@ -61,5 +63,13 @@ describe('work time helpers', () => {
         actualEndAt: '2026-03-22T18:20:00.000Z',
       }),
     ).toBe(false);
+  });
+
+  it('formats read-only work-time status and nullable values', () => {
+    expect(formatWorkTimeStatus('actual_recorded')).toBe('Actual recorded');
+    expect(formatWorkTimeValue('2026-03-22T10:10:00.000Z')).toBe(
+      '2026-03-22T10:10:00.000Z',
+    );
+    expect(formatWorkTimeValue(null)).toBe('Not recorded');
   });
 });

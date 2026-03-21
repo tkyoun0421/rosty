@@ -36,6 +36,21 @@ export function canCompleteScheduleOperation(input: {
   );
 }
 
+export function formatWorkTimeStatus(status: WorkTimeStatus): string {
+  switch (status) {
+    case 'planned':
+      return 'Planned';
+    case 'actual_recorded':
+      return 'Actual recorded';
+    case 'corrected':
+      return 'Corrected';
+  }
+}
+
+export function formatWorkTimeValue(value: string | null): string {
+  return value && value.trim().length > 0 ? value : 'Not recorded';
+}
+
 export function createWorkTimeFormValues(record: WorkTimeRecord | null): WorkTimeFormValues {
   return {
     plannedStartAt: record?.plannedStartAt ?? '',
