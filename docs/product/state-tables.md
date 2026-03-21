@@ -20,6 +20,7 @@
 - `manager`는 사용자 상태를 변경할 수 없다.
 - 마지막 남은 `admin`은 `suspended` 또는 `deactivated`로 전환할 수 없다.
 - 사용자는 설정 화면에서 본인 계정을 `deactivated` 상태로 전환할 수 있다.
+- 단, `다가오는 confirmed assignment`가 남아 있으면 먼저 취소 요청 절차를 진행해야 한다.
 
 ## 3. InvitationLinkState
 

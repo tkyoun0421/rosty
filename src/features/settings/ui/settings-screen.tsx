@@ -10,6 +10,7 @@ import {
   validateProfileSetup,
   type ProfileSetupFieldErrors,
 } from '@/features/auth/model/profile-setup';
+import { useDeactivateAccountMutation } from '@/features/settings/api/use-deactivate-account-mutation';
 import { useSettingsProfileQuery } from '@/features/settings/api/fetch-settings-profile';
 import { useSettingsProfileMutation } from '@/features/settings/api/use-settings-profile-mutation';
 import { createSettingsProfileFormValues } from '@/features/settings/model/settings-profile';
@@ -26,11 +27,17 @@ export function SettingsScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const profileQuery = useSettingsProfileQuery(session.userId);
   const mutation = useSettingsProfileMutation(session);
+  const deactivateMutation = useDeactivateAccountMutation(session);
   const [formValues, setFormValues] = useState(
     createSettingsProfileFormValues(null, session.displayName),
   );
   const [fieldErrors, setFieldErrors] = useState<ProfileSetupFieldErrors>({});
-  const [notice, setNotice] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{
+    kind: 'success' | 'error';
+    body: string;
+  } | null>(null);
+  const [isDeactivateConfirming, setIsDeactivateConfirming] = useState(false);
+  const isBusy = mutation.isPending || deactivateMutation.isPending;
 
   useEffect(() => {
     if (!profileQuery.data) {
@@ -53,9 +60,32 @@ export function SettingsScreen({
 
     try {
       await mutation.mutateAsync(result.data);
-      setNotice('Profile updated.');
+      setNotice({
+        kind: 'success',
+        body: 'Profile updated.',
+      });
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : 'Could not update profile.');
+      setNotice({
+        kind: 'error',
+        body:
+          error instanceof Error ? error.message : 'Could not update profile.',
+      });
+    }
+  }
+
+  async function handleDeactivate() {
+    setNotice(null);
+
+    try {
+      await deactivateMutation.mutateAsync();
+    } catch (error) {
+      setNotice({
+        kind: 'error',
+        body:
+          error instanceof Error
+            ? error.message
+            : 'Could not deactivate the account.',
+      });
     }
   }
 
@@ -121,10 +151,93 @@ export function SettingsScreen({
           </View>
         </View>
 
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Session</Text>
+          <Text style={styles.sectionBody}>
+            End the current session without changing your account status.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            disabled={isBusy}
+            onPress={() => {
+              void signOut();
+            }}
+            style={[styles.secondaryButton, isBusy ? styles.disabledButton : null]}
+          >
+            <Text style={styles.secondaryButtonLabel}>Sign out</Text>
+          </Pressable>
+        </View>
+
+        <View style={[styles.section, styles.dangerSection]}>
+          <Text style={styles.dangerTitle}>Deactivate account</Text>
+          <Text style={styles.sectionBody}>
+            This keeps past operating data, signs you out, and is blocked while
+            upcoming confirmed assignments still belong to you.
+          </Text>
+          {isDeactivateConfirming ? (
+            <View style={styles.buttonRow}>
+              <Pressable
+                accessibilityRole="button"
+                disabled={isBusy}
+                onPress={() => {
+                  void handleDeactivate();
+                }}
+                style={[
+                  styles.dangerButton,
+                  styles.buttonGrow,
+                  isBusy ? styles.disabledButton : null,
+                ]}
+              >
+                <Text style={styles.dangerButtonLabel}>
+                  {deactivateMutation.isPending
+                    ? 'Deactivating...'
+                    : 'Confirm deactivation'}
+                </Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                disabled={isBusy}
+                onPress={() => {
+                  setIsDeactivateConfirming(false);
+                }}
+                style={[
+                  styles.secondaryButton,
+                  styles.buttonGrow,
+                  isBusy ? styles.disabledButton : null,
+                ]}
+              >
+                <Text style={styles.secondaryButtonLabel}>Keep account</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable
+              accessibilityRole="button"
+              disabled={isBusy}
+              onPress={() => {
+                setNotice(null);
+                setIsDeactivateConfirming(true);
+              }}
+              style={[
+                styles.dangerButton,
+                isBusy ? styles.disabledButton : null,
+              ]}
+            >
+              <Text style={styles.dangerButtonLabel}>Review deactivation</Text>
+            </Pressable>
+          )}
+        </View>
+
         {notice ? (
           <View style={styles.noticeCard}>
             <Text style={styles.noticeTitle}>Settings</Text>
-            <Text style={styles.noticeBody}>{notice}</Text>
+            <Text
+              style={[
+                styles.noticeBody,
+                notice.kind === 'error' ? styles.noticeBodyError : null,
+              ]}
+            >
+              {notice.body}
+            </Text>
           </View>
         ) : null}
 
@@ -132,30 +245,25 @@ export function SettingsScreen({
           <Pressable
             accessibilityRole="button"
             onPress={onBackHome}
-            style={styles.secondaryButton}
+            style={[styles.secondaryButton, styles.buttonGrow]}
           >
             <Text style={styles.secondaryButtonLabel}>Back home</Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            disabled={mutation.isPending}
+            disabled={isBusy}
             onPress={() => {
               void handleSave();
             }}
-            style={[styles.primaryButton, mutation.isPending ? styles.disabledButton : null]}
+            style={[
+              styles.primaryButton,
+              styles.buttonGrow,
+              isBusy ? styles.disabledButton : null,
+            ]}
           >
             <Text style={styles.primaryButtonLabel}>
               {mutation.isPending ? 'Saving...' : 'Save profile'}
             </Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              void signOut();
-            }}
-            style={styles.secondaryButton}
-          >
-            <Text style={styles.secondaryButtonLabel}>Sign out</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -236,6 +344,16 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 12,
   },
+  sectionTitle: {
+    color: '#14342b',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  sectionBody: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 21,
+  },
   fieldGroup: {
     gap: 6,
   },
@@ -282,7 +400,7 @@ const styles = StyleSheet.create({
   },
   noticeCard: {
     borderRadius: 18,
-    backgroundColor: '#d8e5de',
+    backgroundColor: '#efe7dc',
     padding: 14,
     gap: 4,
   },
@@ -296,9 +414,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
+  noticeBodyError: {
+    color: '#7a2e1f',
+  },
   footerActions: {
     flexDirection: 'row',
     gap: 10,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  buttonGrow: {
+    flex: 1,
   },
   primaryButton: {
     borderRadius: 999,
@@ -306,7 +434,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     alignItems: 'center',
-    flex: 1,
   },
   primaryButtonLabel: {
     color: '#fff8ef',
@@ -319,10 +446,29 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     alignItems: 'center',
-    flex: 1,
   },
   secondaryButtonLabel: {
     color: '#2d2720',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  dangerSection: {
+    backgroundColor: '#faece8',
+  },
+  dangerTitle: {
+    color: '#7a2e1f',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  dangerButton: {
+    borderRadius: 999,
+    backgroundColor: '#8f2f24',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  dangerButtonLabel: {
+    color: '#fff8ef',
     fontSize: 15,
     fontWeight: '800',
   },
