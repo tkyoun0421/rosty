@@ -1,10 +1,16 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useMyPayrollQuery } from '@/features/payroll/api/fetch-my-payroll';
-import { formatEstimatedPay } from '@/features/payroll/model/team-payroll';
+import {
+  filterTeamPayrollMemberEstimate,
+  formatEstimatedPay,
+  type PayrollShiftTab,
+} from '@/features/payroll/model/team-payroll';
 
 type MyPayrollScreenProps = {
   session: AuthSession;
@@ -17,6 +23,7 @@ export function MyPayrollScreen({
 }: MyPayrollScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const payrollQuery = useMyPayrollQuery(session.userId);
+  const [tab, setTab] = useState<PayrollShiftTab>('all');
 
   if (payrollQuery.isLoading || !payrollQuery.data) {
     return (
@@ -33,7 +40,9 @@ export function MyPayrollScreen({
   }
 
   const snapshot = payrollQuery.data;
-  const member = snapshot.member;
+  const member = snapshot.member
+    ? filterTeamPayrollMemberEstimate(snapshot.member, tab)
+    : null;
 
   return (
     <PayrollFrame
@@ -52,10 +61,34 @@ export function MyPayrollScreen({
         }
       />
 
+      {snapshot.member ? (
+        <View style={styles.tabRow}>
+          <TabButton
+            active={tab === 'all'}
+            label={`All (${snapshot.member.shifts.length})`}
+            onPress={() => setTab('all')}
+          />
+          <TabButton
+            active={tab === 'estimated'}
+            label={`Estimated (${snapshot.member.estimatedShiftCount})`}
+            onPress={() => setTab('estimated')}
+          />
+          <TabButton
+            active={tab === 'pending'}
+            label={`Pending (${snapshot.member.pendingScheduleCount})`}
+            onPress={() => setTab('pending')}
+          />
+        </View>
+      ) : null}
+
       {!member ? (
         <NoticeCard
           title="No payroll estimate yet"
-          body="Your assignments do not have enough confirmed work-time data yet for a personal estimate."
+          body={
+            snapshot.member
+              ? 'No shift estimates matched the selected payroll tab.'
+              : 'Your assignments do not have enough confirmed work-time data yet for a personal estimate.'
+          }
         />
       ) : (
         <>
@@ -183,6 +216,30 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
   );
 }
 
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -237,6 +294,27 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
   },
   summaryGrid: {
     flexDirection: 'row',

@@ -85,6 +85,8 @@ export type TeamPayrollSnapshot = {
   members: TeamPayrollMemberEstimate[];
 };
 
+export type PayrollShiftTab = 'all' | 'estimated' | 'pending';
+
 function isPayrollEligibleAssignment(status: TeamPayrollAssignmentStatus): boolean {
   return status !== 'proposed' && status !== 'cancelled';
 }
@@ -108,6 +110,90 @@ function diffMinutes(startAt: string, endAt: string): number | null {
 
 export function formatEstimatedPay(value: number): string {
   return `KRW ${value.toLocaleString('en-US')}`;
+}
+
+export function filterTeamPayrollSnapshot(
+  snapshot: TeamPayrollSnapshot,
+  tab: PayrollShiftTab,
+): TeamPayrollSnapshot {
+  const members = snapshot.members
+    .map((member) => filterTeamPayrollMemberEstimate(member, tab))
+    .filter((member): member is TeamPayrollMemberEstimate => member !== null);
+
+  return {
+    policy: snapshot.policy,
+    summary: {
+      totalEstimatedPay: members.reduce(
+        (total, member) => total + member.totalEstimatedPay,
+        0,
+      ),
+      regularPayTotal: members.reduce(
+        (total, member) => total + member.totalRegularPay,
+        0,
+      ),
+      overtimePayTotal: members.reduce(
+        (total, member) => total + member.totalOvertimePay,
+        0,
+      ),
+      estimatedMemberCount: members.length,
+      missingActualTimeCount: members.reduce(
+        (total, member) => total + member.pendingScheduleCount,
+        0,
+      ),
+      overtimeShiftCount: members.reduce(
+        (total, member) =>
+          total +
+          member.shifts.filter((shift) => shift.overtimeMinutes > 0).length,
+        0,
+      ),
+      scheduleCount: members.reduce(
+        (total, member) => total + member.shifts.length,
+        0,
+      ),
+    },
+    members,
+  };
+}
+
+export function filterTeamPayrollMemberEstimate(
+  member: TeamPayrollMemberEstimate,
+  tab: PayrollShiftTab,
+): TeamPayrollMemberEstimate | null {
+  const shifts =
+    tab === 'all'
+      ? member.shifts
+      : member.shifts.filter((shift) =>
+          tab === 'estimated'
+            ? shift.status === 'estimated'
+            : shift.status === 'missing_actual_time',
+        );
+
+  if (shifts.length === 0) {
+    return null;
+  }
+
+  return {
+    ...member,
+    totalEstimatedPay: shifts.reduce(
+      (total, shift) => total + shift.estimatedPay,
+      0,
+    ),
+    totalRegularPay: shifts.reduce((total, shift) => total + shift.regularPay, 0),
+    totalOvertimePay: shifts.reduce(
+      (total, shift) => total + shift.overtimePay,
+      0,
+    ),
+    totalMinutes: shifts.reduce(
+      (total, shift) => total + (shift.durationMinutes ?? 0),
+      0,
+    ),
+    estimatedShiftCount: shifts.filter((shift) => shift.status === 'estimated')
+      .length,
+    pendingScheduleCount: shifts.filter(
+      (shift) => shift.status === 'missing_actual_time',
+    ).length,
+    shifts,
+  };
 }
 
 export function createTeamPayrollSnapshot(

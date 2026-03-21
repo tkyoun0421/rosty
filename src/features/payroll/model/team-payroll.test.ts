@@ -1,5 +1,7 @@
 import {
   createTeamPayrollSnapshot,
+  filterTeamPayrollMemberEstimate,
+  filterTeamPayrollSnapshot,
   formatEstimatedPay,
   type TeamPayrollSource,
 } from '@/features/payroll/model/team-payroll';
@@ -128,5 +130,27 @@ describe('team payroll snapshot', () => {
 
   it('formats estimated pay for display', () => {
     expect(formatEstimatedPay(253000)).toBe('KRW 253,000');
+  });
+
+  it('filters the shared snapshot by estimated or pending shifts', () => {
+    const snapshot = createTeamPayrollSnapshot(createSource());
+    const pendingSnapshot = filterTeamPayrollSnapshot(snapshot, 'pending');
+    const estimatedSnapshot = filterTeamPayrollSnapshot(snapshot, 'estimated');
+
+    expect(pendingSnapshot.members).toHaveLength(1);
+    expect(pendingSnapshot.summary.missingActualTimeCount).toBe(1);
+    expect(pendingSnapshot.summary.totalEstimatedPay).toBe(0);
+    expect(estimatedSnapshot.summary.scheduleCount).toBe(2);
+    expect(estimatedSnapshot.summary.totalEstimatedPay).toBe(253000);
+  });
+
+  it('filters a single member estimate down to the visible shifts', () => {
+    const snapshot = createTeamPayrollSnapshot(createSource());
+    const mina = snapshot.members.find((member) => member.memberId === 'member-1')!;
+    const pendingOnly = filterTeamPayrollMemberEstimate(mina, 'pending');
+
+    expect(pendingOnly?.shifts).toHaveLength(1);
+    expect(pendingOnly?.pendingScheduleCount).toBe(1);
+    expect(pendingOnly?.totalEstimatedPay).toBe(0);
   });
 });

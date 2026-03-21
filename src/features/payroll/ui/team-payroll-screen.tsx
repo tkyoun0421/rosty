@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -5,7 +7,9 @@ import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useTeamPayrollQuery } from '@/features/payroll/api/fetch-team-payroll';
 import {
+  filterTeamPayrollSnapshot,
   formatEstimatedPay,
+  type PayrollShiftTab,
   type TeamPayrollMemberEstimate,
 } from '@/features/payroll/model/team-payroll';
 
@@ -22,6 +26,7 @@ export function TeamPayrollScreen({
 }: TeamPayrollScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const payrollQuery = useTeamPayrollQuery();
+  const [tab, setTab] = useState<PayrollShiftTab>('all');
 
   if (payrollQuery.isLoading || !payrollQuery.data) {
     return (
@@ -54,6 +59,7 @@ export function TeamPayrollScreen({
   }
 
   const snapshot = payrollQuery.data;
+  const visibleSnapshot = filterTeamPayrollSnapshot(snapshot, tab);
 
   return (
     <PayrollFrame
@@ -73,30 +79,48 @@ export function TeamPayrollScreen({
         }
       />
 
+      <View style={styles.tabRow}>
+        <TabButton
+          active={tab === 'all'}
+          label={`All (${snapshot.summary.scheduleCount})`}
+          onPress={() => setTab('all')}
+        />
+        <TabButton
+          active={tab === 'estimated'}
+          label={`Estimated (${snapshot.summary.scheduleCount - snapshot.summary.missingActualTimeCount})`}
+          onPress={() => setTab('estimated')}
+        />
+        <TabButton
+          active={tab === 'pending'}
+          label={`Pending (${snapshot.summary.missingActualTimeCount})`}
+          onPress={() => setTab('pending')}
+        />
+      </View>
+
       <View style={styles.summaryGrid}>
         <SummaryCard
           label="Estimated payout"
-          value={formatEstimatedPay(snapshot.summary.totalEstimatedPay)}
+          value={formatEstimatedPay(visibleSnapshot.summary.totalEstimatedPay)}
         />
         <SummaryCard
           label="Regular pay"
-          value={formatEstimatedPay(snapshot.summary.regularPayTotal)}
+          value={formatEstimatedPay(visibleSnapshot.summary.regularPayTotal)}
         />
         <SummaryCard
           label="Overtime pay"
-          value={formatEstimatedPay(snapshot.summary.overtimePayTotal)}
+          value={formatEstimatedPay(visibleSnapshot.summary.overtimePayTotal)}
         />
         <SummaryCard
           label="Members"
-          value={String(snapshot.summary.estimatedMemberCount)}
+          value={String(visibleSnapshot.summary.estimatedMemberCount)}
         />
         <SummaryCard
           label="Missing time"
-          value={String(snapshot.summary.missingActualTimeCount)}
+          value={String(visibleSnapshot.summary.missingActualTimeCount)}
         />
         <SummaryCard
           label="Overtime shifts"
-          value={String(snapshot.summary.overtimeShiftCount)}
+          value={String(visibleSnapshot.summary.overtimeShiftCount)}
         />
       </View>
 
@@ -115,9 +139,16 @@ export function TeamPayrollScreen({
           Duplicate assignments inside the same schedule are counted once for time,
           cancelled assignments are excluded, and schedules without actual time stay pending.
         </Text>
-        {snapshot.members.map((member) => (
-          <MemberEstimateCard key={member.memberId} member={member} />
-        ))}
+        {visibleSnapshot.members.length === 0 ? (
+          <NoticeCard
+            title="No payroll items in this view"
+            body="Switch the payroll tab to see a different subset of shifts."
+          />
+        ) : (
+          visibleSnapshot.members.map((member) => (
+            <MemberEstimateCard key={member.memberId} member={member} />
+          ))
+        )}
       </View>
 
       <View style={styles.footerActions}>
@@ -202,6 +233,30 @@ function ErrorCard({ title, body }: { title: string; body: string }) {
       <Text style={styles.errorTitle}>{title}</Text>
       <Text style={styles.errorBody}>{body}</Text>
     </View>
+  );
+}
+
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -327,6 +382,27 @@ const styles = StyleSheet.create({
     color: '#5b3329',
     fontSize: 14,
     lineHeight: 20,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
   },
   summaryGrid: {
     flexDirection: 'row',

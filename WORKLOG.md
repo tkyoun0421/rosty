@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Payroll breakdown slice.
+Pending the next locked staffing or scheduling feature after completing the Payroll filter-tabs slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/payroll-breakdown-slice/summary.md`
-- Archive plan: `docs/development-plans/payroll-breakdown-slice/plan.md`
+- Archive summary: `docs/development-plans/payroll-filter-tabs-slice/summary.md`
+- Archive plan: `docs/development-plans/payroll-filter-tabs-slice/plan.md`
 
 ## Last Completed
 
-Completed the Payroll breakdown slice:
+Completed the Payroll filter-tabs slice:
 
-- Extended the shared payroll snapshot model with regular/overtime pay breakdown fields.
-- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` to display the new breakdown values.
-- Updated worklog archive references for the richer payroll read flow.
+- Added view-layer payroll filter helpers for `all`, `estimated`, and `pending actual time`.
+- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with top tabs and filtered summaries.
+- Updated worklog archive references for the richer payroll navigation flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Payroll breakdown slice task on 2026-03-21.
+- Completed the Payroll filter-tabs slice task on 2026-03-21.
