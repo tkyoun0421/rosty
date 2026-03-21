@@ -45,6 +45,7 @@ describe('assignment workspace snapshot', () => {
           assigneeUserId: 'employee-1',
           assigneeName: 'Mina Staff',
           guestName: null,
+          isExceptionCase: false,
         },
       ],
     });
@@ -53,6 +54,65 @@ describe('assignment workspace snapshot', () => {
     expect(snapshot?.slots[0]?.availableCandidates).toHaveLength(1);
     expect(snapshot?.slots[0]?.vacancyCount).toBe(1);
     expect(snapshot?.canConfirm).toBe(true);
+  });
+
+  it('marks candidates already assigned elsewhere as requiring an exception', () => {
+    const snapshot = createAssignmentWorkspaceSnapshot({
+      schedule: {
+        id: 'schedule-1',
+        title: '2026-03-22 · Grand Hall wedding',
+        eventDate: '2026-03-22',
+        scheduleStatus: 'collecting',
+        collectionState: 'open',
+      },
+      slots: [
+        {
+          id: 'slot-1',
+          positionName: 'Bride room',
+          headcount: 1,
+          requiredGender: 'female',
+          isEnabled: true,
+        },
+        {
+          id: 'slot-2',
+          positionName: 'Reception',
+          headcount: 1,
+          requiredGender: 'female',
+          isEnabled: true,
+        },
+      ],
+      employees: [
+        {
+          id: 'employee-1',
+          fullName: 'Mina Staff',
+          gender: 'female',
+        },
+      ],
+      submissions: [
+        {
+          userId: 'employee-1',
+          status: 'available',
+        },
+      ],
+      assignments: [
+        {
+          id: 'assignment-1',
+          slotId: 'slot-1',
+          status: 'proposed',
+          assigneeUserId: 'employee-1',
+          assigneeName: 'Mina Staff',
+          guestName: null,
+          isExceptionCase: false,
+        },
+      ],
+    });
+
+    expect(snapshot?.slots[1]?.availableCandidates[0]?.requiresException).toBe(
+      true,
+    );
+    expect(
+      snapshot?.slots[1]?.availableCandidates[0]?.existingAssignmentCount,
+    ).toBe(1);
   });
 
   it('disables edit/confirm when the schedule is already assigned', () => {

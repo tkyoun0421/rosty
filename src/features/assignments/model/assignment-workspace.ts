@@ -10,6 +10,8 @@ export type AssignmentWorkspaceCandidate = {
   fullName: string;
   gender: 'male' | 'female' | 'unspecified';
   responseState: AssignmentWorkspaceResponseState;
+  existingAssignmentCount: number;
+  requiresException: boolean;
 };
 
 export type AssignmentWorkspaceSeat = {
@@ -19,6 +21,7 @@ export type AssignmentWorkspaceSeat = {
   assigneeUserId: string | null;
   assigneeName: string | null;
   guestName: string | null;
+  isExceptionCase: boolean;
 };
 
 export type AssignmentWorkspaceSlot = {
@@ -75,6 +78,7 @@ type Input = {
     assigneeUserId: string | null;
     assigneeName: string | null;
     guestName: string | null;
+    isExceptionCase: boolean;
   }[];
 };
 
@@ -115,6 +119,18 @@ export function createAssignmentWorkspaceSnapshot(
   const submissionsByUserId = new Map(
     input.submissions.map((submission) => [submission.userId, submission.status]),
   );
+  const assignmentCountByUserId = new Map<string, number>();
+
+  for (const assignment of input.assignments) {
+    if (!assignment.assigneeUserId) {
+      continue;
+    }
+
+    assignmentCountByUserId.set(
+      assignment.assigneeUserId,
+      (assignmentCountByUserId.get(assignment.assigneeUserId) ?? 0) + 1,
+    );
+  }
 
   const slots = input.slots
     .filter((slot) => slot.isEnabled)
@@ -137,6 +153,7 @@ export function createAssignmentWorkspaceSnapshot(
             ? employeeById.get(assignment.assigneeUserId)?.fullName ?? assignment.assigneeName
             : assignment?.assigneeName ?? null,
           guestName: assignment?.guestName ?? null,
+          isExceptionCase: assignment?.isExceptionCase ?? false,
         });
       }
 
@@ -155,6 +172,9 @@ export function createAssignmentWorkspaceSnapshot(
           fullName: employee.fullName,
           gender: employee.gender,
           responseState,
+          existingAssignmentCount: assignmentCountByUserId.get(employee.id) ?? 0,
+          requiresException:
+            (assignmentCountByUserId.get(employee.id) ?? 0) > 0,
         };
 
         if (responseState === 'available') {

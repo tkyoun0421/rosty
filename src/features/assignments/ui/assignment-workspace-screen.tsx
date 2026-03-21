@@ -30,6 +30,11 @@ export function AssignmentWorkspaceScreen({
   const confirmMutation = useConfirmScheduleAssignmentsMutation(scheduleId);
   const [guestDrafts, setGuestDrafts] = useState<Record<string, string>>({});
   const [notice, setNotice] = useState<string | null>(null);
+  const [exceptionDraft, setExceptionDraft] = useState<{
+    slotId: string;
+    candidateUserId: string;
+    candidateName: string;
+  } | null>(null);
 
   if (workspaceQuery.isLoading || !workspaceQuery.data) {
     return (
@@ -109,6 +114,9 @@ export function AssignmentWorkspaceScreen({
                         : 'No draft yet'}
                   </Text>
                   <Text style={styles.seatBody}>Status {seat.status}</Text>
+                  {seat.isExceptionCase ? (
+                    <Text style={styles.exceptionBody}>Exception case enabled</Text>
+                  ) : null}
                   {seat.assignmentId ? (
                     <Pressable
                       accessibilityRole="button"
@@ -145,14 +153,26 @@ export function AssignmentWorkspaceScreen({
                         return;
                       }
 
+                      if (candidate.requiresException) {
+                        setExceptionDraft({
+                          slotId: slot.slotId,
+                          candidateUserId: candidate.userId,
+                          candidateName: candidate.fullName,
+                        });
+                        setNotice(null);
+                        return;
+                      }
+
                       void saveDraftMutation.mutateAsync({
                         scheduleId: workspace.scheduleId,
                         slotId: slot.slotId,
                         assignmentId: openSeat.assignmentId,
                         assigneeUserId: candidate.userId,
                         guestName: null,
+                        isExceptionCase: false,
                         actorUserId: session.userId,
                       });
+                      setExceptionDraft(null);
                     }}
                     style={[
                       styles.secondaryButton,
@@ -162,10 +182,83 @@ export function AssignmentWorkspaceScreen({
                     ]}
                   >
                     <Text style={styles.secondaryButtonLabel}>
-                      {candidate.fullName}
+                      {candidate.requiresException
+                        ? `${candidate.fullName} · Exception required`
+                        : candidate.fullName}
                     </Text>
                   </Pressable>
                 ))}
+                {exceptionDraft?.slotId === slot.slotId ? (
+                  <View style={styles.exceptionCard}>
+                    <Text style={styles.exceptionTitle}>
+                      Duplicate assignment exception
+                    </Text>
+                    <Text style={styles.exceptionBody}>
+                      {exceptionDraft.candidateName} is already assigned on this
+                      schedule. Confirm the override only for explicit
+                      operational exception cases.
+                    </Text>
+                    <View style={styles.exceptionActions}>
+                      <Pressable
+                        accessibilityRole="button"
+                        disabled={
+                          !workspace.canEdit ||
+                          saveDraftMutation.isPending ||
+                          !openSeat
+                        }
+                        onPress={() => {
+                          if (!openSeat) {
+                            return;
+                          }
+
+                          void saveDraftMutation
+                            .mutateAsync({
+                              scheduleId: workspace.scheduleId,
+                              slotId: slot.slotId,
+                              assignmentId: openSeat.assignmentId,
+                              assigneeUserId:
+                                exceptionDraft.candidateUserId,
+                              guestName: null,
+                              isExceptionCase: true,
+                              actorUserId: session.userId,
+                            })
+                            .then(() => {
+                              setExceptionDraft(null);
+                            });
+                        }}
+                        style={[
+                          styles.primaryButton,
+                          !workspace.canEdit ||
+                          saveDraftMutation.isPending ||
+                          !openSeat
+                            ? styles.disabledButton
+                            : null,
+                        ]}
+                      >
+                        <Text style={styles.primaryButtonLabel}>
+                          {saveDraftMutation.isPending
+                            ? 'Saving exception...'
+                            : 'Allow exception'}
+                        </Text>
+                      </Pressable>
+                      <Pressable
+                        accessibilityRole="button"
+                        disabled={saveDraftMutation.isPending}
+                        onPress={() => {
+                          setExceptionDraft(null);
+                        }}
+                        style={[
+                          styles.secondaryButton,
+                          saveDraftMutation.isPending
+                            ? styles.disabledButton
+                            : null,
+                        ]}
+                      >
+                        <Text style={styles.secondaryButtonLabel}>Cancel</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                ) : null}
               </View>
 
               <View style={styles.groupSection}>
@@ -200,8 +293,10 @@ export function AssignmentWorkspaceScreen({
                       assignmentId: openSeat.assignmentId,
                       assigneeUserId: null,
                       guestName: guestDrafts[slot.slotId] ?? '',
+                      isExceptionCase: false,
                       actorUserId: session.userId,
                     });
+                    setExceptionDraft(null);
                   }}
                   style={[
                     styles.secondaryButton,
@@ -408,6 +503,26 @@ const styles = StyleSheet.create({
   },
   groupSection: {
     gap: 8,
+  },
+  exceptionCard: {
+    borderRadius: 16,
+    backgroundColor: '#faece8',
+    padding: 14,
+    gap: 8,
+  },
+  exceptionTitle: {
+    color: '#7a2e1f',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  exceptionBody: {
+    color: '#7a2e1f',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  exceptionActions: {
+    flexDirection: 'row',
+    gap: 10,
   },
   groupTitle: {
     color: '#14342b',

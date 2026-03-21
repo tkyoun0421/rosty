@@ -49,6 +49,7 @@ type AssignmentRow = {
   status: 'proposed' | 'confirmed' | 'cancel_requested' | 'cancelled' | 'completed';
   assignee_user_id: string | null;
   guest_name: string | null;
+  is_exception_case: boolean;
 };
 
 export function assignmentWorkspaceQueryKey(scheduleId: string) {
@@ -98,6 +99,7 @@ function createSeedWorkspace(scheduleId: string, message: string | null): Assign
               ?.full_name ?? null
           : null,
         guestName: assignment.guest_name,
+        isExceptionCase: assignment.is_exception_case,
       })),
     }),
   };
@@ -136,7 +138,7 @@ async function fetchLiveWorkspace(scheduleId: string): Promise<AssignmentWorkspa
         .returns<AvailabilitySubmissionRow[]>(),
       supabaseClient
         .from('assignments')
-        .select('id, slot_id, status, assignee_user_id, guest_name')
+        .select('id, slot_id, status, assignee_user_id, guest_name, is_exception_case')
         .eq('schedule_id', scheduleId)
         .returns<AssignmentRow[]>(),
     ]);
@@ -194,6 +196,7 @@ async function fetchLiveWorkspace(scheduleId: string): Promise<AssignmentWorkspa
           ? (profilesResult.data ?? []).find((profile) => profile.id === assignment.assignee_user_id)?.full_name ?? null
           : null,
         guestName: assignment.guest_name,
+        isExceptionCase: assignment.is_exception_case,
       })),
     }),
   };

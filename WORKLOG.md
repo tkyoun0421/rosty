@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Availability Collection toggle slice.
+Pending the next locked staffing or scheduling feature after completing the Assignment exception slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/availability-collection-toggle-slice/summary.md`
-- Archive plan: `docs/development-plans/availability-collection-toggle-slice/plan.md`
+- Archive summary: `docs/development-plans/assignment-exception-slice/summary.md`
+- Archive plan: `docs/development-plans/assignment-exception-slice/plan.md`
 
 ## Last Completed
 
-Completed the Availability Collection toggle slice:
+Completed the Assignment exception slice:
 
-- Added the collection-state helpers and update mutation path under `src/features/availability/`.
-- Updated `src/features/schedules/ui/schedule-detail-screen.tsx` so manager/admin can lock or reopen collection from the operator hub.
-- Refreshed the stale `Schedule Detail` operator copy and updated IA/worklog references for the new slice.
+- Extended assignment workspace save/read paths so `is_exception_case` is preserved.
+- Added duplicate-assignee detection in the assignment workspace snapshot and explicit confirmation UI in `src/features/assignments/ui/assignment-workspace-screen.tsx`.
+- Added focused API/model regression coverage and updated IA/worklog references for the richer staffing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action

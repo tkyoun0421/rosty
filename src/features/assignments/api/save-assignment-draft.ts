@@ -10,6 +10,7 @@ type SaveAssignmentDraftInput = {
   assignmentId: string | null;
   assigneeUserId: string | null;
   guestName: string | null;
+  isExceptionCase: boolean;
   actorUserId: string;
 };
 
@@ -34,6 +35,7 @@ export async function saveAssignmentDraft(
       assignmentId: input.assignmentId,
       assigneeUserId: input.assigneeUserId,
       guestName: input.guestName?.trim() ?? null,
+      isExceptionCase: input.isExceptionCase,
     });
     return;
   }
@@ -45,13 +47,14 @@ export async function saveAssignmentDraft(
         assignee_user_id: input.assigneeUserId,
         guest_name: input.guestName?.trim() ?? null,
         status: 'proposed',
+        is_exception_case: input.isExceptionCase,
         updated_by: input.actorUserId,
         updated_at: new Date().toISOString(),
       })
       .eq('id', input.assignmentId);
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error(formatAssignmentDraftErrorMessage(error.message));
     }
 
     return;
@@ -63,13 +66,22 @@ export async function saveAssignmentDraft(
     assignee_user_id: input.assigneeUserId,
     guest_name: input.guestName?.trim() ?? null,
     status: 'proposed',
+    is_exception_case: input.isExceptionCase,
     created_by: input.actorUserId,
     updated_by: input.actorUserId,
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(formatAssignmentDraftErrorMessage(error.message));
   }
+}
+
+function formatAssignmentDraftErrorMessage(message: string): string {
+  if (message.includes('assignments_schedule_assignee_unique')) {
+    return 'This employee is already assigned on the same schedule. Confirm the exception flow to allow a duplicate assignment.';
+  }
+
+  return message;
 }
 
 export async function clearAssignmentDraft(

@@ -51,6 +51,7 @@ export function saveWorkspaceSeedAssignment(input: {
   assignmentId: string | null;
   assigneeUserId: string | null;
   guestName: string | null;
+  isExceptionCase: boolean;
 }) {
   if (input.assignmentId) {
     workspaceSeedAssignments = workspaceSeedAssignments.map((assignment) =>
@@ -60,6 +61,7 @@ export function saveWorkspaceSeedAssignment(input: {
             assignee_user_id: input.assigneeUserId,
             guest_name: input.guestName,
             status: 'proposed',
+            is_exception_case: input.isExceptionCase,
           }
         : assignment,
     );
@@ -75,7 +77,7 @@ export function saveWorkspaceSeedAssignment(input: {
       status: 'proposed',
       assignee_user_id: input.assigneeUserId,
       guest_name: input.guestName,
-      is_exception_case: false,
+      is_exception_case: input.isExceptionCase,
     },
   ];
 }
