@@ -99,6 +99,8 @@ describe('team payroll snapshot', () => {
     expect(mina?.shifts).toHaveLength(2);
     expect(mina?.shifts[0]?.positionCount).toBe(2);
     expect(mina?.totalEstimatedPay).toBe(112000);
+    expect(mina?.totalRegularPay).toBe(112000);
+    expect(mina?.totalOvertimePay).toBe(0);
   });
 
   it('falls back to the hall default rate and applies overtime', () => {
@@ -107,6 +109,8 @@ describe('team payroll snapshot', () => {
 
     expect(sera?.shifts[0]?.hourlyRate).toBe(12000);
     expect(sera?.shifts[0]?.overtimeMinutes).toBe(150);
+    expect(sera?.shifts[0]?.regularPay).toBe(96000);
+    expect(sera?.shifts[0]?.overtimePay).toBe(45000);
     expect(sera?.shifts[0]?.estimatedPay).toBe(141000);
   });
 
@@ -116,6 +120,8 @@ describe('team payroll snapshot', () => {
 
     expect(snapshot.summary.scheduleCount).toBe(3);
     expect(snapshot.summary.missingActualTimeCount).toBe(1);
+    expect(snapshot.summary.regularPayTotal).toBe(208000);
+    expect(snapshot.summary.overtimePayTotal).toBe(45000);
     expect(mina?.pendingScheduleCount).toBe(1);
     expect(mina?.shifts[1]?.status).toBe('missing_actual_time');
   });

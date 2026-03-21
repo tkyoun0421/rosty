@@ -65,6 +65,14 @@ export function MyPayrollScreen({
               value={formatEstimatedPay(member.totalEstimatedPay)}
             />
             <SummaryCard
+              label="Regular pay"
+              value={formatEstimatedPay(member.totalRegularPay)}
+            />
+            <SummaryCard
+              label="Overtime pay"
+              value={formatEstimatedPay(member.totalOvertimePay)}
+            />
+            <SummaryCard
               label="Estimated shifts"
               value={String(member.estimatedShiftCount)}
             />
@@ -96,6 +104,10 @@ export function MyPayrollScreen({
                 </View>
                 <Text style={styles.shiftBody}>
                   Positions {shift.positionCount} · Rate {formatEstimatedPay(shift.hourlyRate)}
+                </Text>
+                <Text style={styles.shiftBody}>
+                  Regular pay {formatEstimatedPay(shift.regularPay)} · Overtime pay{' '}
+                  {formatEstimatedPay(shift.overtimePay)}
                 </Text>
                 <Text style={styles.shiftBody}>
                   {shift.status === 'estimated'

@@ -50,6 +50,8 @@ export type TeamPayrollShiftEstimate = {
   durationMinutes: number | null;
   regularMinutes: number;
   overtimeMinutes: number;
+  regularPay: number;
+  overtimePay: number;
   estimatedPay: number;
   status: 'estimated' | 'missing_actual_time';
 };
@@ -59,6 +61,8 @@ export type TeamPayrollMemberEstimate = {
   fullName: string;
   role: UserRole;
   totalEstimatedPay: number;
+  totalRegularPay: number;
+  totalOvertimePay: number;
   totalMinutes: number;
   estimatedShiftCount: number;
   pendingScheduleCount: number;
@@ -67,6 +71,8 @@ export type TeamPayrollMemberEstimate = {
 
 export type TeamPayrollSummary = {
   totalEstimatedPay: number;
+  regularPayTotal: number;
+  overtimePayTotal: number;
   estimatedMemberCount: number;
   missingActualTimeCount: number;
   overtimeShiftCount: number;
@@ -152,15 +158,22 @@ export function createTeamPayrollSnapshot(
       durationMinutes === null
         ? 0
         : Math.max(0, durationMinutes - source.policy.overtimeThresholdMinutes);
-    const estimatedPay =
+    const regularPay =
+      durationMinutes === null
+        ? 0
+        : roundCurrency((regularMinutes / 60) * hourlyRate);
+    const overtimePay =
       durationMinutes === null
         ? 0
         : roundCurrency(
-            (regularMinutes / 60) * hourlyRate +
-              (overtimeMinutes / 60) *
-                hourlyRate *
-                source.policy.overtimeMultiplier,
+            (overtimeMinutes / 60) *
+              hourlyRate *
+              source.policy.overtimeMultiplier,
           );
+    const estimatedPay =
+      durationMinutes === null
+        ? 0
+        : regularPay + overtimePay;
 
     const shift: TeamPayrollShiftEstimate = {
       scheduleId,
@@ -170,6 +183,8 @@ export function createTeamPayrollSnapshot(
       durationMinutes,
       regularMinutes,
       overtimeMinutes,
+      regularPay,
+      overtimePay,
       estimatedPay,
       status: durationMinutes === null ? 'missing_actual_time' : 'estimated',
     };
@@ -183,6 +198,8 @@ export function createTeamPayrollSnapshot(
         fullName: member.fullName,
         role: member.role,
         totalEstimatedPay: estimatedPay,
+        totalRegularPay: regularPay,
+        totalOvertimePay: overtimePay,
         totalMinutes: durationMinutes ?? 0,
         estimatedShiftCount: durationMinutes === null ? 0 : 1,
         pendingScheduleCount: durationMinutes === null ? 1 : 0,
@@ -192,6 +209,8 @@ export function createTeamPayrollSnapshot(
     }
 
     currentMember.totalEstimatedPay += estimatedPay;
+    currentMember.totalRegularPay += regularPay;
+    currentMember.totalOvertimePay += overtimePay;
     currentMember.totalMinutes += durationMinutes ?? 0;
     currentMember.estimatedShiftCount += durationMinutes === null ? 0 : 1;
     currentMember.pendingScheduleCount += durationMinutes === null ? 1 : 0;
@@ -203,6 +222,14 @@ export function createTeamPayrollSnapshot(
   const summary: TeamPayrollSummary = {
     totalEstimatedPay: members.reduce(
       (total, member) => total + member.totalEstimatedPay,
+      0,
+    ),
+    regularPayTotal: members.reduce(
+      (total, member) => total + member.totalRegularPay,
+      0,
+    ),
+    overtimePayTotal: members.reduce(
+      (total, member) => total + member.totalOvertimePay,
       0,
     ),
     estimatedMemberCount: members.filter(

@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Employee work-time read slice.
+Pending the next locked staffing or scheduling feature after completing the Payroll breakdown slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/employee-work-time-read-slice/summary.md`
-- Archive plan: `docs/development-plans/employee-work-time-read-slice/plan.md`
+- Archive summary: `docs/development-plans/payroll-breakdown-slice/summary.md`
+- Archive plan: `docs/development-plans/payroll-breakdown-slice/plan.md`
 
 ## Last Completed
 
-Completed the Employee work-time read slice:
+Completed the Payroll breakdown slice:
 
-- Added read-only work-time display helpers under `src/features/work-time/model/`.
-- Updated `src/features/assignments/ui/assignment-detail-screen.tsx` so employees can review schedule-level planned and actual work time.
-- Updated IA/worklog references for the richer employee assignment detail flow.
+- Extended the shared payroll snapshot model with regular/overtime pay breakdown fields.
+- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` to display the new breakdown values.
+- Updated worklog archive references for the richer payroll read flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Employee work-time read slice task on 2026-03-21.
+- Completed the Payroll breakdown slice task on 2026-03-21.

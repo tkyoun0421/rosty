@@ -79,6 +79,14 @@ export function TeamPayrollScreen({
           value={formatEstimatedPay(snapshot.summary.totalEstimatedPay)}
         />
         <SummaryCard
+          label="Regular pay"
+          value={formatEstimatedPay(snapshot.summary.regularPayTotal)}
+        />
+        <SummaryCard
+          label="Overtime pay"
+          value={formatEstimatedPay(snapshot.summary.overtimePayTotal)}
+        />
+        <SummaryCard
           label="Members"
           value={String(snapshot.summary.estimatedMemberCount)}
         />
@@ -214,8 +222,11 @@ function MemberEstimateCard({
         </Text>
       </View>
       <Text style={styles.memberBody}>
-        Estimated shifts {member.estimatedShiftCount} · Pending actual time{' '}
-        {member.pendingScheduleCount}
+        Estimated shifts {member.estimatedShiftCount} · Pending actual time {member.pendingScheduleCount}
+      </Text>
+      <Text style={styles.memberBody}>
+        Regular pay {formatEstimatedPay(member.totalRegularPay)} · Overtime pay{' '}
+        {formatEstimatedPay(member.totalOvertimePay)}
       </Text>
       {member.shifts.map((shift) => (
         <View key={`${member.memberId}-${shift.scheduleId}`} style={styles.shiftCard}>
@@ -229,6 +240,10 @@ function MemberEstimateCard({
           </View>
           <Text style={styles.shiftBody}>
             Positions {shift.positionCount} · Rate {formatEstimatedPay(shift.hourlyRate)}
+          </Text>
+          <Text style={styles.shiftBody}>
+            Regular pay {formatEstimatedPay(shift.regularPay)} · Overtime pay{' '}
+            {formatEstimatedPay(shift.overtimePay)}
           </Text>
           <Text style={styles.shiftBody}>
             {shift.status === 'estimated'
