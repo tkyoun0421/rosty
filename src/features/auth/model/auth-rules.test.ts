@@ -45,6 +45,7 @@ describe('auth route resolution', () => {
 describe('auth route access', () => {
   it('blocks signed-out users from protected routes', () => {
     expect(canAccessRoute(null, authRoutes.notifications)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.globalSearch)).toBe(false);
     expect(canAccessRoute(null, authRoutes.scheduleList)).toBe(false);
     expect(canAccessRoute(null, authRoutes.scheduleDetail)).toBe(false);
     expect(canAccessRoute(null, authRoutes.scheduleEdit)).toBe(false);
@@ -97,6 +98,12 @@ describe('auth route access', () => {
     expect(
       canAccessRoute(
         createDemoSession('employee-suspended'),
+        authRoutes.globalSearch,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
         authRoutes.scheduleList,
       ),
     ).toBe(false);
@@ -131,6 +138,12 @@ describe('auth route access', () => {
       canAccessRoute(
         createDemoSession('employee-active'),
         authRoutes.notifications,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.globalSearch,
       ),
     ).toBe(true);
     expect(
@@ -203,6 +216,12 @@ describe('auth route access', () => {
       canAccessRoute(
         createDemoSession('manager-active'),
         authRoutes.notifications,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.globalSearch,
       ),
     ).toBe(true);
     expect(

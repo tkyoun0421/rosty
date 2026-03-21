@@ -115,6 +115,7 @@
 - 홈은 요약과 진입 중심 화면이다.
 - 편집 액션은 가능한 한 전용 작업 화면에서 수행한다.
 - 목록 화면은 `상단 탭 + 간단 칩` 필터 구조를 공유한다.
+- 첫 shipped `Global Search` slice는 schedules, 내 assignments, role-gated member results를 한 화면에서 보여준다.
 - 직원은 개인 정보 중심 화면만 본다.
 - 운영진은 운영 큐와 작업 화면으로 빠르게 이동하는 흐름을 우선한다.
 

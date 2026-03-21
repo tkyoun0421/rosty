@@ -15,6 +15,9 @@ function EmployeeHomeRouteContent() {
   return (
     <EmployeeHomeScreen
       session={session}
+      onOpenGlobalSearch={() => {
+        router.push(authRoutes.globalSearch);
+      }}
       onOpenNotifications={() => {
         router.push(authRoutes.notifications);
       }}

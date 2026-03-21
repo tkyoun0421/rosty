@@ -15,6 +15,7 @@ import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 
 type RoleHomeProps = {
+  onOpenGlobalSearch?: () => void;
   onOpenNotifications?: () => void;
   onOpenScheduleEdit?: () => void;
   onOpenScheduleList?: () => void;
@@ -50,6 +51,7 @@ type LoadingStateProps = {
 };
 
 export function EmployeeHomeScreen({
+  onOpenGlobalSearch,
   onOpenNotifications,
   onOpenScheduleList,
   session,
@@ -136,6 +138,19 @@ export function EmployeeHomeScreen({
         </Pressable>
       ) : null}
 
+      {onOpenGlobalSearch ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenGlobalSearch}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open search</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Search schedules, your assignments, and shared results from one place.
+          </Text>
+        </Pressable>
+      ) : null}
+
       {onOpenScheduleList ? (
         <Pressable
           accessibilityRole="button"
@@ -163,6 +178,7 @@ export function EmployeeHomeScreen({
 }
 
 export function ManagerHomeScreen({
+  onOpenGlobalSearch,
   onOpenNotifications,
   onOpenScheduleEdit,
   onOpenScheduleList,
@@ -281,6 +297,19 @@ export function ManagerHomeScreen({
           <Text style={styles.quickActionButtonLabel}>Open notifications</Text>
           <Text style={styles.quickActionButtonBody}>
             Review inbox items linked to queue, assignment, and approval events.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenGlobalSearch ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenGlobalSearch}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Open search</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Search schedules, assignments, and member results from one screen.
           </Text>
         </Pressable>
       ) : null}
