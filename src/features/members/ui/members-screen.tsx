@@ -11,6 +11,7 @@ import {
   canReactivateMember,
   canSuspendMember,
   getActiveMembers,
+  getDeactivatedMembers,
   getLastAdminProtectionMessage,
   getPendingMembers,
   getSuspendedMembers,
@@ -124,11 +125,13 @@ export function MembersScreen({
   const pendingMembers = getPendingMembers(members);
   const activeMembers = getActiveMembers(members);
   const suspendedMembers = getSuspendedMembers(members);
+  const deactivatedMembers = getDeactivatedMembers(members);
   const otherMembers = members.filter(
     (member) =>
       member.status !== 'pending_approval' &&
       member.status !== 'active' &&
-      member.status !== 'suspended',
+      member.status !== 'suspended' &&
+      member.status !== 'deactivated',
   );
 
   return (
@@ -140,6 +143,7 @@ export function MembersScreen({
         <SummaryCard label="Pending" value={pendingMembers.length} />
         <SummaryCard label="Active" value={activeMembers.length} />
         <SummaryCard label="Suspended" value={suspendedMembers.length} />
+        <SummaryCard label="Deactivated" value={deactivatedMembers.length} />
       </View>
 
       <AdminShortcutCard
@@ -181,6 +185,14 @@ export function MembersScreen({
         title="Suspended members"
         body="Users who can sign in but cannot open operating flows until restored."
         members={suspendedMembers}
+        allMembers={members}
+        mutation={mutation}
+      />
+
+      <MemberSection
+        title="Deactivated members"
+        body="Read-only accounts that exited the product and can no longer sign in."
+        members={deactivatedMembers}
         allMembers={members}
         mutation={mutation}
       />
@@ -565,10 +577,11 @@ const styles = StyleSheet.create({
   },
   summaryRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
   },
   summaryCard: {
-    flex: 1,
+    width: '48%',
     borderRadius: 22,
     backgroundColor: '#fff8ef',
     padding: 18,
@@ -792,4 +805,3 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
-

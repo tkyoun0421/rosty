@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Deactivated auth lockout slice.
+Pending the next locked staffing or scheduling feature after completing the Deactivated members slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/deactivated-auth-lockout-slice/summary.md`
-- Archive plan: `docs/development-plans/deactivated-auth-lockout-slice/plan.md`
+- Archive summary: `docs/development-plans/deactivated-members-slice/summary.md`
+- Archive plan: `docs/development-plans/deactivated-members-slice/plan.md`
 
 ## Last Completed
 
-Completed the Deactivated auth lockout slice:
+Completed the Deactivated members slice:
 
-- Extended auth status parsing so `deactivated` is treated as a valid profile state.
-- Updated auth routing and store normalization so restored deactivated sessions return to the login shell with a blocked message.
-- Updated worklog archive references for the stronger account-deactivation lockout behavior.
+- Added explicit deactivated member grouping and read-only guards in the members model.
+- Updated `src/features/members/ui/members-screen.tsx` so admins see deactivated accounts in their own section and summary card.
+- Updated worklog archive references for the clearer admin member-state view.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Deactivated auth lockout slice task on 2026-03-21.
+- Completed the Deactivated members slice task on 2026-03-21.

@@ -28,6 +28,10 @@ export function getSuspendedMembers(members: MemberRecord[]): MemberRecord[] {
   return members.filter((member) => member.status === 'suspended');
 }
 
+export function getDeactivatedMembers(members: MemberRecord[]): MemberRecord[] {
+  return members.filter((member) => member.status === 'deactivated');
+}
+
 export function countActiveAdmins(members: MemberRecord[]): number {
   return members.filter(
     (member) => member.role === 'admin' && member.status === 'active',
@@ -74,6 +78,10 @@ export function canChangeMemberRole(
   member: MemberRecord,
   nextRole: UserRole,
 ): boolean {
+  if (member.status === 'deactivated') {
+    return false;
+  }
+
   if (member.role === nextRole) {
     return false;
   }
