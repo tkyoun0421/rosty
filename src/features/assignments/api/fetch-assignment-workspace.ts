@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
 import {
-  getWorkspaceSeedAssignments,
   readWorkspaceSeedSource,
   workspaceSeedProfiles,
 } from '@/features/assignments/api/assignment-workspace-fallback';

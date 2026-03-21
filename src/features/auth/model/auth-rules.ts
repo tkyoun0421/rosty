@@ -12,8 +12,10 @@ export const authRoutes = {
   notifications: '/notifications',
   scheduleList: '/schedules',
   scheduleDetail: '/schedule-detail',
+  scheduleEdit: '/schedule-edit',
   availabilityOverview: '/availability-overview',
   assignmentWorkspace: '/assignment-workspace',
+  workTime: '/work-time',
   employeeHome: '/employee-home',
   myAssignments: '/my-assignments',
   assignmentDetail: '/assignment-detail',
@@ -110,7 +112,9 @@ export function canAccessRoute(
     case authRoutes.scheduleDetail:
       return session?.status === 'active';
     case authRoutes.availabilityOverview:
+    case authRoutes.scheduleEdit:
     case authRoutes.assignmentWorkspace:
+    case authRoutes.workTime:
       return session?.status === 'active' && session.role !== 'employee';
     case authRoutes.employeeHome:
       return session?.status === 'active' && session.role === 'employee';

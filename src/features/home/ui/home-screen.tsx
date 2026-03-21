@@ -16,6 +16,7 @@ import { useHomeDashboardQuery } from '@/features/home/model/home-dashboard';
 
 type RoleHomeProps = {
   onOpenNotifications?: () => void;
+  onOpenScheduleEdit?: () => void;
   onOpenScheduleList?: () => void;
   session: AuthSession;
   onOpenMyAssignments?: () => void;
@@ -163,6 +164,7 @@ export function EmployeeHomeScreen({
 
 export function ManagerHomeScreen({
   onOpenNotifications,
+  onOpenScheduleEdit,
   onOpenScheduleList,
   session,
   onOpenCancellationQueue,
@@ -292,6 +294,19 @@ export function ManagerHomeScreen({
           <Text style={styles.quickActionButtonLabel}>Open schedules</Text>
           <Text style={styles.quickActionButtonBody}>
             Review tracked schedules before availability, assignment, or work-time actions.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {onOpenScheduleEdit ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenScheduleEdit}
+          style={styles.quickActionButton}
+        >
+          <Text style={styles.quickActionButtonLabel}>Create schedule</Text>
+          <Text style={styles.quickActionButtonBody}>
+            Start a new collecting schedule from the tracked slot preset baseline.
           </Text>
         </Pressable>
       ) : null}

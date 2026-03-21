@@ -47,8 +47,10 @@ describe('auth route access', () => {
     expect(canAccessRoute(null, authRoutes.notifications)).toBe(false);
     expect(canAccessRoute(null, authRoutes.scheduleList)).toBe(false);
     expect(canAccessRoute(null, authRoutes.scheduleDetail)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.scheduleEdit)).toBe(false);
     expect(canAccessRoute(null, authRoutes.availabilityOverview)).toBe(false);
     expect(canAccessRoute(null, authRoutes.assignmentWorkspace)).toBe(false);
+    expect(canAccessRoute(null, authRoutes.workTime)).toBe(false);
     expect(canAccessRoute(null, authRoutes.employeeHome)).toBe(false);
     expect(canAccessRoute(null, authRoutes.myAssignments)).toBe(false);
     expect(canAccessRoute(null, authRoutes.assignmentDetail)).toBe(false);
@@ -101,6 +103,12 @@ describe('auth route access', () => {
     expect(
       canAccessRoute(
         createDemoSession('employee-suspended'),
+        authRoutes.scheduleEdit,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
         authRoutes.availabilityOverview,
       ),
     ).toBe(false);
@@ -108,6 +116,12 @@ describe('auth route access', () => {
       canAccessRoute(
         createDemoSession('employee-suspended'),
         authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-suspended'),
+        authRoutes.workTime,
       ),
     ).toBe(false);
   });
@@ -134,6 +148,12 @@ describe('auth route access', () => {
     expect(
       canAccessRoute(
         createDemoSession('employee-active'),
+        authRoutes.scheduleEdit,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
         authRoutes.availabilityOverview,
       ),
     ).toBe(false);
@@ -141,6 +161,12 @@ describe('auth route access', () => {
       canAccessRoute(
         createDemoSession('employee-active'),
         authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(false);
+    expect(
+      canAccessRoute(
+        createDemoSession('employee-active'),
+        authRoutes.workTime,
       ),
     ).toBe(false);
     expect(
@@ -194,6 +220,12 @@ describe('auth route access', () => {
     expect(
       canAccessRoute(
         createDemoSession('manager-active'),
+        authRoutes.scheduleEdit,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
         authRoutes.availabilityOverview,
       ),
     ).toBe(true);
@@ -201,6 +233,12 @@ describe('auth route access', () => {
       canAccessRoute(
         createDemoSession('manager-active'),
         authRoutes.assignmentWorkspace,
+      ),
+    ).toBe(true);
+    expect(
+      canAccessRoute(
+        createDemoSession('manager-active'),
+        authRoutes.workTime,
       ),
     ).toBe(true);
     expect(

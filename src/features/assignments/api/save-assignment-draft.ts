@@ -13,14 +13,6 @@ type SaveAssignmentDraftInput = {
   actorUserId: string;
 };
 
-type AssignmentDraftRow = {
-  id: string;
-  slot_id: string;
-  status: 'proposed';
-  assignee_user_id: string | null;
-  guest_name: string | null;
-};
-
 function validateDraftInput(input: SaveAssignmentDraftInput) {
   const hasAssignee = !!input.assigneeUserId;
   const hasGuest = !!input.guestName && input.guestName.trim().length > 0;

@@ -18,6 +18,9 @@ function ManagerHomeRouteContent() {
       onOpenNotifications={() => {
         router.push(authRoutes.notifications);
       }}
+      onOpenScheduleEdit={() => {
+        router.push(authRoutes.scheduleEdit);
+      }}
       onOpenScheduleList={() => {
         router.push(authRoutes.scheduleList);
       }}

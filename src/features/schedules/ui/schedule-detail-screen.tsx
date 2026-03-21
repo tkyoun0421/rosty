@@ -19,16 +19,20 @@ type ScheduleDetailScreenProps = {
   session: AuthSession;
   scheduleId: string;
   onBackList: () => void;
+  onOpenScheduleEdit?: () => void;
   onOpenAvailabilityOverview?: () => void;
   onOpenAssignmentWorkspace?: () => void;
+  onOpenWorkTime?: () => void;
 };
 
 export function ScheduleDetailScreen({
   session,
   scheduleId,
   onBackList,
+  onOpenScheduleEdit,
   onOpenAvailabilityOverview,
   onOpenAssignmentWorkspace,
+  onOpenWorkTime,
 }: ScheduleDetailScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const detailQuery = useScheduleDetailQuery(scheduleId);
@@ -165,12 +169,21 @@ export function ScheduleDetailScreen({
                 </Text>
               )}
             </View>
-          ) : onOpenAvailabilityOverview || onOpenAssignmentWorkspace ? (
+          ) : onOpenAvailabilityOverview || onOpenAssignmentWorkspace || onOpenWorkTime || onOpenScheduleEdit ? (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Operator actions</Text>
               <Text style={styles.sectionBody}>
                 Review availability coverage and move into the assignment workspace from the current schedule.
               </Text>
+              {onOpenScheduleEdit ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onOpenScheduleEdit}
+                  style={styles.secondaryButton}
+                >
+                  <Text style={styles.secondaryButtonLabel}>Open schedule edit</Text>
+                </Pressable>
+              ) : null}
               {onOpenAvailabilityOverview ? (
                 <Pressable
                   accessibilityRole="button"
@@ -187,6 +200,15 @@ export function ScheduleDetailScreen({
                   style={styles.secondaryButton}
                 >
                   <Text style={styles.secondaryButtonLabel}>Open assignment workspace</Text>
+                </Pressable>
+              ) : null}
+              {onOpenWorkTime ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={onOpenWorkTime}
+                  style={styles.secondaryButton}
+                >
+                  <Text style={styles.secondaryButtonLabel}>Open work time</Text>
                 </Pressable>
               ) : null}
             </View>

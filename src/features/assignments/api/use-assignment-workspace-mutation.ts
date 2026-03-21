@@ -1,8 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
 import { assignmentWorkspaceQueryKey } from '@/features/assignments/api/fetch-assignment-workspace';
-import { assignmentDetailQueryKey } from '@/features/assignments/api/fetch-assignment-detail';
-import { myAssignmentsQueryKey } from '@/features/assignments/api/fetch-my-assignments';
 import {
   clearAssignmentDraft,
   saveAssignmentDraft,

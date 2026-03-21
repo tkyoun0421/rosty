@@ -1,5 +1,4 @@
 import { myAssignmentsSeedSource } from '@/features/assignments/api/assignment-read-fallback';
-import { seededAvailabilityByScheduleId } from '@/features/availability/api/fetch-my-availability';
 import { scheduleSeedRows, scheduleSlotSeedRows } from '@/features/schedules/api/schedule-read-fallback';
 
 export const workspaceSeedProfiles = [
@@ -20,7 +19,17 @@ export const workspaceSeedProfiles = [
   },
 ];
 
-let workspaceSeedAssignments = [
+type SeedWorkspaceAssignment = {
+  id: string;
+  schedule_id: string;
+  slot_id: string;
+  status: 'proposed' | 'confirmed';
+  assignee_user_id: string | null;
+  guest_name: string | null;
+  is_exception_case: boolean;
+};
+
+let workspaceSeedAssignments: SeedWorkspaceAssignment[] = [
   {
     id: 'workspace-assignment-1',
     schedule_id: 'schedule-2',
@@ -104,7 +113,7 @@ export function confirmWorkspaceSeedSchedule(scheduleId: string) {
       id: assignment.id,
       scheduleId: assignment.schedule_id,
       slotId: assignment.slot_id,
-      status: assignment.status,
+      status: 'confirmed' as const,
     }));
 
   myAssignmentsSeedSource.assignments = [...assignmentsForSchedule, ...projected];
@@ -113,10 +122,22 @@ export function confirmWorkspaceSeedSchedule(scheduleId: string) {
 export function readWorkspaceSeedSource(scheduleId: string) {
   const schedule = scheduleSeedRows.find((entry) => entry.id === scheduleId) ?? null;
   const slots = scheduleSlotSeedRows.filter((slot) => slot.schedule_id === scheduleId);
-  const submissions = (seededAvailabilityByScheduleId[scheduleId] ?? []).map((submission) => ({
-    userId: submission.user_id,
-    status: submission.status,
-  }));
+  const seededSubmissionsByScheduleId: Record<
+    string,
+    { userId: string; status: 'available' | 'unavailable' }[]
+  > = {
+    'schedule-2': [
+      {
+        userId: 'employee-3',
+        status: 'available',
+      },
+      {
+        userId: 'employee-1',
+        status: 'unavailable',
+      },
+    ],
+  };
+  const submissions = seededSubmissionsByScheduleId[scheduleId] ?? [];
 
   return {
     schedule,

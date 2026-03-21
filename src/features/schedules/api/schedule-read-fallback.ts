@@ -4,7 +4,14 @@ import type {
   ScheduleStatus,
 } from '@/features/schedules/model/schedules';
 
-export const scheduleSeedRows = [
+export const scheduleSeedRows: {
+  id: string;
+  event_date: string;
+  package_count: number;
+  status: ScheduleStatus;
+  collection_state: AvailabilityCollectionState;
+  memo: string | null;
+}[] = [
   {
     id: 'schedule-1',
     event_date: '2026-03-22',
@@ -31,7 +38,14 @@ export const scheduleSeedRows = [
   },
 ];
 
-export const scheduleSlotSeedRows = [
+export const scheduleSlotSeedRows: {
+  id: string;
+  schedule_id: string;
+  position_name: string;
+  headcount: number;
+  required_gender: RequiredGender;
+  is_enabled: boolean;
+}[] = [
   {
     id: 'slot-1',
     schedule_id: 'schedule-1',
@@ -71,5 +85,57 @@ export const scheduleSlotSeedRows = [
     headcount: 1,
     required_gender: 'any' as RequiredGender,
     is_enabled: false,
+  },
+];
+
+export const slotPresetSeedRows: {
+  id: string;
+  code: string;
+  position_name: string;
+  default_headcount: number;
+  required_gender: RequiredGender;
+  is_required: boolean;
+  sort_order: number;
+  is_active: boolean;
+}[] = [
+  {
+    id: 'preset-1',
+    code: 'bride-room',
+    position_name: 'Bride room',
+    default_headcount: 1,
+    required_gender: 'female' as RequiredGender,
+    is_required: true,
+    sort_order: 0,
+    is_active: true,
+  },
+  {
+    id: 'preset-2',
+    code: 'guest-hall',
+    position_name: 'Guest hall',
+    default_headcount: 2,
+    required_gender: 'any' as RequiredGender,
+    is_required: true,
+    sort_order: 1,
+    is_active: true,
+  },
+  {
+    id: 'preset-3',
+    code: 'reception',
+    position_name: 'Reception',
+    default_headcount: 1,
+    required_gender: 'any' as RequiredGender,
+    is_required: false,
+    sort_order: 2,
+    is_active: true,
+  },
+  {
+    id: 'preset-4',
+    code: 'banquet',
+    position_name: 'Banquet',
+    default_headcount: 3,
+    required_gender: 'male' as RequiredGender,
+    is_required: false,
+    sort_order: 3,
+    is_active: true,
   },
 ];

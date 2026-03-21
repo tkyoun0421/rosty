@@ -2,26 +2,25 @@
 
 ## Current Task
 
-Pending the real scheduling migration apply and the next locked staffing/scheduling follow-up after completing the first Assignment Workspace slice.
+Pending the real scheduling migration apply and the next locked staffing/scheduling follow-up after completing Schedule Create/Edit.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/assignment-workspace-slice/summary.md`
-- Archive plan: `docs/development-plans/assignment-workspace-slice/plan.md`
+- Archive summary: `docs/development-plans/schedule-create-edit-slice/summary.md`
+- Archive plan: `docs/development-plans/schedule-create-edit-slice/plan.md`
 
 ## Last Completed
 
-Completed the Assignment Workspace slice:
+Completed the Schedule Create/Edit slice:
 
-- Added `src/app/assignment-workspace.tsx` and manager/admin route access.
-- Added the workspace query, fallback state, draft save/clear, and confirm helpers under `src/features/assignments/`.
-- Added `supabase/migrations/20260320153000_confirm_schedule_assignments_rpc.sql` for the limited confirm write path.
-- Updated `Schedule Detail` and `Availability Overview` so manager/admin users can open the workspace from the current schedule flow.
+- Added `src/app/schedule-edit.tsx` and manager/admin route access.
+- Added the schedule edit form/model helpers and the save path under `src/features/schedules/`.
+- Extended the local slot preset baseline and wired manager-home/schedule-detail entry points for the route.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration plus the staffing/notifications migrations to the real Supabase project, then lock `Work Time` or the next scheduling write slice.
+Apply the shared scheduling/payroll migration plus the staffing/notifications migrations to the real Supabase project, then lock the next staffing/scheduling follow-up.
 
 ## Blockers
 
@@ -42,4 +41,4 @@ Apply the shared scheduling/payroll migration plus the staffing/notifications mi
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Assignment Workspace slice task on 2026-03-20.
+- Completed the Schedule Create/Edit slice task on 2026-03-21.

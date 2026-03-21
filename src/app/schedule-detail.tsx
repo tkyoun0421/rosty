@@ -26,6 +26,17 @@ function ScheduleDetailRouteContent() {
       onBackList={() => {
         router.replace(authRoutes.scheduleList);
       }}
+      onOpenScheduleEdit={
+        session.role !== 'employee'
+          ? () => {
+              router.push(
+                `${authRoutes.scheduleEdit}?scheduleId=${encodeURIComponent(
+                  scheduleId,
+                )}`,
+              );
+            }
+          : undefined
+      }
       onOpenAvailabilityOverview={
         session.role !== 'employee'
           ? () => {
@@ -42,6 +53,17 @@ function ScheduleDetailRouteContent() {
           ? () => {
               router.push(
                 `${authRoutes.assignmentWorkspace}?scheduleId=${encodeURIComponent(
+                  scheduleId,
+                )}`,
+              );
+            }
+          : undefined
+      }
+      onOpenWorkTime={
+        session.role !== 'employee'
+          ? () => {
+              router.push(
+                `${authRoutes.workTime}?scheduleId=${encodeURIComponent(
                   scheduleId,
                 )}`,
               );
