@@ -2,32 +2,30 @@
 
 ## Current Task
 
-Pending the next locked cross-cutting or staffing feature after completing the Settings deactivation slice.
+Pending the next locked staffing or scheduling feature after completing the Availability Collection toggle slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/settings-deactivation-slice/summary.md`
-- Archive plan: `docs/development-plans/settings-deactivation-slice/plan.md`
+- Archive summary: `docs/development-plans/availability-collection-toggle-slice/summary.md`
+- Archive plan: `docs/development-plans/availability-collection-toggle-slice/plan.md`
 
 ## Last Completed
 
-Completed the Settings deactivation slice:
+Completed the Availability Collection toggle slice:
 
-- Added `supabase/migrations/20260321110000_deactivate_my_account_rpc.sql` for the limited self deactivation path with upcoming confirmed-assignment checks.
-- Added the account-deactivation mutation path under `src/features/settings/api/`.
-- Expanded `src/features/settings/ui/settings-screen.tsx` with a danger section, confirmation flow, and post-success sign-out behavior.
-- Updated Settings-facing docs and worklog references to include the new self deactivation rule.
+- Added the collection-state helpers and update mutation path under `src/features/availability/`.
+- Updated `src/features/schedules/ui/schedule-detail-screen.tsx` so manager/admin can lock or reopen collection from the operator hub.
+- Refreshed the stale `Schedule Detail` operator copy and updated IA/worklog references for the new slice.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the new settings migrations plus the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing or scheduling slice.
+Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing or scheduling slice.
 
 ## Blockers
 
 - The shared scheduling/payroll read migration is repo-tracked but not yet applied to the real Supabase project, so assignments and payroll routes will still show the seeded fallback there.
-- The new settings migration is also not yet applied to the real Supabase project, so live self profile updates cannot work there yet.
-- The new self-deactivation migration is also not yet applied to the real Supabase project, so live Settings deactivation cannot work there yet.
+- The new settings migrations are also not yet applied to the real Supabase project, so live self profile updates and Settings deactivation cannot work there yet.
 - The member-directory search migration is also not yet applied to the real Supabase project, so live manager/admin member search cannot work there yet.
 - The new availability migration is also not yet applied to the real Supabase project, so the live employee availability RPC cannot work there yet.
 - The new confirm-schedule migration is also not yet applied to the real Supabase project, so the live assignment workspace confirm RPC cannot work there yet.
@@ -45,4 +43,4 @@ Apply the new settings migrations plus the shared scheduling/payroll migration t
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Settings deactivation slice task on 2026-03-21.
+- Completed the Availability Collection toggle slice task on 2026-03-21.

@@ -3,8 +3,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
+import {
+  useAvailabilityCollectionMutation,
+} from '@/features/availability/api/use-availability-collection-mutation';
 import { useMyAvailabilityQuery } from '@/features/availability/api/fetch-my-availability';
 import { useAvailabilitySubmissionMutation } from '@/features/availability/api/use-availability-submission-mutation';
+import {
+  canManageAvailabilityCollection,
+  getAvailabilityCollectionActionLabel,
+  getNextAvailabilityCollectionState,
+} from '@/features/availability/model/availability-collection';
 import {
   canSubmitAvailability,
   formatAvailabilityResponseState,
@@ -44,6 +52,10 @@ export function ScheduleDetailScreen({
     scheduleId,
     session.userId,
   );
+  const collectionMutation = useAvailabilityCollectionMutation(
+    scheduleId,
+    session.userId,
+  );
 
   if (detailQuery.isLoading || !detailQuery.data) {
     return (
@@ -61,12 +73,13 @@ export function ScheduleDetailScreen({
   }
 
   const snapshot = detailQuery.data;
+  const detail = snapshot.detail;
 
   return (
     <DetailFrame
       session={session}
       title="Schedule Detail"
-      subtitle="Review the selected event schedule before the later availability, assignment, or work-time actions land."
+      subtitle="Review the selected event schedule and move into availability, assignment, or work-time actions from one operator hub."
     >
       <NoticeCard
         title={
@@ -80,7 +93,7 @@ export function ScheduleDetailScreen({
         }
       />
 
-      {!snapshot.detail ? (
+      {!detail ? (
         <NoticeCard
           title="Schedule not found"
           body="The selected schedule could not be found."
@@ -88,26 +101,26 @@ export function ScheduleDetailScreen({
       ) : (
         <>
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>{snapshot.detail.title}</Text>
+            <Text style={styles.sectionTitle}>{detail.title}</Text>
             <Text style={styles.sectionBody}>
-              {formatScheduleStatus(snapshot.detail.status)} ·{' '}
-              {formatCollectionState(snapshot.detail.collectionState)}
+              {formatScheduleStatus(detail.status)} ·{' '}
+              {formatCollectionState(detail.collectionState)}
             </Text>
             <Text style={styles.sectionBody}>
-              Packages {snapshot.detail.packageCount} · Enabled slots{' '}
-              {snapshot.detail.enabledSlotCount}
+              Packages {detail.packageCount} · Enabled slots{' '}
+              {detail.enabledSlotCount}
             </Text>
-            {snapshot.detail.memo ? (
-              <Text style={styles.sectionBody}>{snapshot.detail.memo}</Text>
+            {detail.memo ? (
+              <Text style={styles.sectionBody}>{detail.memo}</Text>
             ) : null}
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Slots</Text>
             <Text style={styles.sectionBody}>
-              Availability, assignment workspace, and work-time actions remain later follow-ups.
+              Review the slot mix first, then use the operator actions below to manage collection, staffing, and work time.
             </Text>
-            {snapshot.detail.slots.map((slot) => (
+            {detail.slots.map((slot) => (
               <View key={slot.id} style={styles.slotCard}>
                 <Text style={styles.slotTitle}>{slot.positionName}</Text>
                 <Text style={styles.slotBody}>
@@ -126,8 +139,8 @@ export function ScheduleDetailScreen({
               </Text>
               {canSubmitAvailability({
                 role: session.role,
-                scheduleStatus: snapshot.detail.status,
-                collectionState: snapshot.detail.collectionState,
+                scheduleStatus: detail.status,
+                collectionState: detail.collectionState,
               }) ? (
                 <View style={styles.actionRow}>
                   <Pressable
@@ -173,8 +186,55 @@ export function ScheduleDetailScreen({
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Operator actions</Text>
               <Text style={styles.sectionBody}>
-                Review availability coverage and move into the assignment workspace from the current schedule.
+                Manage the availability collection window, then move into coverage, assignment, and work-time actions from the current schedule.
               </Text>
+              {canManageAvailabilityCollection({
+                role: session.role,
+                scheduleStatus: detail.status,
+              }) ? (
+                <>
+                  <Text style={styles.sectionBody}>
+                    Collection is currently{' '}
+                    {formatCollectionState(detail.collectionState)}.
+                    Employees can respond only while it stays open.
+                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    disabled={collectionMutation.isPending}
+                    onPress={() => {
+                      collectionMutation.mutate(
+                        getNextAvailabilityCollectionState(
+                          detail.collectionState,
+                        ),
+                      );
+                    }}
+                    style={[
+                      styles.secondaryButton,
+                      collectionMutation.isPending
+                        ? styles.disabledButton
+                        : null,
+                    ]}
+                  >
+                    <Text style={styles.secondaryButtonLabel}>
+                      {collectionMutation.isPending
+                        ? 'Saving collection...'
+                        : getAvailabilityCollectionActionLabel(
+                            detail.collectionState,
+                          )}
+                    </Text>
+                  </Pressable>
+                  {collectionMutation.error instanceof Error ? (
+                    <Text style={styles.errorText}>
+                      {collectionMutation.error.message}
+                    </Text>
+                  ) : null}
+                </>
+              ) : (
+                <Text style={styles.sectionBody}>
+                  Availability collection can be managed only while the schedule
+                  is still collecting.
+                </Text>
+              )}
               {onOpenScheduleEdit ? (
                 <Pressable
                   accessibilityRole="button"
@@ -358,6 +418,10 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  errorText: {
+    color: '#7a2e1f',
+    fontSize: 12,
   },
   footerActions: {
     flexDirection: 'row',
