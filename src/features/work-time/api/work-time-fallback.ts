@@ -1,3 +1,9 @@
+import {
+  assignmentRequestSeedSource,
+  myAssignmentsSeedSource,
+} from '@/features/assignments/api/assignment-read-fallback';
+import { scheduleSeedRows } from '@/features/schedules/api/schedule-read-fallback';
+
 let seededWorkTimeByScheduleId: Record<
   string,
   {
@@ -39,5 +45,64 @@ export function saveSeedWorkTime(
       ...input,
       updated_at: new Date().toISOString(),
     },
+  };
+}
+
+export function completeSeedScheduleOperation(scheduleId: string) {
+  const schedule = scheduleSeedRows.find((entry) => entry.id === scheduleId);
+
+  if (!schedule) {
+    throw new Error('The schedule was not found.');
+  }
+
+  if (schedule.status !== 'assigned') {
+    throw new Error('Only assigned schedules can be completed.');
+  }
+
+  const record = seededWorkTimeByScheduleId[scheduleId];
+
+  if (!record?.actual_start_at || !record.actual_end_at) {
+    throw new Error('Record actual start and end times before completing the schedule.');
+  }
+
+  const hasPendingCancellationRequest = assignmentRequestSeedSource.some(
+    (request) =>
+      request.status === 'requested' &&
+      myAssignmentsSeedSource.assignments.some(
+        (assignment) =>
+          assignment.id === request.assignmentId &&
+          assignment.scheduleId === scheduleId,
+      ),
+  );
+
+  if (hasPendingCancellationRequest) {
+    throw new Error('Resolve pending cancellation requests before completing the schedule.');
+  }
+
+  schedule.status = 'completed';
+
+  let completedAssignmentCount = 0;
+
+  myAssignmentsSeedSource.assignments = myAssignmentsSeedSource.assignments.map(
+    (assignment) => {
+      if (
+        assignment.scheduleId === scheduleId &&
+        assignment.status === 'confirmed'
+      ) {
+        completedAssignmentCount += 1;
+        return {
+          ...assignment,
+          status: 'completed',
+        };
+      }
+
+      return assignment;
+    },
+  );
+
+  return {
+    schedule_id: scheduleId,
+    schedule_status: 'completed' as const,
+    completed_assignment_count: completedAssignmentCount,
   };
 }

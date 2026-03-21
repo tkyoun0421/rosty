@@ -19,6 +19,23 @@ export type WorkTimeFormValues = {
 
 export type WorkTimeFieldErrors = Partial<Record<keyof WorkTimeFormValues, string>>;
 
+export function canCompleteScheduleOperation(input: {
+  scheduleStatus:
+    | 'collecting'
+    | 'assigned'
+    | 'completed'
+    | 'cancelled'
+    | null;
+  actualStartAt: string | null;
+  actualEndAt: string | null;
+}): boolean {
+  return (
+    input.scheduleStatus === 'assigned' &&
+    !!input.actualStartAt &&
+    !!input.actualEndAt
+  );
+}
+
 export function createWorkTimeFormValues(record: WorkTimeRecord | null): WorkTimeFormValues {
   return {
     plannedStartAt: record?.plannedStartAt ?? '',

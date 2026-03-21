@@ -1,6 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 
+import { assignmentDetailQueryKey } from '@/features/assignments/api/fetch-assignment-detail';
+import { assignmentWorkspaceQueryKey } from '@/features/assignments/api/fetch-assignment-workspace';
+import { availabilityOverviewQueryKey } from '@/features/availability/api/fetch-availability-overview';
 import { workTimeQueryKey } from '@/features/work-time/api/fetch-work-time';
+import { completeScheduleOperation } from '@/features/work-time/api/complete-schedule-operation';
 import { saveWorkTime } from '@/features/work-time/api/save-work-time';
 import { scheduleDetailQueryKey } from '@/features/schedules/api/fetch-schedule-detail';
 import { scheduleListQueryKey } from '@/features/schedules/api/fetch-schedule-list';
@@ -22,23 +26,50 @@ export function useWorkTimeMutation(scheduleId: string, actorUserId: string) {
         ...input,
       }),
     onSuccess: async () => {
+      await invalidateWorkTimeLinkedQueries(scheduleId);
+    },
+  });
+}
+
+export function useWorkTimeCompletionMutation(scheduleId: string) {
+  return useMutation({
+    mutationFn: () => completeScheduleOperation(scheduleId),
+    onSuccess: async () => {
+      await invalidateWorkTimeLinkedQueries(scheduleId);
       await Promise.all([
         queryClient.invalidateQueries({
-          queryKey: workTimeQueryKey(scheduleId),
+          queryKey: ['my-assignments'],
         }),
         queryClient.invalidateQueries({
-          queryKey: scheduleDetailQueryKey(scheduleId),
-        }),
-        queryClient.invalidateQueries({
-          queryKey: scheduleListQueryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: teamPayrollQueryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ['team-payroll', 'me'],
+          queryKey: assignmentDetailQueryKey(scheduleId),
         }),
       ]);
     },
   });
+}
+
+async function invalidateWorkTimeLinkedQueries(scheduleId: string) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: workTimeQueryKey(scheduleId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: scheduleDetailQueryKey(scheduleId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: scheduleListQueryKey,
+    }),
+    queryClient.invalidateQueries({
+      queryKey: teamPayrollQueryKey,
+    }),
+    queryClient.invalidateQueries({
+      queryKey: ['team-payroll', 'me'],
+    }),
+    queryClient.invalidateQueries({
+      queryKey: assignmentWorkspaceQueryKey(scheduleId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: availabilityOverviewQueryKey(scheduleId),
+    }),
+  ]);
 }

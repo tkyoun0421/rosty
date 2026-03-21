@@ -77,7 +77,7 @@
 - 첫 shipped `Availability Collection` toggle slice는 `Schedule Detail`에서 manager/admin이 collecting schedule의 모집 상태를 열고 잠근다.
 - 첫 shipped `Schedule Create/Edit` slice는 tracked slot preset baseline에서 새 일정을 만들고 collecting schedule만 수정한다.
 - 첫 shipped `Assignment Workspace` slice는 slot-level draft save/clear, duplicate-assignee exception confirm, schedule confirm을 먼저 다룬다.
-- 첫 shipped `Work Time` slice는 schedule 단위 planned/actual start/end 저장만 먼저 다룬다.
+- 첫 shipped `Work Time` slice는 schedule 단위 planned/actual start/end 저장과 assigned schedule completion까지 먼저 다룬다.
 - `admin`도 운영 홈 구조는 `manager`와 동일하게 시작한다.
 
 ## 5. Admin 전용 영역

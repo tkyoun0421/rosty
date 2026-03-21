@@ -5,9 +5,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
+import { useScheduleDetailQuery } from '@/features/schedules/api/fetch-schedule-detail';
 import { useWorkTimeQuery } from '@/features/work-time/api/fetch-work-time';
-import { useWorkTimeMutation } from '@/features/work-time/api/use-work-time-mutation';
 import {
+  useWorkTimeCompletionMutation,
+  useWorkTimeMutation,
+} from '@/features/work-time/api/use-work-time-mutation';
+import {
+  canCompleteScheduleOperation,
   createWorkTimeFormValues,
   validateWorkTimeForm,
   type WorkTimeFieldErrors,
@@ -25,11 +30,14 @@ export function WorkTimeScreen({
   onBackDetail,
 }: WorkTimeScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
+  const scheduleDetailQuery = useScheduleDetailQuery(scheduleId);
   const workTimeQuery = useWorkTimeQuery(scheduleId);
   const mutation = useWorkTimeMutation(scheduleId, session.userId);
+  const completionMutation = useWorkTimeCompletionMutation(scheduleId);
   const [formValues, setFormValues] = useState(createWorkTimeFormValues(null));
   const [fieldErrors, setFieldErrors] = useState<WorkTimeFieldErrors>({});
   const [notice, setNotice] = useState<string | null>(null);
+  const isBusy = mutation.isPending || completionMutation.isPending;
 
   useEffect(() => {
     if (!workTimeQuery.data) {
@@ -61,6 +69,25 @@ export function WorkTimeScreen({
       setNotice(error instanceof Error ? error.message : 'Could not save work time.');
     }
   }
+
+  async function handleCompleteSchedule() {
+    try {
+      await completionMutation.mutateAsync();
+      setNotice('Schedule marked completed.');
+    } catch (error) {
+      setNotice(
+        error instanceof Error
+          ? error.message
+          : 'Could not complete the schedule.',
+      );
+    }
+  }
+
+  const canCompleteSchedule = canCompleteScheduleOperation({
+    scheduleStatus: scheduleDetailQuery.data?.detail?.status ?? null,
+    actualStartAt: workTimeQuery.data?.record?.actualStartAt ?? null,
+    actualEndAt: workTimeQuery.data?.record?.actualEndAt ?? null,
+  });
 
   return (
     <Frame session={session} title="Work Time" subtitle="Record planned and actual times for the selected schedule.">
@@ -122,6 +149,35 @@ export function WorkTimeScreen({
         />
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Completion</Text>
+        <Text style={styles.sectionBody}>
+          Assigned schedules can be completed only after actual start and end
+          times are recorded and any pending cancellation requests are resolved.
+        </Text>
+        {canCompleteSchedule ? (
+          <Pressable
+            accessibilityRole="button"
+            disabled={isBusy}
+            onPress={() => {
+              void handleCompleteSchedule();
+            }}
+            style={[styles.primaryButton, isBusy ? styles.disabledButton : null]}
+          >
+            <Text style={styles.primaryButtonLabel}>
+              {completionMutation.isPending
+                ? 'Completing schedule...'
+                : 'Mark schedule completed'}
+            </Text>
+          </Pressable>
+        ) : (
+          <Text style={styles.sectionBody}>
+            This action opens once the schedule is assigned and both actual time
+            fields are present.
+          </Text>
+        )}
+      </View>
+
       {notice ? <NoticeCard title="Work Time" body={notice} /> : null}
 
       <View style={styles.footerActions}>
@@ -134,11 +190,11 @@ export function WorkTimeScreen({
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={mutation.isPending}
+          disabled={isBusy}
           onPress={() => {
             void handleSave();
           }}
-          style={[styles.primaryButton, mutation.isPending ? styles.disabledButton : null]}
+          style={[styles.primaryButton, isBusy ? styles.disabledButton : null]}
         >
           <Text style={styles.primaryButtonLabel}>
             {mutation.isPending ? 'Saving work time...' : 'Save work time'}
@@ -286,6 +342,11 @@ const styles = StyleSheet.create({
     color: '#14342b',
     fontSize: 19,
     fontWeight: '800',
+  },
+  sectionBody: {
+    color: '#56635d',
+    fontSize: 14,
+    lineHeight: 20,
   },
   fieldGroup: {
     gap: 6,
