@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import * as Clipboard from 'expo-clipboard';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,6 +8,7 @@ import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useTeamPayrollQuery } from '@/features/payroll/api/fetch-team-payroll';
 import {
+  createTeamPayrollCsv,
   filterTeamPayrollSnapshot,
   formatEstimatedPay,
   type PayrollShiftTab,
@@ -27,6 +29,7 @@ export function TeamPayrollScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const payrollQuery = useTeamPayrollQuery();
   const [tab, setTab] = useState<PayrollShiftTab>('all');
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
 
   if (payrollQuery.isLoading || !payrollQuery.data) {
     return (
@@ -61,6 +64,17 @@ export function TeamPayrollScreen({
   const snapshot = payrollQuery.data;
   const visibleSnapshot = filterTeamPayrollSnapshot(snapshot, tab);
 
+  async function handleCopyExport() {
+    try {
+      await Clipboard.setStringAsync(createTeamPayrollCsv(visibleSnapshot));
+      setExportNotice(
+        'The visible team payroll view was copied as CSV and is ready to paste.',
+      );
+    } catch {
+      setExportNotice('Could not copy the current payroll CSV view.');
+    }
+  }
+
   return (
     <PayrollFrame
       session={session}
@@ -78,6 +92,28 @@ export function TeamPayrollScreen({
           'Team Payroll is reading the current Supabase-backed payroll snapshot.'
         }
       />
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: visibleSnapshot.members.length === 0 }}
+        disabled={visibleSnapshot.members.length === 0}
+        onPress={() => {
+          void handleCopyExport();
+        }}
+        style={[
+          styles.exportButton,
+          visibleSnapshot.members.length === 0 ? styles.disabledButton : null,
+        ]}
+      >
+        <Text style={styles.exportButtonLabel}>Copy visible CSV export</Text>
+        <Text style={styles.exportButtonBody}>
+          Copy the currently visible team payroll rows for handoff or review.
+        </Text>
+      </Pressable>
+
+      {exportNotice ? (
+        <NoticeCard title="Payroll export ready" body={exportNotice} />
+      ) : null}
 
       <View style={styles.tabRow}>
         <TabButton
@@ -366,6 +402,25 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  exportButton: {
+    borderRadius: 18,
+    backgroundColor: '#efe0c8',
+    padding: 16,
+    gap: 6,
+  },
+  exportButtonLabel: {
+    color: '#14342b',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  exportButtonBody: {
+    color: '#56635d',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  disabledButton: {
+    opacity: 0.55,
   },
   errorCard: {
     borderRadius: 20,

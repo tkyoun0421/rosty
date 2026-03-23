@@ -1,5 +1,7 @@
 import {
+  createMemberPayrollCsv,
   createTeamPayrollSnapshot,
+  createTeamPayrollCsv,
   filterTeamPayrollMemberEstimate,
   filterTeamPayrollSnapshot,
   formatEstimatedPay,
@@ -152,5 +154,22 @@ describe('team payroll snapshot', () => {
     expect(pendingOnly?.shifts).toHaveLength(1);
     expect(pendingOnly?.pendingScheduleCount).toBe(1);
     expect(pendingOnly?.totalEstimatedPay).toBe(0);
+  });
+
+  it('creates CSV exports from visible team and member payroll views', () => {
+    const snapshot = createTeamPayrollSnapshot(createSource());
+    const estimatedOnly = filterTeamPayrollSnapshot(snapshot, 'estimated');
+    const sera = estimatedOnly.members.find(
+      (member) => member.memberId === 'member-2',
+    )!;
+
+    expect(createTeamPayrollCsv(estimatedOnly)).toContain(
+      'member_name,role,schedule_id,schedule_title,shift_status,position_count,hourly_rate,duration_minutes,regular_pay,overtime_pay,estimated_pay',
+    );
+    expect(createTeamPayrollCsv(estimatedOnly)).toContain(
+      'March 24 Garden Hall reception',
+    );
+    expect(createMemberPayrollCsv(sera)).toContain('Sera Staff');
+    expect(createMemberPayrollCsv(sera)).toContain('schedule-2');
   });
 });

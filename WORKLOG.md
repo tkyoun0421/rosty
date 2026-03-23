@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the notifications filter and search slice.
+Pending the next locked staffing or scheduling feature after completing the payroll copy export slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/notifications-filter-search-slice/summary.md`
-- Archive plan: `docs/development-plans/notifications-filter-search-slice/plan.md`
+- Archive summary: `docs/development-plans/payroll-copy-export-slice/summary.md`
+- Archive plan: `docs/development-plans/payroll-copy-export-slice/plan.md`
 
 ## Last Completed
 
-Completed the notifications filter and search slice:
+Completed the payroll copy export slice:
 
-- Added notification category filtering for access, schedule, assignment, and cancellation flows.
-- Updated `src/features/notifications/ui/notifications-screen.tsx` with type chips and a local search field on top of the existing unread/all tabs.
-- Updated worklog archive references for the richer inbox browsing flow.
+- Added shared CSV export helpers for visible team and member payroll views.
+- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with copy-export actions.
+- Updated worklog archive references for the richer payroll handoff flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -37,7 +37,7 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
-- Push delivery, device-token registration, schedule-update notifications, and payroll export/date-period filtering are still unimplemented.
+- Push delivery, device-token registration, schedule-update notifications, and payroll date-period filtering are still unimplemented.
 
 ## Latest Verification
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the notifications filter and search slice task on 2026-03-23.
+- Completed the payroll copy export slice task on 2026-03-23.

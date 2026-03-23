@@ -87,6 +87,20 @@ export type TeamPayrollSnapshot = {
 
 export type PayrollShiftTab = 'all' | 'estimated' | 'pending';
 
+const PAYROLL_CSV_HEADERS = [
+  'member_name',
+  'role',
+  'schedule_id',
+  'schedule_title',
+  'shift_status',
+  'position_count',
+  'hourly_rate',
+  'duration_minutes',
+  'regular_pay',
+  'overtime_pay',
+  'estimated_pay',
+];
+
 function isPayrollEligibleAssignment(status: TeamPayrollAssignmentStatus): boolean {
   return status !== 'proposed' && status !== 'cancelled';
 }
@@ -110,6 +124,59 @@ function diffMinutes(startAt: string, endAt: string): number | null {
 
 export function formatEstimatedPay(value: number): string {
   return `KRW ${value.toLocaleString('en-US')}`;
+}
+
+function escapeCsvValue(value: string | number | null): string {
+  if (value === null) {
+    return '';
+  }
+
+  const raw = String(value);
+
+  if (
+    raw.includes(',') ||
+    raw.includes('"') ||
+    raw.includes('\n') ||
+    raw.includes('\r')
+  ) {
+    return `"${raw.replaceAll('"', '""')}"`;
+  }
+
+  return raw;
+}
+
+function createPayrollCsvRows(members: TeamPayrollMemberEstimate[]): string {
+  const rows = members.flatMap((member) =>
+    member.shifts.map((shift) =>
+      [
+        member.fullName,
+        member.role,
+        shift.scheduleId,
+        shift.scheduleTitle,
+        shift.status,
+        shift.positionCount,
+        shift.hourlyRate,
+        shift.durationMinutes,
+        shift.regularPay,
+        shift.overtimePay,
+        shift.estimatedPay,
+      ]
+        .map((value) => escapeCsvValue(value))
+        .join(','),
+    ),
+  );
+
+  return [PAYROLL_CSV_HEADERS.join(','), ...rows].join('\n');
+}
+
+export function createTeamPayrollCsv(snapshot: TeamPayrollSnapshot): string {
+  return createPayrollCsvRows(snapshot.members);
+}
+
+export function createMemberPayrollCsv(
+  member: TeamPayrollMemberEstimate,
+): string {
+  return createPayrollCsvRows([member]);
 }
 
 export function filterTeamPayrollSnapshot(
