@@ -67,30 +67,54 @@ function createSeedQueueSnapshot(message: string | null): CancellationQueueSnaps
   return {
     source: 'seed',
     sourceMessage: message,
-    items: assignmentRequestSeedSource
-      .filter((request) => request.status === 'requested')
-      .map((request) => {
-        const assignment = myAssignmentsSeedSource.assignments.find(
-          (entry) => entry.id === request.assignmentId,
-        )!;
-        const schedule = schedulesById.get(assignment.scheduleId)!;
-        const slot = slotsById.get(assignment.slotId)!;
+    items: [
+      ...assignmentRequestSeedSource
+        .filter((request) => request.status === 'requested')
+        .map((request) => {
+          const assignment = myAssignmentsSeedSource.assignments.find(
+            (entry) => entry.id === request.assignmentId,
+          )!;
+          const schedule = schedulesById.get(assignment.scheduleId)!;
+          const slot = slotsById.get(assignment.slotId)!;
 
-        return {
-          requestId: `seed-${request.assignmentId}`,
-          assignmentId: request.assignmentId,
-          requesterName: 'Mina Staff',
-          scheduleId: assignment.scheduleId,
-          scheduleTitle:
-            schedule.memo && schedule.memo.trim().length > 0
-              ? `${schedule.eventDate} · ${schedule.memo.trim()}`
-              : `${schedule.eventDate} · ${schedule.packageCount} packages`,
-          eventDate: schedule.eventDate,
-          positionName: slot.positionName,
-          reason: request.reason,
-          status: request.status,
-        };
-      }),
+          return {
+            requestId: `seed-${request.assignmentId}`,
+            assignmentId: request.assignmentId,
+            requesterName: 'Mina Staff',
+            scheduleId: assignment.scheduleId,
+            scheduleTitle:
+              schedule.memo && schedule.memo.trim().length > 0
+                ? `${schedule.eventDate} · ${schedule.memo.trim()}`
+                : `${schedule.eventDate} · ${schedule.packageCount} packages`,
+            eventDate: schedule.eventDate,
+            positionName: slot.positionName,
+            reason: request.reason,
+            status: request.status,
+          };
+        }),
+      {
+        requestId: 'seed-reviewed-approved',
+        assignmentId: 'assignment-reviewed-approved',
+        requesterName: 'Sera Staff',
+        scheduleId: 'schedule-1',
+        scheduleTitle: '2026-03-22 · Grand Hall wedding',
+        eventDate: '2026-03-22',
+        positionName: 'Guest hall',
+        reason: 'Reviewed and approved.',
+        status: 'approved',
+      },
+      {
+        requestId: 'seed-reviewed-rejected',
+        assignmentId: 'assignment-reviewed-rejected',
+        requesterName: 'Joon Staff',
+        scheduleId: 'schedule-2',
+        scheduleTitle: '2026-03-12 · Garden Hall reception',
+        eventDate: '2026-03-12',
+        positionName: 'Banquet',
+        reason: 'Reviewed and rejected.',
+        status: 'rejected',
+      },
+    ],
   };
 }
 
@@ -157,7 +181,6 @@ async function fetchLiveCancellationQueue(): Promise<CancellationQueueSnapshot> 
   const requestsResult = await supabaseClient
     .from('cancellation_requests')
     .select('id, assignment_id, requested_by, reason, status')
-    .eq('status', 'requested')
     .returns<CancellationRequestRow[]>();
 
   if (requestsResult.error) {
@@ -188,8 +211,10 @@ async function fetchLiveCancellationQueue(): Promise<CancellationQueueSnapshot> 
   const slotIds = [...new Set((assignmentsResult.data ?? []).map((row) => row.slot_id))];
   const userIds = [
     ...new Set(
-      (assignmentsResult.data ?? [])
-        .map((row) => row.assignee_user_id)
+      [
+        ...(assignmentsResult.data ?? []).map((row) => row.assignee_user_id),
+        ...(requestsResult.data ?? []).map((row) => row.requested_by),
+      ]
         .filter((value): value is string => !!value),
     ),
   ];

@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the My Assignments filter slice.
+Pending the next locked staffing or scheduling feature after completing the Cancellation Queue history slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/my-assignments-filter-slice/summary.md`
-- Archive plan: `docs/development-plans/my-assignments-filter-slice/plan.md`
+- Archive summary: `docs/development-plans/cancellation-queue-history-slice/summary.md`
+- Archive plan: `docs/development-plans/cancellation-queue-history-slice/plan.md`
 
 ## Last Completed
 
-Completed the My Assignments filter slice:
+Completed the Cancellation Queue history slice:
 
-- Added My Assignments filter helpers for `upcoming / past` tabs plus status chips.
-- Updated `src/features/assignments/ui/my-assignments-screen.tsx` with top tabs, status chips, and filtered empty states.
-- Updated worklog archive references for the richer employee assignment browsing flow.
+- Added cancellation queue filter helpers for `pending / reviewed` tabs plus reviewed-status chips.
+- Expanded `Cancellation Queue` so approved/rejected history is visible and pending requests remain reviewable.
+- Updated worklog archive references for the richer cancellation review flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the My Assignments filter slice task on 2026-03-23.
+- Completed the Cancellation Queue history slice task on 2026-03-23.

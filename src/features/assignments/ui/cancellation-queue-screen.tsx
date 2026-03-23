@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -5,6 +7,11 @@ import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useCancellationQueueQuery } from '@/features/assignments/api/fetch-cancellation-queue';
 import { useCancellationReviewMutation } from '@/features/assignments/api/use-cancellation-review-mutation';
+import {
+  filterCancellationQueueItems,
+  type CancellationQueueStatusChip,
+  type CancellationQueueTab,
+} from '@/features/assignments/model/cancellation-queue';
 
 type CancellationQueueScreenProps = {
   session: AuthSession;
@@ -18,6 +25,9 @@ export function CancellationQueueScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const queueQuery = useCancellationQueueQuery();
   const mutation = useCancellationReviewMutation();
+  const [tab, setTab] = useState<CancellationQueueTab>('pending');
+  const [statusChip, setStatusChip] =
+    useState<CancellationQueueStatusChip>('all');
 
   if (queueQuery.isLoading || !queueQuery.data) {
     return (
@@ -35,6 +45,11 @@ export function CancellationQueueScreen({
   }
 
   const snapshot = queueQuery.data;
+  const visibleItems = filterCancellationQueueItems({
+    items: snapshot.items,
+    tab,
+    statusChip,
+  });
 
   return (
     <QueueFrame
@@ -54,13 +69,58 @@ export function CancellationQueueScreen({
         }
       />
 
-      {snapshot.items.length === 0 ? (
+      <View style={styles.tabRow}>
+        <TabButton
+          active={tab === 'pending'}
+          label={`Pending (${filterCancellationQueueItems({
+            items: snapshot.items,
+            tab: 'pending',
+            statusChip: 'all',
+          }).length})`}
+          onPress={() => setTab('pending')}
+        />
+        <TabButton
+          active={tab === 'reviewed'}
+          label={`Reviewed (${filterCancellationQueueItems({
+            items: snapshot.items,
+            tab: 'reviewed',
+            statusChip: 'all',
+          }).length})`}
+          onPress={() => setTab('reviewed')}
+        />
+      </View>
+
+      {tab === 'reviewed' ? (
+        <View style={styles.chipRow}>
+          <ChipButton
+            active={statusChip === 'all'}
+            label="All reviews"
+            onPress={() => setStatusChip('all')}
+          />
+          <ChipButton
+            active={statusChip === 'approved'}
+            label="Approved"
+            onPress={() => setStatusChip('approved')}
+          />
+          <ChipButton
+            active={statusChip === 'rejected'}
+            label="Rejected"
+            onPress={() => setStatusChip('rejected')}
+          />
+        </View>
+      ) : null}
+
+      {visibleItems.length === 0 ? (
         <NoticeCard
-          title="No pending requests"
-          body="There are no cancellation requests waiting for review right now."
+          title={tab === 'pending' ? 'No pending requests' : 'No reviewed requests'}
+          body={
+            tab === 'pending'
+              ? 'There are no cancellation requests waiting for review right now.'
+              : 'Switch the current review filter to see a different subset.'
+          }
         />
       ) : (
-        snapshot.items.map((item) => (
+        visibleItems.map((item) => (
           <View key={item.requestId} style={styles.requestCard}>
             <View style={styles.requestHeader}>
               <Text style={styles.requestTitle}>{item.scheduleTitle}</Text>
@@ -70,40 +130,44 @@ export function CancellationQueueScreen({
               {item.requesterName} · {item.positionName} · {item.eventDate}
             </Text>
             <Text style={styles.requestReason}>{item.reason}</Text>
-            <View style={styles.actionRow}>
-              <Pressable
-                accessibilityRole="button"
-                disabled={mutation.isPending}
-                onPress={() => {
-                  void mutation.mutateAsync({
-                    requestId: item.requestId,
-                    action: 'approve',
-                  });
-                }}
-                style={[
-                  styles.primaryButton,
-                  mutation.isPending ? styles.disabledButton : null,
-                ]}
-              >
-                <Text style={styles.primaryButtonLabel}>Approve</Text>
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                disabled={mutation.isPending}
-                onPress={() => {
-                  void mutation.mutateAsync({
-                    requestId: item.requestId,
-                    action: 'reject',
-                  });
-                }}
-                style={[
-                  styles.secondaryButton,
-                  mutation.isPending ? styles.disabledButton : null,
-                ]}
-              >
-                <Text style={styles.secondaryButtonLabel}>Reject</Text>
-              </Pressable>
-            </View>
+            {item.status === 'requested' ? (
+              <View style={styles.actionRow}>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={mutation.isPending}
+                  onPress={() => {
+                    void mutation.mutateAsync({
+                      requestId: item.requestId,
+                      action: 'approve',
+                    });
+                  }}
+                  style={[
+                    styles.primaryButton,
+                    mutation.isPending ? styles.disabledButton : null,
+                  ]}
+                >
+                  <Text style={styles.primaryButtonLabel}>Approve</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={mutation.isPending}
+                  onPress={() => {
+                    void mutation.mutateAsync({
+                      requestId: item.requestId,
+                      action: 'reject',
+                    });
+                  }}
+                  style={[
+                    styles.secondaryButton,
+                    mutation.isPending ? styles.disabledButton : null,
+                  ]}
+                >
+                  <Text style={styles.secondaryButtonLabel}>Reject</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text style={styles.requestMeta}>Review completed</Text>
+            )}
           </View>
         ))
       )}
@@ -164,6 +228,54 @@ function NoticeCard({ title, body }: { title: string; body: string }) {
   );
 }
 
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -218,6 +330,49 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
+    color: '#fff8ef',
   },
   requestCard: {
     borderRadius: 18,
