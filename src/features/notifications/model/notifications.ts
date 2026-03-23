@@ -3,6 +3,7 @@ export type NotificationItem = {
   type:
     | 'user_approved'
     | 'schedule_created'
+    | 'schedule_cancelled'
     | 'assignment_confirmed'
     | 'cancellation_requested'
     | 'cancellation_approved'

@@ -2,25 +2,25 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the My Assignments search and sort slice.
+Pending the next locked staffing or scheduling feature after completing the schedule-cancelled notifications slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/my-assignments-search-sort-slice/summary.md`
-- Archive plan: `docs/development-plans/my-assignments-search-sort-slice/plan.md`
+- Archive summary: `docs/development-plans/schedule-cancelled-notifications-slice/summary.md`
+- Archive plan: `docs/development-plans/schedule-cancelled-notifications-slice/plan.md`
 
 ## Last Completed
 
-Completed the My Assignments search and sort slice:
+Completed the schedule-cancelled notifications slice:
 
-- Added local assignment search matching for title, positions, date, and visible status text.
-- Updated `src/features/assignments/ui/my-assignments-screen.tsx` with sort chips and a local search field on top of the existing tabs and status chips.
-- Updated worklog archive references for the richer employee assignment browsing flow.
+- Added `schedule_cancelled` as a tracked inbox notification type.
+- Patched `cancel_schedule_operation` so confirmed assignees receive a schedule-cancelled notification when an operator cancels the schedule.
+- Updated worklog archive references for the richer staffing interruption flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, employee, or scheduling slice.
+Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, notification, or scheduling slice.
 
 ## Blockers
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the My Assignments search and sort slice task on 2026-03-23.
+- Completed the schedule-cancelled notifications slice task on 2026-03-23.

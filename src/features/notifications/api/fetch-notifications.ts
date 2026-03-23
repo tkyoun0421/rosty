@@ -78,6 +78,16 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
         },
         {
           id: 'seed-notification-employee-4',
+          type: 'schedule_cancelled',
+          title: 'Schedule cancelled',
+          body: `The schedule for ${createdSchedule?.eventDate ?? '2026-03-29'} · ${createdSchedule?.memo ?? 'Convention Hall banquet'} was cancelled. Your assignment was removed.`,
+          targetRoute: '/schedule-detail?scheduleId=schedule-3',
+          targetId: 'schedule-3',
+          isRead: false,
+          createdAt: '2026-03-20T12:00:00.000Z',
+        },
+        {
+          id: 'seed-notification-employee-5',
           type: 'cancellation_approved',
           title: 'Cancellation approved',
           body: 'Your cancellation request was approved.',
