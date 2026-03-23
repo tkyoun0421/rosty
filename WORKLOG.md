@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Schedule list filter slice.
+Pending the next locked staffing or scheduling feature after completing the My Assignments filter slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-list-filter-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-list-filter-slice/plan.md`
+- Archive summary: `docs/development-plans/my-assignments-filter-slice/summary.md`
+- Archive plan: `docs/development-plans/my-assignments-filter-slice/plan.md`
 
 ## Last Completed
 
-Completed the Schedule list filter slice:
+Completed the My Assignments filter slice:
 
-- Added schedule list filter helpers for `all / collecting / assigned / closed` and `all / open / locked`.
-- Updated `src/features/schedules/ui/schedule-list-screen.tsx` with top tabs, chips, and filtered empty states.
-- Updated worklog archive references for the richer schedule browsing flow.
+- Added My Assignments filter helpers for `upcoming / past` tabs plus status chips.
+- Updated `src/features/assignments/ui/my-assignments-screen.tsx` with top tabs, status chips, and filtered empty states.
+- Updated worklog archive references for the richer employee assignment browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Schedule list filter slice task on 2026-03-23.
+- Completed the My Assignments filter slice task on 2026-03-23.

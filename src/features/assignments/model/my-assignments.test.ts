@@ -1,5 +1,6 @@
 import {
   createMyAssignmentsSnapshot,
+  filterMyAssignmentSchedules,
   formatAssignmentStatus,
 } from '@/features/assignments/model/my-assignments';
 
@@ -124,5 +125,67 @@ describe('createMyAssignmentsSnapshot', () => {
 
     expect(snapshot.upcoming[0]?.status).toBe('cancel_requested');
     expect(formatAssignmentStatus('cancel_requested')).toBe('Cancel requested');
+  });
+
+  it('filters grouped schedules by tab and status chip', () => {
+    const snapshot = createMyAssignmentsSnapshot(
+      {
+        assignments: [
+          {
+            id: 'assignment-1',
+            scheduleId: 'schedule-1',
+            slotId: 'slot-1',
+            status: 'confirmed',
+          },
+          {
+            id: 'assignment-2',
+            scheduleId: 'schedule-2',
+            slotId: 'slot-2',
+            status: 'completed',
+          },
+        ],
+        schedules: [
+          {
+            id: 'schedule-1',
+            eventDate: '2026-03-22',
+            memo: null,
+            packageCount: 4,
+          },
+          {
+            id: 'schedule-2',
+            eventDate: '2026-03-12',
+            memo: null,
+            packageCount: 2,
+          },
+        ],
+        slots: [
+          { id: 'slot-1', positionName: 'Bride room' },
+          { id: 'slot-2', positionName: 'Banquet' },
+        ],
+      },
+      '2026-03-20',
+    );
+
+    expect(
+      filterMyAssignmentSchedules({
+        snapshot,
+        tab: 'upcoming',
+        status: 'confirmed',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterMyAssignmentSchedules({
+        snapshot,
+        tab: 'past',
+        status: 'completed',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterMyAssignmentSchedules({
+        snapshot,
+        tab: 'past',
+        status: 'confirmed',
+      }),
+    ).toHaveLength(0);
   });
 });

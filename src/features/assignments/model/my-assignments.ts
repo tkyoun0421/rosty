@@ -37,6 +37,9 @@ export type MyAssignmentsSnapshot = {
   past: MyAssignmentSchedule[];
 };
 
+export type MyAssignmentsTab = 'upcoming' | 'past';
+export type MyAssignmentsStatusChip = 'all' | MyAssignmentStatus;
+
 const statusPriority: Record<MyAssignmentStatus, number> = {
   cancel_requested: 4,
   confirmed: 3,
@@ -138,4 +141,19 @@ export function formatAssignmentStatus(status: MyAssignmentStatus): string {
     case 'completed':
       return 'Completed';
   }
+}
+
+export function filterMyAssignmentSchedules(input: {
+  snapshot: MyAssignmentsSnapshot;
+  tab: MyAssignmentsTab;
+  status: MyAssignmentsStatusChip;
+}): MyAssignmentSchedule[] {
+  const schedules =
+    input.tab === 'upcoming' ? input.snapshot.upcoming : input.snapshot.past;
+
+  if (input.status === 'all') {
+    return schedules;
+  }
+
+  return schedules.filter((schedule) => schedule.status === input.status);
 }

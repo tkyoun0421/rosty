@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -5,7 +7,10 @@ import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useMyAssignmentsQuery } from '@/features/assignments/api/fetch-my-assignments';
 import {
+  filterMyAssignmentSchedules,
   formatAssignmentStatus,
+  type MyAssignmentsStatusChip,
+  type MyAssignmentsTab,
   type MyAssignmentSchedule,
 } from '@/features/assignments/model/my-assignments';
 
@@ -22,6 +27,9 @@ export function MyAssignmentsScreen({
 }: MyAssignmentsScreenProps) {
   const signOut = useAuthStore((state) => state.signOut);
   const assignmentsQuery = useMyAssignmentsQuery(session.userId);
+  const [tab, setTab] = useState<MyAssignmentsTab>('upcoming');
+  const [statusChip, setStatusChip] =
+    useState<MyAssignmentsStatusChip>('all');
 
   if (assignmentsQuery.isLoading || !assignmentsQuery.data) {
     return (
@@ -38,6 +46,11 @@ export function MyAssignmentsScreen({
   }
 
   const snapshot = assignmentsQuery.data;
+  const filteredSchedules = filterMyAssignmentSchedules({
+    snapshot,
+    tab,
+    status: statusChip,
+  });
 
   return (
     <AssignmentsFrame
@@ -56,22 +69,62 @@ export function MyAssignmentsScreen({
         }
       />
 
-      <AssignmentsSection
-        title="Upcoming schedules"
-        body="Schedules on or after today."
-        schedules={snapshot.upcoming}
-        onOpenSchedule={onOpenSchedule}
-        emptyTitle="No upcoming assignments"
-        emptyBody="Your upcoming confirmed schedules will appear here."
-      />
+      <View style={styles.tabRow}>
+        <TabButton
+          active={tab === 'upcoming'}
+          label={`Upcoming (${snapshot.upcoming.length})`}
+          onPress={() => setTab('upcoming')}
+        />
+        <TabButton
+          active={tab === 'past'}
+          label={`Past (${snapshot.past.length})`}
+          onPress={() => setTab('past')}
+        />
+      </View>
+
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={statusChip === 'all'}
+          label="All"
+          onPress={() => setStatusChip('all')}
+        />
+        <ChipButton
+          active={statusChip === 'confirmed'}
+          label="Confirmed"
+          onPress={() => setStatusChip('confirmed')}
+        />
+        <ChipButton
+          active={statusChip === 'cancel_requested'}
+          label="Cancel requested"
+          onPress={() => setStatusChip('cancel_requested')}
+        />
+        <ChipButton
+          active={statusChip === 'cancelled'}
+          label="Cancelled"
+          onPress={() => setStatusChip('cancelled')}
+        />
+        <ChipButton
+          active={statusChip === 'completed'}
+          label="Completed"
+          onPress={() => setStatusChip('completed')}
+        />
+      </View>
 
       <AssignmentsSection
-        title="Past schedules"
-        body="Completed or previous schedules."
-        schedules={snapshot.past}
+        title={tab === 'upcoming' ? 'Upcoming schedules' : 'Past schedules'}
+        body={
+          tab === 'upcoming'
+            ? 'Schedules on or after today.'
+            : 'Completed or previous schedules.'
+        }
+        schedules={filteredSchedules}
         onOpenSchedule={onOpenSchedule}
-        emptyTitle="No past assignments"
-        emptyBody="Past schedules will appear here after event dates pass."
+        emptyTitle={
+          tab === 'upcoming'
+            ? 'No upcoming assignments'
+            : 'No past assignments'
+        }
+        emptyBody="Switch the current tab or status chip to see a different subset."
       />
 
       <View style={styles.footerActions}>
@@ -125,6 +178,54 @@ function NoticeCard({ title, body }: { title: string; body: string }) {
       <Text style={styles.noticeTitle}>{title}</Text>
       <Text style={styles.noticeBody}>{body}</Text>
     </View>
+  );
+}
+
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -237,6 +338,49 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
+    color: '#fff8ef',
   },
   section: {
     borderRadius: 24,
