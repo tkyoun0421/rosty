@@ -27,6 +27,41 @@ export type ScheduleDetail = ScheduleListItem & {
 
 export type ScheduleListTab = 'all' | 'collecting' | 'assigned' | 'closed';
 export type ScheduleCollectionChip = 'all' | 'open' | 'locked';
+export type ScheduleDateChip = 'all' | 'next_7_days' | 'later' | 'past';
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function parseDateOnly(value: string): number {
+  return Date.parse(`${value}T00:00:00.000Z`);
+}
+
+function resolveTodayDate(today?: string): string {
+  return today ?? new Date().toISOString().slice(0, 10);
+}
+
+function matchesScheduleDateRange(input: {
+  eventDate: string;
+  dateRange: ScheduleDateChip;
+  today?: string;
+}): boolean {
+  if (input.dateRange === 'all') {
+    return true;
+  }
+
+  const diffInDays = Math.floor(
+    (parseDateOnly(input.eventDate) - parseDateOnly(resolveTodayDate(input.today))) /
+      DAY_IN_MS,
+  );
+
+  switch (input.dateRange) {
+    case 'next_7_days':
+      return diffInDays >= 0 && diffInDays <= 7;
+    case 'later':
+      return diffInDays > 7;
+    case 'past':
+      return diffInDays < 0;
+  }
+}
 
 export function buildScheduleTitle(input: {
   eventDate: string;
@@ -63,7 +98,12 @@ export function filterScheduleListItems(input: {
   items: ScheduleListItem[];
   tab: ScheduleListTab;
   collection: ScheduleCollectionChip;
+  dateRange?: ScheduleDateChip;
+  query?: string;
+  today?: string;
 }): ScheduleListItem[] {
+  const normalizedQuery = input.query?.trim().toLowerCase() ?? '';
+
   return input.items.filter((item) => {
     const tabMatch =
       input.tab === 'all'
@@ -73,8 +113,19 @@ export function filterScheduleListItems(input: {
           : item.status === input.tab;
     const collectionMatch =
       input.collection === 'all' || item.collectionState === input.collection;
+    const dateMatch = matchesScheduleDateRange({
+      eventDate: item.eventDate,
+      dateRange: input.dateRange ?? 'all',
+      today: input.today,
+    });
+    const queryMatch =
+      normalizedQuery.length === 0
+        ? true
+        : `${item.title} ${item.eventDate} ${formatScheduleStatus(item.status)} ${formatCollectionState(item.collectionState)}`
+            .toLowerCase()
+            .includes(normalizedQuery);
 
-    return tabMatch && collectionMatch;
+    return tabMatch && collectionMatch && dateMatch && queryMatch;
   });
 }
 

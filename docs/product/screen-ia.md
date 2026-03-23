@@ -47,6 +47,7 @@
 
 - `Schedule Detail`에서는 본인 응답 생성/수정으로 이동한다.
 - 첫 shipped `Schedule List/Detail` slice는 tracked scheduling schema를 읽는 공통 read-only 화면으로 시작한다.
+- 현재 shipped `Schedule List`는 status tab, collection chip, date-range chip, local search로 현재 목록을 다시 좁혀 볼 수 있다.
 - 첫 shipped `Availability` slice는 employee가 `Schedule Detail` 안에서 자신의 `available`/`unavailable` 응답만 제출/수정한다.
 - 첫 shipped `Availability Overview` slice는 manager/admin이 slot별 available/support 후보와 vacancy를 읽는 read-only 화면으로 시작한다.
 - `Assignment Detail`에서만 취소 요청을 생성할 수 있다.

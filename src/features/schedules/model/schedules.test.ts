@@ -75,6 +75,8 @@ describe('schedule read helpers', () => {
         items,
         tab: 'collecting',
         collection: 'all',
+        dateRange: 'all',
+        query: '',
       }),
     ).toHaveLength(1);
     expect(
@@ -82,6 +84,8 @@ describe('schedule read helpers', () => {
         items,
         tab: 'closed',
         collection: 'locked',
+        dateRange: 'all',
+        query: '',
       }),
     ).toHaveLength(1);
     expect(
@@ -89,7 +93,74 @@ describe('schedule read helpers', () => {
         items,
         tab: 'assigned',
         collection: 'open',
+        dateRange: 'all',
+        query: '',
       }),
     ).toHaveLength(0);
+  });
+
+  it('filters the schedule list by date range and local query', () => {
+    const items = [
+      {
+        id: 'schedule-1',
+        title: '2026-03-22 · Grand Hall wedding',
+        eventDate: '2026-03-22',
+        packageCount: 4,
+        status: 'collecting' as const,
+        collectionState: 'open' as const,
+        enabledSlotCount: 2,
+      },
+      {
+        id: 'schedule-2',
+        title: '2026-03-29 · Garden Hall reception',
+        eventDate: '2026-03-29',
+        packageCount: 2,
+        status: 'assigned' as const,
+        collectionState: 'locked' as const,
+        enabledSlotCount: 3,
+      },
+      {
+        id: 'schedule-3',
+        title: '2026-03-18 · Convention Hall banquet',
+        eventDate: '2026-03-18',
+        packageCount: 3,
+        status: 'completed' as const,
+        collectionState: 'locked' as const,
+        enabledSlotCount: 1,
+      },
+    ];
+
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'all',
+        collection: 'all',
+        dateRange: 'next_7_days',
+        query: '',
+        today: '2026-03-22',
+      }).map((item) => item.id),
+    ).toEqual(['schedule-1', 'schedule-2']);
+
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'all',
+        collection: 'all',
+        dateRange: 'past',
+        query: '',
+        today: '2026-03-22',
+      }).map((item) => item.id),
+    ).toEqual(['schedule-3']);
+
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'all',
+        collection: 'all',
+        dateRange: 'all',
+        query: 'garden',
+        today: '2026-03-22',
+      }).map((item) => item.id),
+    ).toEqual(['schedule-2']);
   });
 });

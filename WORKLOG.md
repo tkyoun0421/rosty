@@ -2,25 +2,25 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Members search slice.
+Pending the next locked staffing or scheduling feature after completing the Schedule List search and date-range slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/members-search-slice/summary.md`
-- Archive plan: `docs/development-plans/members-search-slice/plan.md`
+- Archive summary: `docs/development-plans/schedule-list-search-range-slice/summary.md`
+- Archive plan: `docs/development-plans/schedule-list-search-range-slice/plan.md`
 
 ## Last Completed
 
-Completed the Members search slice:
+Completed the Schedule List search and date-range slice:
 
-- Added local member search matching for name, phone number, and role.
-- Updated `src/features/members/ui/members-screen.tsx` with a local search field on top of the existing tabs and chips.
-- Updated worklog archive references for the richer admin member browsing flow.
+- Added local schedule search matching for title, date, and visible status text.
+- Updated `src/features/schedules/ui/schedule-list-screen.tsx` with date-range chips and a local search field on top of the existing tabs and chips.
+- Updated worklog archive references for the richer schedule browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing or scheduling slice.
+Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, search, or scheduling slice.
 
 ## Blockers
 
@@ -37,7 +37,7 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
-- The manager-facing payroll and broader payroll calculation surfaces are still unimplemented.
+- Push delivery, device-token registration, schedule-update notifications, and payroll export/date-period filtering are still unimplemented.
 
 ## Latest Verification
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Members search slice task on 2026-03-23.
+- Completed the Schedule List search and date-range slice task on 2026-03-23.

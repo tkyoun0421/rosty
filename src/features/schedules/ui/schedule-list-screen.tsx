@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -12,6 +12,7 @@ import {
   formatCollectionState,
   formatScheduleStatus,
   type ScheduleCollectionChip,
+  type ScheduleDateChip,
   type ScheduleListTab,
   type ScheduleListItem,
 } from '@/features/schedules/model/schedules';
@@ -31,6 +32,8 @@ export function ScheduleListScreen({
   const [tab, setTab] = useState<ScheduleListTab>('all');
   const [collectionChip, setCollectionChip] =
     useState<ScheduleCollectionChip>('all');
+  const [dateChip, setDateChip] = useState<ScheduleDateChip>('all');
+  const [query, setQuery] = useState('');
 
   if (schedulesQuery.isLoading || !schedulesQuery.data) {
     return (
@@ -52,6 +55,8 @@ export function ScheduleListScreen({
     items: snapshot.items,
     tab,
     collection: collectionChip,
+    dateRange: dateChip,
+    query,
   });
 
   return (
@@ -84,6 +89,8 @@ export function ScheduleListScreen({
             items: snapshot.items,
             tab: 'collecting',
             collection: 'all',
+            dateRange: 'all',
+            query: '',
           }).length})`}
           onPress={() => setTab('collecting')}
         />
@@ -93,6 +100,8 @@ export function ScheduleListScreen({
             items: snapshot.items,
             tab: 'assigned',
             collection: 'all',
+            dateRange: 'all',
+            query: '',
           }).length})`}
           onPress={() => setTab('assigned')}
         />
@@ -102,6 +111,8 @@ export function ScheduleListScreen({
             items: snapshot.items,
             tab: 'closed',
             collection: 'all',
+            dateRange: 'all',
+            query: '',
           }).length})`}
           onPress={() => setTab('closed')}
         />
@@ -125,10 +136,45 @@ export function ScheduleListScreen({
         />
       </View>
 
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={dateChip === 'all'}
+          label="All dates"
+          onPress={() => setDateChip('all')}
+        />
+        <ChipButton
+          active={dateChip === 'next_7_days'}
+          label="Next 7 days"
+          onPress={() => setDateChip('next_7_days')}
+        />
+        <ChipButton
+          active={dateChip === 'later'}
+          label="Later"
+          onPress={() => setDateChip('later')}
+        />
+        <ChipButton
+          active={dateChip === 'past'}
+          label="Past"
+          onPress={() => setDateChip('past')}
+        />
+      </View>
+
+      <View style={styles.inputWrap}>
+        <Text style={styles.fieldLabel}>Search schedules</Text>
+        <TextInput
+          autoCapitalize="none"
+          onChangeText={setQuery}
+          placeholder="Search title, date, or status"
+          placeholderTextColor="#8f8a80"
+          style={styles.textInput}
+          value={query}
+        />
+      </View>
+
       {filteredItems.length === 0 ? (
         <NoticeCard
           title="No schedules in this view"
-          body="Switch the current tab or collection chip to see a different subset."
+          body="Adjust the current tab, chip, date range, or search query to see a different subset."
         />
       ) : (
         filteredItems.map((item) => (
@@ -349,6 +395,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  inputWrap: {
+    gap: 6,
+  },
+  fieldLabel: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  textInput: {
+    borderRadius: 16,
+    backgroundColor: '#fff8ef',
+    borderWidth: 1,
+    borderColor: '#d9ceb9',
+    color: '#14342b',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
   },
   chipButton: {
     borderRadius: 999,
