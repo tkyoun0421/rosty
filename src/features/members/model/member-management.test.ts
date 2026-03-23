@@ -4,6 +4,7 @@ import {
   canReactivateMember,
   canSuspendMember,
   countActiveAdmins,
+  filterMembersList,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   isLastActiveAdmin,
@@ -89,5 +90,29 @@ describe('member workflow actions', () => {
     expect(canChangeMemberRole(membersSeed, membersSeed[3], 'manager')).toBe(
       false,
     );
+  });
+
+  it('filters members by top tab and role chip', () => {
+    expect(
+      filterMembersList({
+        members: membersSeed,
+        tab: 'pending_approval',
+        roleChip: 'all',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterMembersList({
+        members: membersSeed,
+        tab: 'all',
+        roleChip: 'employee',
+      }),
+    ).toHaveLength(3);
+    expect(
+      filterMembersList({
+        members: membersSeed,
+        tab: 'deactivated',
+        roleChip: 'manager',
+      }),
+    ).toHaveLength(0);
   });
 });

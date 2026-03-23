@@ -16,6 +16,15 @@ export type MemberRecord = {
   approvedAt: string | null;
 };
 
+export type MemberListTab =
+  | 'all'
+  | 'pending_approval'
+  | 'active'
+  | 'suspended'
+  | 'deactivated';
+
+export type MemberRoleChip = 'all' | UserRole;
+
 export function getPendingMembers(members: MemberRecord[]): MemberRecord[] {
   return members.filter((member) => member.status === 'pending_approval');
 }
@@ -30,6 +39,21 @@ export function getSuspendedMembers(members: MemberRecord[]): MemberRecord[] {
 
 export function getDeactivatedMembers(members: MemberRecord[]): MemberRecord[] {
   return members.filter((member) => member.status === 'deactivated');
+}
+
+export function filterMembersList(input: {
+  members: MemberRecord[];
+  tab: MemberListTab;
+  roleChip: MemberRoleChip;
+}): MemberRecord[] {
+  return input.members.filter((member) => {
+    const tabMatch =
+      input.tab === 'all' ? true : member.status === input.tab;
+    const roleMatch =
+      input.roleChip === 'all' ? true : member.role === input.roleChip;
+
+    return tabMatch && roleMatch;
+  });
 }
 
 export function countActiveAdmins(members: MemberRecord[]): number {

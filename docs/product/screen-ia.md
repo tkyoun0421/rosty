@@ -53,6 +53,7 @@
 - 현재 shipped `Assignment Detail`은 schedule-level work time도 read-only로 함께 보여준다.
 - `My Assignments`는 `다가오는 일정`, `지난 일정` 탭으로 나뉜다.
 - 첫 shipped `My Assignments` slice는 shared scheduling read schema를 기준으로 같은 일정의 다중 포지션을 하나의 일정 카드로 묶어 보여준다.
+- 현재 shipped `My Assignments`는 `upcoming / past` 탭과 status chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - 첫 shipped `Assignment Detail` slice는 grouped schedule 안의 포지션별 assignment를 보여주고, `confirmed` 상태 포지션에만 개별 취소 요청을 보낸다.
 - 첫 shipped `My Payroll` slice는 shared payroll snapshot을 현재 사용자 기준으로만 필터링해서 보여준다.
 
@@ -96,6 +97,7 @@
 
 - `Members` 안에서 승인, 역할 변경, 정지/복구가 이루어진다.
 - `Members`는 deactivated 계정을 별도 read-only 섹션으로도 보여준다.
+- 현재 shipped `Members`는 status top tab과 role chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - `Invitation`은 활성, 사용됨, 만료, 비활성 링크를 함께 보여주고 재발급 시 기존 활성 링크를 비활성 이력으로 남긴다.
 - Invitation은 방금 발급한 링크와 현재 활성 링크를 바로 복사하거나 네이티브 공유 시트로 전달할 수 있다.
 - Pay Policy는 Members와 Manager Home에서 바로 열 수 있고, 직원별 override를 비우고 저장하면 홀 기본 시급 fallback으로 복귀한다.

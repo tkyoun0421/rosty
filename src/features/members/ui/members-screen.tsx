@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,11 +12,14 @@ import {
   canChangeMemberRole,
   canReactivateMember,
   canSuspendMember,
+  filterMembersList,
   getActiveMembers,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   getPendingMembers,
   getSuspendedMembers,
+  type MemberListTab,
+  type MemberRoleChip,
   type MemberRecord,
 } from '@/features/members/model/member-management';
 import { hasSupabaseConfig } from '@/shared/lib/supabase/client';
@@ -51,6 +56,8 @@ export function MembersScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const membersQuery = useMembersQuery();
   const mutation = useMemberAdminMutation(session);
+  const [tab, setTab] = useState<MemberListTab>('all');
+  const [roleChip, setRoleChip] = useState<MemberRoleChip>('all');
 
   if (!hasSupabaseConfig) {
     return (
@@ -89,7 +96,7 @@ export function MembersScreen({
         <View style={styles.noticeCard}>
           <Text style={styles.noticeTitle}>Loading members</Text>
           <Text style={styles.noticeBody}>
-            Pulling pending approvals, active staff, and suspended accounts.
+            Pulling pending approvals, active staff, suspended accounts, and deactivated accounts.
           </Text>
         </View>
       </MembersFrame>
@@ -126,13 +133,11 @@ export function MembersScreen({
   const activeMembers = getActiveMembers(members);
   const suspendedMembers = getSuspendedMembers(members);
   const deactivatedMembers = getDeactivatedMembers(members);
-  const otherMembers = members.filter(
-    (member) =>
-      member.status !== 'pending_approval' &&
-      member.status !== 'active' &&
-      member.status !== 'suspended' &&
-      member.status !== 'deactivated',
-  );
+  const filteredMembers = filterMembersList({
+    members,
+    tab,
+    roleChip,
+  });
 
   return (
     <MembersFrame
@@ -165,47 +170,64 @@ export function MembersScreen({
         </View>
       ) : null}
 
-      <MemberSection
-        title="Pending approval"
-        body="Profiles that completed setup and still need an admin decision."
-        members={pendingMembers}
-        allMembers={members}
-        mutation={mutation}
-      />
-
-      <MemberSection
-        title="Active members"
-        body="Users who can enter the main app today."
-        members={activeMembers}
-        allMembers={members}
-        mutation={mutation}
-      />
-
-      <MemberSection
-        title="Suspended members"
-        body="Users who can sign in but cannot open operating flows until restored."
-        members={suspendedMembers}
-        allMembers={members}
-        mutation={mutation}
-      />
-
-      <MemberSection
-        title="Deactivated members"
-        body="Read-only accounts that exited the product and can no longer sign in."
-        members={deactivatedMembers}
-        allMembers={members}
-        mutation={mutation}
-      />
-
-      {otherMembers.length > 0 ? (
-        <MemberSection
-          title="Other states"
-          body="Read-only rows outside the current management scope."
-          members={otherMembers}
-          allMembers={members}
-          mutation={mutation}
+      <View style={styles.tabRow}>
+        <TabButton
+          active={tab === 'all'}
+          label={`All (${members.length})`}
+          onPress={() => setTab('all')}
         />
-      ) : null}
+        <TabButton
+          active={tab === 'pending_approval'}
+          label={`Pending (${pendingMembers.length})`}
+          onPress={() => setTab('pending_approval')}
+        />
+        <TabButton
+          active={tab === 'active'}
+          label={`Active (${activeMembers.length})`}
+          onPress={() => setTab('active')}
+        />
+        <TabButton
+          active={tab === 'suspended'}
+          label={`Suspended (${suspendedMembers.length})`}
+          onPress={() => setTab('suspended')}
+        />
+        <TabButton
+          active={tab === 'deactivated'}
+          label={`Deactivated (${deactivatedMembers.length})`}
+          onPress={() => setTab('deactivated')}
+        />
+      </View>
+
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={roleChip === 'all'}
+          label="All roles"
+          onPress={() => setRoleChip('all')}
+        />
+        <ChipButton
+          active={roleChip === 'employee'}
+          label="Employee"
+          onPress={() => setRoleChip('employee')}
+        />
+        <ChipButton
+          active={roleChip === 'manager'}
+          label="Manager"
+          onPress={() => setRoleChip('manager')}
+        />
+        <ChipButton
+          active={roleChip === 'admin'}
+          label="Admin"
+          onPress={() => setRoleChip('admin')}
+        />
+      </View>
+
+      <MemberSection
+        title={getSectionTitle(tab)}
+        body={getSectionBody(tab)}
+        members={filteredMembers}
+        allMembers={members}
+        mutation={mutation}
+      />
 
       <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
     </MembersFrame>
@@ -243,6 +265,54 @@ function SummaryCard({ label, value }: { label: string; value: number }) {
       <Text style={styles.summaryLabel}>{label}</Text>
       <Text style={styles.summaryValue}>{value}</Text>
     </View>
+  );
+}
+
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -520,6 +590,36 @@ function FooterActions({
   );
 }
 
+function getSectionTitle(tab: MemberListTab) {
+  switch (tab) {
+    case 'all':
+      return 'All members';
+    case 'pending_approval':
+      return 'Pending approval';
+    case 'active':
+      return 'Active members';
+    case 'suspended':
+      return 'Suspended members';
+    case 'deactivated':
+      return 'Deactivated members';
+  }
+}
+
+function getSectionBody(tab: MemberListTab) {
+  switch (tab) {
+    case 'all':
+      return 'Review the full member list and narrow it with the role chips.';
+    case 'pending_approval':
+      return 'Profiles that completed setup and still need an admin decision.';
+    case 'active':
+      return 'Users who can enter the main app today.';
+    case 'suspended':
+      return 'Users who can sign in but cannot open operating flows until restored.';
+    case 'deactivated':
+      return 'Read-only accounts that exited the product and can no longer sign in.';
+  }
+}
+
 function formatStatus(status: MemberRecord['status']) {
   switch (status) {
     case 'pending_approval':
@@ -579,6 +679,50 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
+    color: '#fff8ef',
   },
   summaryCard: {
     width: '48%',
