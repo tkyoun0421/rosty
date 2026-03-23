@@ -9,6 +9,7 @@ import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useTeamPayrollQuery } from '@/features/payroll/api/fetch-team-payroll';
 import {
   createTeamPayrollCsv,
+  type PayrollDateRangeChip,
   filterTeamPayrollSnapshot,
   formatEstimatedPay,
   type PayrollShiftTab,
@@ -29,6 +30,7 @@ export function TeamPayrollScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const payrollQuery = useTeamPayrollQuery();
   const [tab, setTab] = useState<PayrollShiftTab>('all');
+  const [dateRange, setDateRange] = useState<PayrollDateRangeChip>('all');
   const [exportNotice, setExportNotice] = useState<string | null>(null);
 
   if (payrollQuery.isLoading || !payrollQuery.data) {
@@ -62,7 +64,7 @@ export function TeamPayrollScreen({
   }
 
   const snapshot = payrollQuery.data;
-  const visibleSnapshot = filterTeamPayrollSnapshot(snapshot, tab);
+  const visibleSnapshot = filterTeamPayrollSnapshot(snapshot, tab, dateRange);
 
   async function handleCopyExport() {
     try {
@@ -133,6 +135,29 @@ export function TeamPayrollScreen({
         />
       </View>
 
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={dateRange === 'all'}
+          label="All periods"
+          onPress={() => setDateRange('all')}
+        />
+        <ChipButton
+          active={dateRange === 'current_month'}
+          label="Current month"
+          onPress={() => setDateRange('current_month')}
+        />
+        <ChipButton
+          active={dateRange === 'future_months'}
+          label="Future months"
+          onPress={() => setDateRange('future_months')}
+        />
+        <ChipButton
+          active={dateRange === 'past_months'}
+          label="Past months"
+          onPress={() => setDateRange('past_months')}
+        />
+      </View>
+
       <View style={styles.summaryGrid}>
         <SummaryCard
           label="Estimated payout"
@@ -178,7 +203,7 @@ export function TeamPayrollScreen({
         {visibleSnapshot.members.length === 0 ? (
           <NoticeCard
             title="No payroll items in this view"
-            body="Switch the payroll tab to see a different subset of shifts."
+            body="Switch the payroll tab or period chip to see a different subset of shifts."
           />
         ) : (
           visibleSnapshot.members.map((member) => (
@@ -289,6 +314,30 @@ function TabButton({
     >
       <Text
         style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
       >
         {label}
       </Text>
@@ -442,6 +491,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   tabButton: {
     borderRadius: 999,
     backgroundColor: '#ded5c6',
@@ -457,6 +511,23 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
     color: '#fff8ef',
   },
   summaryGrid: {

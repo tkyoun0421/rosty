@@ -57,7 +57,7 @@
 - 현재 shipped `My Assignments`는 `upcoming / past` 탭, status chip, local search, sort chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - 첫 shipped `Assignment Detail` slice는 grouped schedule 안의 포지션별 assignment를 보여주고, `confirmed` 상태 포지션에만 개별 취소 요청을 보낸다.
 - 첫 shipped `My Payroll` slice는 shared payroll snapshot을 현재 사용자 기준으로만 필터링해서 보여준다.
-- 현재 shipped `My Payroll`과 `Team Payroll`은 현재 visible payroll view를 CSV로 복사할 수 있다.
+- 현재 shipped `My Payroll`과 `Team Payroll`은 current tab 위에 month-period chip을 지원하고, 현재 visible payroll view를 CSV로 복사할 수 있다.
 
 ## 4. Manager/Admin 운영 영역
 

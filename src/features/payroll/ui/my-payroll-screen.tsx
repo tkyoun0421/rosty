@@ -9,6 +9,7 @@ import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useMyPayrollQuery } from '@/features/payroll/api/fetch-my-payroll';
 import {
   createMemberPayrollCsv,
+  type PayrollDateRangeChip,
   filterTeamPayrollMemberEstimate,
   formatEstimatedPay,
   type PayrollShiftTab,
@@ -26,6 +27,7 @@ export function MyPayrollScreen({
   const signOut = useAuthStore((state) => state.signOut);
   const payrollQuery = useMyPayrollQuery(session.userId);
   const [tab, setTab] = useState<PayrollShiftTab>('all');
+  const [dateRange, setDateRange] = useState<PayrollDateRangeChip>('all');
   const [exportNotice, setExportNotice] = useState<string | null>(null);
 
   if (payrollQuery.isLoading || !payrollQuery.data) {
@@ -44,7 +46,7 @@ export function MyPayrollScreen({
 
   const snapshot = payrollQuery.data;
   const member = snapshot.member
-    ? filterTeamPayrollMemberEstimate(snapshot.member, tab)
+    ? filterTeamPayrollMemberEstimate(snapshot.member, tab, dateRange)
     : null;
 
   async function handleCopyExport() {
@@ -99,23 +101,48 @@ export function MyPayrollScreen({
       ) : null}
 
       {snapshot.member ? (
-        <View style={styles.tabRow}>
-          <TabButton
-            active={tab === 'all'}
-            label={`All (${snapshot.member.shifts.length})`}
-            onPress={() => setTab('all')}
-          />
-          <TabButton
-            active={tab === 'estimated'}
-            label={`Estimated (${snapshot.member.estimatedShiftCount})`}
-            onPress={() => setTab('estimated')}
-          />
-          <TabButton
-            active={tab === 'pending'}
-            label={`Pending (${snapshot.member.pendingScheduleCount})`}
-            onPress={() => setTab('pending')}
-          />
-        </View>
+        <>
+          <View style={styles.tabRow}>
+            <TabButton
+              active={tab === 'all'}
+              label={`All (${snapshot.member.shifts.length})`}
+              onPress={() => setTab('all')}
+            />
+            <TabButton
+              active={tab === 'estimated'}
+              label={`Estimated (${snapshot.member.estimatedShiftCount})`}
+              onPress={() => setTab('estimated')}
+            />
+            <TabButton
+              active={tab === 'pending'}
+              label={`Pending (${snapshot.member.pendingScheduleCount})`}
+              onPress={() => setTab('pending')}
+            />
+          </View>
+
+          <View style={styles.chipRow}>
+            <ChipButton
+              active={dateRange === 'all'}
+              label="All periods"
+              onPress={() => setDateRange('all')}
+            />
+            <ChipButton
+              active={dateRange === 'current_month'}
+              label="Current month"
+              onPress={() => setDateRange('current_month')}
+            />
+            <ChipButton
+              active={dateRange === 'future_months'}
+              label="Future months"
+              onPress={() => setDateRange('future_months')}
+            />
+            <ChipButton
+              active={dateRange === 'past_months'}
+              label="Past months"
+              onPress={() => setDateRange('past_months')}
+            />
+          </View>
+        </>
       ) : null}
 
       {!member ? (
@@ -123,7 +150,7 @@ export function MyPayrollScreen({
           title="No payroll estimate yet"
           body={
             snapshot.member
-              ? 'No shift estimates matched the selected payroll tab.'
+              ? 'No shift estimates matched the selected payroll tab and period chip.'
               : 'Your assignments do not have enough confirmed work-time data yet for a personal estimate.'
           }
         />
@@ -277,6 +304,30 @@ function TabButton({
   );
 }
 
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -355,6 +406,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   tabButton: {
     borderRadius: 999,
     backgroundColor: '#ded5c6',
@@ -370,6 +426,23 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
     color: '#fff8ef',
   },
   summaryGrid: {

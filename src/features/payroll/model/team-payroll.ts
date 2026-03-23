@@ -30,6 +30,7 @@ export type TeamPayrollAssignment = {
 
 export type TeamPayrollScheduleTimeRecord = {
   scheduleId: string;
+  scheduleDate: string;
   scheduleTitle: string;
   actualStartAt: string | null;
   actualEndAt: string | null;
@@ -44,6 +45,7 @@ export type TeamPayrollSource = {
 
 export type TeamPayrollShiftEstimate = {
   scheduleId: string;
+  scheduleDate: string;
   scheduleTitle: string;
   positionCount: number;
   hourlyRate: number;
@@ -86,6 +88,11 @@ export type TeamPayrollSnapshot = {
 };
 
 export type PayrollShiftTab = 'all' | 'estimated' | 'pending';
+export type PayrollDateRangeChip =
+  | 'all'
+  | 'current_month'
+  | 'future_months'
+  | 'past_months';
 
 const PAYROLL_CSV_HEADERS = [
   'member_name',
@@ -179,12 +186,41 @@ export function createMemberPayrollCsv(
   return createPayrollCsvRows([member]);
 }
 
+function matchesPayrollDateRange(input: {
+  scheduleDate: string;
+  dateRange: PayrollDateRangeChip;
+  today?: string;
+}): boolean {
+  if (input.dateRange === 'all') {
+    return true;
+  }
+
+  const currentMonth = (input.today ?? new Date().toISOString().slice(0, 10)).slice(
+    0,
+    7,
+  );
+  const scheduleMonth = input.scheduleDate.slice(0, 7);
+
+  switch (input.dateRange) {
+    case 'current_month':
+      return scheduleMonth === currentMonth;
+    case 'future_months':
+      return scheduleMonth > currentMonth;
+    case 'past_months':
+      return scheduleMonth < currentMonth;
+  }
+}
+
 export function filterTeamPayrollSnapshot(
   snapshot: TeamPayrollSnapshot,
   tab: PayrollShiftTab,
+  dateRange: PayrollDateRangeChip = 'all',
+  today?: string,
 ): TeamPayrollSnapshot {
   const members = snapshot.members
-    .map((member) => filterTeamPayrollMemberEstimate(member, tab))
+    .map((member) =>
+      filterTeamPayrollMemberEstimate(member, tab, dateRange, today),
+    )
     .filter((member): member is TeamPayrollMemberEstimate => member !== null);
 
   return {
@@ -225,15 +261,24 @@ export function filterTeamPayrollSnapshot(
 export function filterTeamPayrollMemberEstimate(
   member: TeamPayrollMemberEstimate,
   tab: PayrollShiftTab,
+  dateRange: PayrollDateRangeChip = 'all',
+  today?: string,
 ): TeamPayrollMemberEstimate | null {
-  const shifts =
-    tab === 'all'
-      ? member.shifts
-      : member.shifts.filter((shift) =>
-          tab === 'estimated'
-            ? shift.status === 'estimated'
-            : shift.status === 'missing_actual_time',
-        );
+  const shifts = member.shifts.filter((shift) => {
+    const tabMatch =
+      tab === 'all'
+        ? true
+        : tab === 'estimated'
+          ? shift.status === 'estimated'
+          : shift.status === 'missing_actual_time';
+    const dateMatch = matchesPayrollDateRange({
+      scheduleDate: shift.scheduleDate,
+      dateRange,
+      today,
+    });
+
+    return tabMatch && dateMatch;
+  });
 
   if (shifts.length === 0) {
     return null;
@@ -330,6 +375,7 @@ export function createTeamPayrollSnapshot(
 
     const shift: TeamPayrollShiftEstimate = {
       scheduleId,
+      scheduleDate: scheduleTimeRecord.scheduleDate,
       scheduleTitle: scheduleTimeRecord.scheduleTitle,
       positionCount: assignments.length,
       hourlyRate,

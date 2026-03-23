@@ -69,25 +69,29 @@ function createSource(): TeamPayrollSource {
     scheduleTimeRecords: [
       {
         scheduleId: 'schedule-1',
+        scheduleDate: '2026-03-23',
         scheduleTitle: 'March 23 Grand Hall wedding',
         actualStartAt: '2026-03-23T01:00:00.000Z',
         actualEndAt: '2026-03-23T09:00:00.000Z',
       },
       {
         scheduleId: 'schedule-2',
+        scheduleDate: '2026-03-24',
         scheduleTitle: 'March 24 Garden Hall reception',
         actualStartAt: '2026-03-24T00:00:00.000Z',
         actualEndAt: '2026-03-24T10:30:00.000Z',
       },
       {
         scheduleId: 'schedule-3',
+        scheduleDate: '2026-02-28',
         scheduleTitle: 'March 28 Convention Hall banquet',
         actualStartAt: '2026-03-28T01:00:00.000Z',
         actualEndAt: '2026-03-28T07:00:00.000Z',
       },
       {
         scheduleId: 'schedule-4',
-        scheduleTitle: 'March 29 Convention Hall banquet',
+        scheduleDate: '2026-04-29',
+        scheduleTitle: 'April 29 Convention Hall banquet',
         actualStartAt: null,
         actualEndAt: null,
       },
@@ -146,6 +150,35 @@ describe('team payroll snapshot', () => {
     expect(estimatedSnapshot.summary.totalEstimatedPay).toBe(253000);
   });
 
+  it('filters the shared snapshot by payroll date period', () => {
+    const snapshot = createTeamPayrollSnapshot(createSource());
+
+    expect(
+      filterTeamPayrollSnapshot(
+        snapshot,
+        'all',
+        'current_month',
+        '2026-03-20',
+      ).summary.scheduleCount,
+    ).toBe(2);
+    expect(
+      filterTeamPayrollSnapshot(
+        snapshot,
+        'all',
+        'future_months',
+        '2026-03-20',
+      ).summary.scheduleCount,
+    ).toBe(1);
+    expect(
+      filterTeamPayrollSnapshot(
+        snapshot,
+        'all',
+        'past_months',
+        '2026-03-20',
+      ).summary.scheduleCount,
+    ).toBe(0);
+  });
+
   it('filters a single member estimate down to the visible shifts', () => {
     const snapshot = createTeamPayrollSnapshot(createSource());
     const mina = snapshot.members.find((member) => member.memberId === 'member-1')!;
@@ -154,6 +187,20 @@ describe('team payroll snapshot', () => {
     expect(pendingOnly?.shifts).toHaveLength(1);
     expect(pendingOnly?.pendingScheduleCount).toBe(1);
     expect(pendingOnly?.totalEstimatedPay).toBe(0);
+  });
+
+  it('filters a single member estimate by payroll date period', () => {
+    const snapshot = createTeamPayrollSnapshot(createSource());
+    const mina = snapshot.members.find((member) => member.memberId === 'member-1')!;
+    const futureOnly = filterTeamPayrollMemberEstimate(
+      mina,
+      'all',
+      'future_months',
+      '2026-03-20',
+    );
+
+    expect(futureOnly?.shifts).toHaveLength(1);
+    expect(futureOnly?.shifts[0]?.scheduleId).toBe('schedule-4');
   });
 
   it('creates CSV exports from visible team and member payroll views', () => {

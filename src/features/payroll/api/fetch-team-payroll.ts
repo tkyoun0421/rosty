@@ -114,19 +114,22 @@ const teamPayrollSeedSource: TeamPayrollSource = {
   scheduleTimeRecords: [
     {
       scheduleId: 'schedule-1',
+      scheduleDate: '2026-03-23',
       scheduleTitle: 'March 23 Grand Hall wedding',
       actualStartAt: '2026-03-23T01:00:00.000Z',
       actualEndAt: '2026-03-23T09:00:00.000Z',
     },
     {
       scheduleId: 'schedule-2',
+      scheduleDate: '2026-03-24',
       scheduleTitle: 'March 24 Garden Hall reception',
       actualStartAt: '2026-03-24T00:00:00.000Z',
       actualEndAt: '2026-03-24T10:30:00.000Z',
     },
     {
       scheduleId: 'schedule-4',
-      scheduleTitle: 'March 29 Convention Hall banquet',
+      scheduleDate: '2026-04-29',
+      scheduleTitle: 'April 29 Convention Hall banquet',
       actualStartAt: null,
       actualEndAt: null,
     },
@@ -192,6 +195,7 @@ export function mapLiveTeamPayrollSource(input: {
 
         return {
           scheduleId: record.schedule_id,
+          scheduleDate: schedule.event_date,
           scheduleTitle: buildScheduleTitle(schedule),
           actualStartAt: record.actual_start_at,
           actualEndAt: record.actual_end_at,

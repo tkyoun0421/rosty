@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the payroll copy export slice.
+Pending the next locked staffing or scheduling feature after completing the payroll date-period filter slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/payroll-copy-export-slice/summary.md`
-- Archive plan: `docs/development-plans/payroll-copy-export-slice/plan.md`
+- Archive summary: `docs/development-plans/payroll-date-period-slice/summary.md`
+- Archive plan: `docs/development-plans/payroll-date-period-slice/plan.md`
 
 ## Last Completed
 
-Completed the payroll copy export slice:
+Completed the payroll date-period filter slice:
 
-- Added shared CSV export helpers for visible team and member payroll views.
-- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with copy-export actions.
-- Updated worklog archive references for the richer payroll handoff flow.
+- Added month-period filtering on top of the existing payroll visibility tabs.
+- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with current-month, future-months, and past-months chips.
+- Updated worklog archive references for the richer payroll browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -37,7 +37,7 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
-- Push delivery, device-token registration, schedule-update notifications, and payroll date-period filtering are still unimplemented.
+- Push delivery, device-token registration, and schedule-update notifications are still unimplemented.
 
 ## Latest Verification
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the payroll copy export slice task on 2026-03-23.
+- Completed the payroll date-period filter slice task on 2026-03-23.
