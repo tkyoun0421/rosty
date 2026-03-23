@@ -13,6 +13,7 @@ import {
 import { useDeactivateAccountMutation } from '@/features/settings/api/use-deactivate-account-mutation';
 import { useSettingsProfileQuery } from '@/features/settings/api/fetch-settings-profile';
 import { useSettingsProfileMutation } from '@/features/settings/api/use-settings-profile-mutation';
+import { getSettingsAppInfo } from '@/features/settings/model/settings-app-info';
 import { createSettingsProfileFormValues } from '@/features/settings/model/settings-profile';
 
 type SettingsScreenProps = {
@@ -28,6 +29,7 @@ export function SettingsScreen({
   const profileQuery = useSettingsProfileQuery(session.userId);
   const mutation = useSettingsProfileMutation(session);
   const deactivateMutation = useDeactivateAccountMutation(session);
+  const appInfo = getSettingsAppInfo();
   const [formValues, setFormValues] = useState(
     createSettingsProfileFormValues(null, session.displayName),
   );
@@ -152,6 +154,17 @@ export function SettingsScreen({
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>App info</Text>
+          <InfoRow label="App" value={appInfo.appName} />
+          <InfoRow label="Version" value={appInfo.version} />
+          <InfoRow label="Environment" value={appInfo.appEnv} />
+          <InfoRow label="Auth" value={appInfo.authStatus} />
+          <InfoRow label="iOS bundle" value={appInfo.iosBundleId} />
+          <InfoRow label="Android package" value={appInfo.androidPackage} />
+          <Text style={styles.sectionBody}>{appInfo.deliveryStatus}</Text>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Session</Text>
           <Text style={styles.sectionBody}>
             End the current session without changing your account status.
@@ -271,6 +284,21 @@ export function SettingsScreen({
   );
 }
 
+function InfoRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  );
+}
+
 function Field({
   label,
   value,
@@ -356,6 +384,21 @@ const styles = StyleSheet.create({
   },
   fieldGroup: {
     gap: 6,
+  },
+  infoRow: {
+    gap: 4,
+  },
+  infoLabel: {
+    color: '#56635d',
+    fontSize: 12,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  infoValue: {
+    color: '#14342b',
+    fontSize: 14,
+    lineHeight: 20,
   },
   fieldLabel: {
     color: '#14342b',

@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Deactivated members slice.
+Pending the next locked staffing or scheduling feature after completing the Settings app-info slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/deactivated-members-slice/summary.md`
-- Archive plan: `docs/development-plans/deactivated-members-slice/plan.md`
+- Archive summary: `docs/development-plans/settings-app-info-slice/summary.md`
+- Archive plan: `docs/development-plans/settings-app-info-slice/plan.md`
 
 ## Last Completed
 
-Completed the Deactivated members slice:
+Completed the Settings app-info slice:
 
-- Added explicit deactivated member grouping and read-only guards in the members model.
-- Updated `src/features/members/ui/members-screen.tsx` so admins see deactivated accounts in their own section and summary card.
-- Updated worklog archive references for the clearer admin member-state view.
+- Added the settings app-info helper and focused regression coverage.
+- Updated `src/features/settings/ui/settings-screen.tsx` so app name, version, environment, auth mode, and package identifiers are visible in a read-only section.
+- Updated worklog archive references for the richer settings information surface.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Deactivated members slice task on 2026-03-21.
+- Completed the Settings app-info slice task on 2026-03-23.

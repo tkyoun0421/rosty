@@ -115,7 +115,7 @@
 
 - 첫 shipped `Notifications` slice는 unread/all inbox와 cancellation flow 기반 알림만 먼저 다룬다.
 - 현재 shipped staffing notifications는 `user_approved`, `schedule_created`, `assignment_confirmed`, cancellation 알림까지 포함한다.
-- 첫 shipped `Settings` slice는 core profile fields 수정, sign-out, self deactivation을 먼저 다룬다.
+- 첫 shipped `Settings` slice는 core profile fields 수정, sign-out, self deactivation, app info를 먼저 다룬다.
 - self deactivation은 `다가오는 confirmed 배정`이 남아 있으면 차단된다.
 
 ## 7. 화면 연결 원칙
