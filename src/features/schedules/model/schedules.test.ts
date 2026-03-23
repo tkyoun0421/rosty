@@ -1,6 +1,7 @@
 import {
   buildScheduleTitle,
   canCancelScheduleOperation,
+  filterScheduleListItems,
   formatCollectionState,
   formatScheduleStatus,
 } from '@/features/schedules/model/schedules';
@@ -36,5 +37,59 @@ describe('schedule read helpers', () => {
     expect(canCancelScheduleOperation('assigned')).toBe(true);
     expect(canCancelScheduleOperation('completed')).toBe(false);
     expect(canCancelScheduleOperation('cancelled')).toBe(false);
+  });
+
+  it('filters the schedule list by top tab and collection chip', () => {
+    const items = [
+      {
+        id: 'schedule-1',
+        title: '2026-03-22 · Grand Hall wedding',
+        eventDate: '2026-03-22',
+        packageCount: 4,
+        status: 'collecting' as const,
+        collectionState: 'open' as const,
+        enabledSlotCount: 2,
+      },
+      {
+        id: 'schedule-2',
+        title: '2026-03-23 · Garden Hall reception',
+        eventDate: '2026-03-23',
+        packageCount: 2,
+        status: 'assigned' as const,
+        collectionState: 'locked' as const,
+        enabledSlotCount: 3,
+      },
+      {
+        id: 'schedule-3',
+        title: '2026-03-24 · Convention Hall banquet',
+        eventDate: '2026-03-24',
+        packageCount: 3,
+        status: 'completed' as const,
+        collectionState: 'locked' as const,
+        enabledSlotCount: 1,
+      },
+    ];
+
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'collecting',
+        collection: 'all',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'closed',
+        collection: 'locked',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterScheduleListItems({
+        items,
+        tab: 'assigned',
+        collection: 'open',
+      }),
+    ).toHaveLength(0);
   });
 });

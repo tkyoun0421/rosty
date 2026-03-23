@@ -25,6 +25,9 @@ export type ScheduleDetail = ScheduleListItem & {
   slots: ScheduleSlotSummary[];
 };
 
+export type ScheduleListTab = 'all' | 'collecting' | 'assigned' | 'closed';
+export type ScheduleCollectionChip = 'all' | 'open' | 'locked';
+
 export function buildScheduleTitle(input: {
   eventDate: string;
   memo: string | null;
@@ -54,6 +57,25 @@ export function formatCollectionState(
   state: AvailabilityCollectionState,
 ): string {
   return state === 'open' ? 'Open' : 'Locked';
+}
+
+export function filterScheduleListItems(input: {
+  items: ScheduleListItem[];
+  tab: ScheduleListTab;
+  collection: ScheduleCollectionChip;
+}): ScheduleListItem[] {
+  return input.items.filter((item) => {
+    const tabMatch =
+      input.tab === 'all'
+        ? true
+        : input.tab === 'closed'
+          ? item.status === 'completed' || item.status === 'cancelled'
+          : item.status === input.tab;
+    const collectionMatch =
+      input.collection === 'all' || item.collectionState === input.collection;
+
+    return tabMatch && collectionMatch;
+  });
 }
 
 export function canCancelScheduleOperation(status: ScheduleStatus): boolean {

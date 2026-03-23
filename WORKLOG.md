@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Settings app-info slice.
+Pending the next locked staffing or scheduling feature after completing the Schedule list filter slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/settings-app-info-slice/summary.md`
-- Archive plan: `docs/development-plans/settings-app-info-slice/plan.md`
+- Archive summary: `docs/development-plans/schedule-list-filter-slice/summary.md`
+- Archive plan: `docs/development-plans/schedule-list-filter-slice/plan.md`
 
 ## Last Completed
 
-Completed the Settings app-info slice:
+Completed the Schedule list filter slice:
 
-- Added the settings app-info helper and focused regression coverage.
-- Updated `src/features/settings/ui/settings-screen.tsx` so app name, version, environment, auth mode, and package identifiers are visible in a read-only section.
-- Updated worklog archive references for the richer settings information surface.
+- Added schedule list filter helpers for `all / collecting / assigned / closed` and `all / open / locked`.
+- Updated `src/features/schedules/ui/schedule-list-screen.tsx` with top tabs, chips, and filtered empty states.
+- Updated worklog archive references for the richer schedule browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Settings app-info slice task on 2026-03-23.
+- Completed the Schedule list filter slice task on 2026-03-23.

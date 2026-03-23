@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,8 +8,11 @@ import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useScheduleListQuery } from '@/features/schedules/api/fetch-schedule-list';
 import {
+  filterScheduleListItems,
   formatCollectionState,
   formatScheduleStatus,
+  type ScheduleCollectionChip,
+  type ScheduleListTab,
   type ScheduleListItem,
 } from '@/features/schedules/model/schedules';
 
@@ -23,6 +28,9 @@ export function ScheduleListScreen({
   const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
   const schedulesQuery = useScheduleListQuery();
+  const [tab, setTab] = useState<ScheduleListTab>('all');
+  const [collectionChip, setCollectionChip] =
+    useState<ScheduleCollectionChip>('all');
 
   if (schedulesQuery.isLoading || !schedulesQuery.data) {
     return (
@@ -40,6 +48,11 @@ export function ScheduleListScreen({
   }
 
   const snapshot = schedulesQuery.data;
+  const filteredItems = filterScheduleListItems({
+    items: snapshot.items,
+    tab,
+    collection: collectionChip,
+  });
 
   return (
     <ScheduleFrame
@@ -59,15 +72,77 @@ export function ScheduleListScreen({
         }
       />
 
-      {snapshot.items.map((item) => (
-        <ScheduleCard
-          key={item.id}
-          item={item}
-          onPress={() => {
-            router.push(`${'/schedule-detail'}?scheduleId=${encodeURIComponent(item.id)}`);
-          }}
+      <View style={styles.tabRow}>
+        <TabButton
+          active={tab === 'all'}
+          label={`All (${snapshot.items.length})`}
+          onPress={() => setTab('all')}
         />
-      ))}
+        <TabButton
+          active={tab === 'collecting'}
+          label={`Collecting (${filterScheduleListItems({
+            items: snapshot.items,
+            tab: 'collecting',
+            collection: 'all',
+          }).length})`}
+          onPress={() => setTab('collecting')}
+        />
+        <TabButton
+          active={tab === 'assigned'}
+          label={`Assigned (${filterScheduleListItems({
+            items: snapshot.items,
+            tab: 'assigned',
+            collection: 'all',
+          }).length})`}
+          onPress={() => setTab('assigned')}
+        />
+        <TabButton
+          active={tab === 'closed'}
+          label={`Closed (${filterScheduleListItems({
+            items: snapshot.items,
+            tab: 'closed',
+            collection: 'all',
+          }).length})`}
+          onPress={() => setTab('closed')}
+        />
+      </View>
+
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={collectionChip === 'all'}
+          label="All collection"
+          onPress={() => setCollectionChip('all')}
+        />
+        <ChipButton
+          active={collectionChip === 'open'}
+          label="Open"
+          onPress={() => setCollectionChip('open')}
+        />
+        <ChipButton
+          active={collectionChip === 'locked'}
+          label="Locked"
+          onPress={() => setCollectionChip('locked')}
+        />
+      </View>
+
+      {filteredItems.length === 0 ? (
+        <NoticeCard
+          title="No schedules in this view"
+          body="Switch the current tab or collection chip to see a different subset."
+        />
+      ) : (
+        filteredItems.map((item) => (
+          <ScheduleCard
+            key={item.id}
+            item={item}
+            onPress={() => {
+              router.push(
+                `${'/schedule-detail'}?scheduleId=${encodeURIComponent(item.id)}`,
+              );
+            }}
+          />
+        ))
+      )}
 
       <View style={styles.footerActions}>
         <Pressable
@@ -122,6 +197,54 @@ function NoticeCard({ title, body }: { title: string; body: string }) {
       <Text style={styles.noticeTitle}>{title}</Text>
       <Text style={styles.noticeBody}>{body}</Text>
     </View>
+  );
+}
+
+function TabButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.tabButton, active ? styles.tabButtonActive : null]}
+    >
+      <Text
+        style={[styles.tabButtonLabel, active ? styles.tabButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -199,6 +322,50 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  tabButton: {
+    borderRadius: 999,
+    backgroundColor: '#ded5c6',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  tabButtonActive: {
+    backgroundColor: '#14342b',
+  },
+  tabButtonLabel: {
+    color: '#2d2720',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
+    color: '#fff8ef',
   },
   card: {
     borderRadius: 18,
