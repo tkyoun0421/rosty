@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the schedule-cancelled notifications slice.
+Pending the next locked staffing or scheduling feature after completing the notifications filter and search slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-cancelled-notifications-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-cancelled-notifications-slice/plan.md`
+- Archive summary: `docs/development-plans/notifications-filter-search-slice/summary.md`
+- Archive plan: `docs/development-plans/notifications-filter-search-slice/plan.md`
 
 ## Last Completed
 
-Completed the schedule-cancelled notifications slice:
+Completed the notifications filter and search slice:
 
-- Added `schedule_cancelled` as a tracked inbox notification type.
-- Patched `cancel_schedule_operation` so confirmed assignees receive a schedule-cancelled notification when an operator cancels the schedule.
-- Updated worklog archive references for the richer staffing interruption flow.
+- Added notification category filtering for access, schedule, assignment, and cancellation flows.
+- Updated `src/features/notifications/ui/notifications-screen.tsx` with type chips and a local search field on top of the existing unread/all tabs.
+- Updated worklog archive references for the richer inbox browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the schedule-cancelled notifications slice task on 2026-03-23.
+- Completed the notifications filter and search slice task on 2026-03-23.

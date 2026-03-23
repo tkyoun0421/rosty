@@ -28,10 +28,51 @@ const notifications = [
 
 describe('notifications model helpers', () => {
   it('filters unread notifications', () => {
-    expect(filterNotifications(notifications, 'unread')).toHaveLength(1);
+    expect(
+      filterNotifications({
+        notifications,
+        tab: 'unread',
+        category: 'all',
+        query: '',
+      }),
+    ).toHaveLength(1);
   });
 
   it('counts unread notifications', () => {
     expect(countUnreadNotifications(notifications)).toBe(1);
+  });
+
+  it('filters notifications by category and local query', () => {
+    const richerNotifications = [
+      ...notifications,
+      {
+        id: 'notification-3',
+        type: 'schedule_created' as const,
+        title: 'Schedule created',
+        body: 'A new banquet schedule was created.',
+        targetRoute: '/schedule-detail?scheduleId=schedule-2',
+        targetId: 'schedule-2',
+        isRead: false,
+        createdAt: '2026-03-20T08:00:00.000Z',
+      },
+    ];
+
+    expect(
+      filterNotifications({
+        notifications: richerNotifications,
+        tab: 'all',
+        category: 'schedule',
+        query: '',
+      }),
+    ).toHaveLength(1);
+
+    expect(
+      filterNotifications({
+        notifications: richerNotifications,
+        tab: 'all',
+        category: 'all',
+        query: 'banquet',
+      }),
+    ).toHaveLength(1);
   });
 });

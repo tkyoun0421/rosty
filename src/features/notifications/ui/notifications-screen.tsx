@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -11,6 +11,7 @@ import { useNotificationReadMutation } from '@/features/notifications/api/use-no
 import {
   countUnreadNotifications,
   filterNotifications,
+  type NotificationCategoryChip,
   type NotificationTab,
 } from '@/features/notifications/model/notifications';
 
@@ -28,6 +29,8 @@ export function NotificationsScreen({
   const notificationsQuery = useNotificationsQuery(session);
   const readMutation = useNotificationReadMutation(session.userId);
   const [tab, setTab] = useState<NotificationTab>('unread');
+  const [category, setCategory] = useState<NotificationCategoryChip>('all');
+  const [query, setQuery] = useState('');
 
   if (notificationsQuery.isLoading || !notificationsQuery.data) {
     return (
@@ -45,7 +48,12 @@ export function NotificationsScreen({
   }
 
   const snapshot = notificationsQuery.data;
-  const visibleItems = filterNotifications(snapshot.items, tab);
+  const visibleItems = filterNotifications({
+    notifications: snapshot.items,
+    tab,
+    category,
+    query,
+  });
   const unreadCount = countUnreadNotifications(snapshot.items);
 
   async function handleOpenNotification(
@@ -98,13 +106,53 @@ export function NotificationsScreen({
         />
       </View>
 
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={category === 'all'}
+          label="All types"
+          onPress={() => setCategory('all')}
+        />
+        <ChipButton
+          active={category === 'access'}
+          label="Access"
+          onPress={() => setCategory('access')}
+        />
+        <ChipButton
+          active={category === 'schedule'}
+          label="Schedule"
+          onPress={() => setCategory('schedule')}
+        />
+        <ChipButton
+          active={category === 'assignment'}
+          label="Assignment"
+          onPress={() => setCategory('assignment')}
+        />
+        <ChipButton
+          active={category === 'cancellation'}
+          label="Cancellation"
+          onPress={() => setCategory('cancellation')}
+        />
+      </View>
+
+      <View style={styles.inputWrap}>
+        <Text style={styles.fieldLabel}>Search notifications</Text>
+        <TextInput
+          autoCapitalize="none"
+          onChangeText={setQuery}
+          placeholder="Search title or body"
+          placeholderTextColor="#8f8a80"
+          style={styles.textInput}
+          value={query}
+        />
+      </View>
+
       {visibleItems.length === 0 ? (
         <NoticeCard
           title="No notifications here"
           body={
             tab === 'unread'
-              ? 'You have no unread notifications right now.'
-              : 'No notifications were available in the current inbox window.'
+              ? 'Adjust the current type filter or search query, or check back when a new unread notification arrives.'
+              : 'Adjust the current type filter or search query to see a different inbox subset.'
           }
         />
       ) : (
@@ -220,6 +268,30 @@ function TabButton({
   );
 }
 
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -279,6 +351,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   tabButton: {
     flex: 1,
     borderRadius: 999,
@@ -295,6 +372,41 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   tabButtonLabelActive: {
+    color: '#fff8ef',
+  },
+  inputWrap: {
+    gap: 6,
+  },
+  fieldLabel: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  textInput: {
+    borderRadius: 16,
+    backgroundColor: '#fff8ef',
+    borderWidth: 1,
+    borderColor: '#d9ceb9',
+    color: '#14342b',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
     color: '#fff8ef',
   },
   notificationCard: {
