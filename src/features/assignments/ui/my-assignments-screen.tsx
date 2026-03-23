@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -10,6 +10,7 @@ import {
   filterMyAssignmentSchedules,
   formatAssignmentStatus,
   type MyAssignmentsStatusChip,
+  type MyAssignmentsSortChip,
   type MyAssignmentsTab,
   type MyAssignmentSchedule,
 } from '@/features/assignments/model/my-assignments';
@@ -30,6 +31,8 @@ export function MyAssignmentsScreen({
   const [tab, setTab] = useState<MyAssignmentsTab>('upcoming');
   const [statusChip, setStatusChip] =
     useState<MyAssignmentsStatusChip>('all');
+  const [sortChip, setSortChip] = useState<MyAssignmentsSortChip>('event_date');
+  const [query, setQuery] = useState('');
 
   if (assignmentsQuery.isLoading || !assignmentsQuery.data) {
     return (
@@ -50,6 +53,8 @@ export function MyAssignmentsScreen({
     snapshot,
     tab,
     status: statusChip,
+    sort: sortChip,
+    query,
   });
 
   return (
@@ -110,6 +115,31 @@ export function MyAssignmentsScreen({
         />
       </View>
 
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={sortChip === 'event_date'}
+          label="Date order"
+          onPress={() => setSortChip('event_date')}
+        />
+        <ChipButton
+          active={sortChip === 'status'}
+          label="Status order"
+          onPress={() => setSortChip('status')}
+        />
+      </View>
+
+      <View style={styles.inputWrap}>
+        <Text style={styles.fieldLabel}>Search assignments</Text>
+        <TextInput
+          autoCapitalize="none"
+          onChangeText={setQuery}
+          placeholder="Search title, position, or status"
+          placeholderTextColor="#8f8a80"
+          style={styles.textInput}
+          value={query}
+        />
+      </View>
+
       <AssignmentsSection
         title={tab === 'upcoming' ? 'Upcoming schedules' : 'Past schedules'}
         body={
@@ -124,7 +154,7 @@ export function MyAssignmentsScreen({
             ? 'No upcoming assignments'
             : 'No past assignments'
         }
-        emptyBody="Switch the current tab or status chip to see a different subset."
+        emptyBody="Adjust the current tab, status chip, sort order, or search query to see a different subset."
       />
 
       <View style={styles.footerActions}>
@@ -364,6 +394,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  inputWrap: {
+    gap: 6,
+  },
+  fieldLabel: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  textInput: {
+    borderRadius: 16,
+    backgroundColor: '#fff8ef',
+    borderWidth: 1,
+    borderColor: '#d9ceb9',
+    color: '#14342b',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
   },
   chipButton: {
     borderRadius: 999,

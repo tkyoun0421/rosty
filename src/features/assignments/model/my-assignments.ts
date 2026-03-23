@@ -39,6 +39,7 @@ export type MyAssignmentsSnapshot = {
 
 export type MyAssignmentsTab = 'upcoming' | 'past';
 export type MyAssignmentsStatusChip = 'all' | MyAssignmentStatus;
+export type MyAssignmentsSortChip = 'event_date' | 'status';
 
 const statusPriority: Record<MyAssignmentStatus, number> = {
   cancel_requested: 4,
@@ -71,6 +72,39 @@ function compareDateOnly(left: string, right: string): number {
   }
 
   return left < right ? -1 : 1;
+}
+
+function compareScheduleDateForTab(
+  tab: MyAssignmentsTab,
+  left: MyAssignmentSchedule,
+  right: MyAssignmentSchedule,
+): number {
+  return tab === 'upcoming'
+    ? compareDateOnly(left.eventDate, right.eventDate)
+    : compareDateOnly(right.eventDate, left.eventDate);
+}
+
+function compareAssignmentSchedules(
+  tab: MyAssignmentsTab,
+  sort: MyAssignmentsSortChip,
+  left: MyAssignmentSchedule,
+  right: MyAssignmentSchedule,
+): number {
+  if (sort === 'status') {
+    const statusDiff = statusPriority[right.status] - statusPriority[left.status];
+
+    if (statusDiff !== 0) {
+      return statusDiff;
+    }
+  }
+
+  const dateDiff = compareScheduleDateForTab(tab, left, right);
+
+  if (dateDiff !== 0) {
+    return dateDiff;
+  }
+
+  return left.title.localeCompare(right.title);
 }
 
 export function createMyAssignmentsSnapshot(
@@ -147,13 +181,32 @@ export function filterMyAssignmentSchedules(input: {
   snapshot: MyAssignmentsSnapshot;
   tab: MyAssignmentsTab;
   status: MyAssignmentsStatusChip;
+  query?: string;
+  sort?: MyAssignmentsSortChip;
 }): MyAssignmentSchedule[] {
   const schedules =
     input.tab === 'upcoming' ? input.snapshot.upcoming : input.snapshot.past;
+  const normalizedQuery = input.query?.trim().toLowerCase() ?? '';
 
-  if (input.status === 'all') {
-    return schedules;
-  }
+  return schedules
+    .filter((schedule) => {
+      const statusMatch =
+        input.status === 'all' ? true : schedule.status === input.status;
+      const queryMatch =
+        normalizedQuery.length === 0
+          ? true
+          : `${schedule.title} ${schedule.eventDate} ${schedule.positions.join(' ')} ${formatAssignmentStatus(schedule.status)}`
+              .toLowerCase()
+              .includes(normalizedQuery);
 
-  return schedules.filter((schedule) => schedule.status === input.status);
+      return statusMatch && queryMatch;
+    })
+    .sort((left, right) =>
+      compareAssignmentSchedules(
+        input.tab,
+        input.sort ?? 'event_date',
+        left,
+        right,
+      ),
+    );
 }

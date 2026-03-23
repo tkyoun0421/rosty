@@ -54,7 +54,7 @@
 - 현재 shipped `Assignment Detail`은 schedule-level work time도 read-only로 함께 보여준다.
 - `My Assignments`는 `다가오는 일정`, `지난 일정` 탭으로 나뉜다.
 - 첫 shipped `My Assignments` slice는 shared scheduling read schema를 기준으로 같은 일정의 다중 포지션을 하나의 일정 카드로 묶어 보여준다.
-- 현재 shipped `My Assignments`는 `upcoming / past` 탭과 status chip으로 현재 목록을 다시 좁혀 볼 수 있다.
+- 현재 shipped `My Assignments`는 `upcoming / past` 탭, status chip, local search, sort chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - 첫 shipped `Assignment Detail` slice는 grouped schedule 안의 포지션별 assignment를 보여주고, `confirmed` 상태 포지션에만 개별 취소 요청을 보낸다.
 - 첫 shipped `My Payroll` slice는 shared payroll snapshot을 현재 사용자 기준으로만 필터링해서 보여준다.
 

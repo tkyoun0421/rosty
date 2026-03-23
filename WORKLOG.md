@@ -2,25 +2,25 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Schedule List search and date-range slice.
+Pending the next locked staffing or scheduling feature after completing the My Assignments search and sort slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-list-search-range-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-list-search-range-slice/plan.md`
+- Archive summary: `docs/development-plans/my-assignments-search-sort-slice/summary.md`
+- Archive plan: `docs/development-plans/my-assignments-search-sort-slice/plan.md`
 
 ## Last Completed
 
-Completed the Schedule List search and date-range slice:
+Completed the My Assignments search and sort slice:
 
-- Added local schedule search matching for title, date, and visible status text.
-- Updated `src/features/schedules/ui/schedule-list-screen.tsx` with date-range chips and a local search field on top of the existing tabs and chips.
-- Updated worklog archive references for the richer schedule browsing flow.
+- Added local assignment search matching for title, positions, date, and visible status text.
+- Updated `src/features/assignments/ui/my-assignments-screen.tsx` with sort chips and a local search field on top of the existing tabs and status chips.
+- Updated worklog archive references for the richer employee assignment browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, search, or scheduling slice.
+Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, employee, or scheduling slice.
 
 ## Blockers
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Schedule List search and date-range slice task on 2026-03-23.
+- Completed the My Assignments search and sort slice task on 2026-03-23.

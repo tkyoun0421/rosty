@@ -171,6 +171,8 @@ describe('createMyAssignmentsSnapshot', () => {
         snapshot,
         tab: 'upcoming',
         status: 'confirmed',
+        query: '',
+        sort: 'event_date',
       }),
     ).toHaveLength(1);
     expect(
@@ -178,6 +180,8 @@ describe('createMyAssignmentsSnapshot', () => {
         snapshot,
         tab: 'past',
         status: 'completed',
+        query: '',
+        sort: 'event_date',
       }),
     ).toHaveLength(1);
     expect(
@@ -185,7 +189,82 @@ describe('createMyAssignmentsSnapshot', () => {
         snapshot,
         tab: 'past',
         status: 'confirmed',
+        query: '',
+        sort: 'event_date',
       }),
     ).toHaveLength(0);
+  });
+
+  it('supports local query matching and status-first sorting', () => {
+    const snapshot = createMyAssignmentsSnapshot(
+      {
+        assignments: [
+          {
+            id: 'assignment-1',
+            scheduleId: 'schedule-1',
+            slotId: 'slot-1',
+            status: 'confirmed',
+          },
+          {
+            id: 'assignment-2',
+            scheduleId: 'schedule-2',
+            slotId: 'slot-2',
+            status: 'cancel_requested',
+          },
+          {
+            id: 'assignment-3',
+            scheduleId: 'schedule-3',
+            slotId: 'slot-3',
+            status: 'completed',
+          },
+        ],
+        schedules: [
+          {
+            id: 'schedule-1',
+            eventDate: '2026-03-22',
+            memo: 'Grand Hall wedding',
+            packageCount: 4,
+          },
+          {
+            id: 'schedule-2',
+            eventDate: '2026-03-24',
+            memo: 'Garden Hall reception',
+            packageCount: 2,
+          },
+          {
+            id: 'schedule-3',
+            eventDate: '2026-03-25',
+            memo: 'Convention Hall banquet',
+            packageCount: 3,
+          },
+        ],
+        slots: [
+          { id: 'slot-1', positionName: 'Bride room' },
+          { id: 'slot-2', positionName: 'Banquet' },
+          { id: 'slot-3', positionName: 'Guest hall' },
+        ],
+      },
+      '2026-03-20',
+    );
+
+    expect(
+      filterMyAssignmentSchedules({
+        snapshot,
+        tab: 'upcoming',
+        status: 'all',
+        query: 'banquet',
+        sort: 'event_date',
+      }).map((schedule) => schedule.scheduleId),
+    ).toEqual(['schedule-2', 'schedule-3']);
+
+    expect(
+      filterMyAssignmentSchedules({
+        snapshot,
+        tab: 'upcoming',
+        status: 'all',
+        query: '',
+        sort: 'status',
+      }).map((schedule) => schedule.scheduleId),
+    ).toEqual(['schedule-2', 'schedule-1', 'schedule-3']);
   });
 });
