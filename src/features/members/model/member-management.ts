@@ -45,14 +45,23 @@ export function filterMembersList(input: {
   members: MemberRecord[];
   tab: MemberListTab;
   roleChip: MemberRoleChip;
+  query?: string;
 }): MemberRecord[] {
+  const normalizedQuery = input.query?.trim().toLowerCase() ?? '';
+
   return input.members.filter((member) => {
     const tabMatch =
       input.tab === 'all' ? true : member.status === input.tab;
     const roleMatch =
       input.roleChip === 'all' ? true : member.role === input.roleChip;
+    const searchMatch =
+      normalizedQuery.length === 0
+        ? true
+        : `${member.fullName} ${member.phoneNumber} ${member.role}`
+            .toLowerCase()
+            .includes(normalizedQuery);
 
-    return tabMatch && roleMatch;
+    return tabMatch && roleMatch && searchMatch;
   });
 }
 

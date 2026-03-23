@@ -1,6 +1,13 @@
 import { useState } from 'react';
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -58,6 +65,7 @@ export function MembersScreen({
   const mutation = useMemberAdminMutation(session);
   const [tab, setTab] = useState<MemberListTab>('all');
   const [roleChip, setRoleChip] = useState<MemberRoleChip>('all');
+  const [query, setQuery] = useState('');
 
   if (!hasSupabaseConfig) {
     return (
@@ -137,6 +145,7 @@ export function MembersScreen({
     members,
     tab,
     roleChip,
+    query,
   });
 
   return (
@@ -218,6 +227,18 @@ export function MembersScreen({
           active={roleChip === 'admin'}
           label="Admin"
           onPress={() => setRoleChip('admin')}
+        />
+      </View>
+
+      <View style={styles.inputWrap}>
+        <Text style={styles.fieldLabel}>Search</Text>
+        <TextInput
+          autoCapitalize="none"
+          onChangeText={setQuery}
+          placeholder="Search name, phone number, or role"
+          placeholderTextColor="#8f8a80"
+          style={styles.textInput}
+          value={query}
         />
       </View>
 
@@ -723,6 +744,24 @@ const styles = StyleSheet.create({
   },
   chipButtonLabelActive: {
     color: '#fff8ef',
+  },
+  inputWrap: {
+    gap: 6,
+  },
+  fieldLabel: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  textInput: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#d0c2ae',
+    backgroundColor: '#fff8ef',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: '#14342b',
+    fontSize: 14,
   },
   summaryCard: {
     width: '48%',

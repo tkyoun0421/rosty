@@ -2,19 +2,19 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the Members filter slice.
+Pending the next locked staffing or scheduling feature after completing the Members search slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/members-filter-slice/summary.md`
-- Archive plan: `docs/development-plans/members-filter-slice/plan.md`
+- Archive summary: `docs/development-plans/members-search-slice/summary.md`
+- Archive plan: `docs/development-plans/members-search-slice/plan.md`
 
 ## Last Completed
 
-Completed the Members filter slice:
+Completed the Members search slice:
 
-- Added member-list filter helpers for status tabs and role chips.
-- Updated `src/features/members/ui/members-screen.tsx` with top tabs, role chips, and filtered empty states.
+- Added local member search matching for name, phone number, and role.
+- Updated `src/features/members/ui/members-screen.tsx` with a local search field on top of the existing tabs and chips.
 - Updated worklog archive references for the richer admin member browsing flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the Members filter slice task on 2026-03-23.
+- Completed the Members search slice task on 2026-03-23.

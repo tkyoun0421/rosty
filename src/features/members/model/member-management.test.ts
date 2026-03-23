@@ -114,5 +114,13 @@ describe('member workflow actions', () => {
         roleChip: 'manager',
       }),
     ).toHaveLength(0);
+    expect(
+      filterMembersList({
+        members: membersSeed,
+        tab: 'all',
+        roleChip: 'all',
+        query: '9999',
+      }),
+    ).toHaveLength(1);
   });
 });
