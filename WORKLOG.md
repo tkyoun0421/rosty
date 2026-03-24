@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the payroll date-period filter slice.
+Pending the next locked staffing or scheduling feature after completing the user-status notifications slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/payroll-date-period-slice/summary.md`
-- Archive plan: `docs/development-plans/payroll-date-period-slice/plan.md`
+- Archive summary: `docs/development-plans/user-status-notifications-slice/summary.md`
+- Archive plan: `docs/development-plans/user-status-notifications-slice/plan.md`
 
 ## Last Completed
 
-Completed the payroll date-period filter slice:
+Completed the user-status notifications slice:
 
-- Added month-period filtering on top of the existing payroll visibility tabs.
-- Updated `src/features/payroll/ui/team-payroll-screen.tsx` and `src/features/payroll/ui/my-payroll-screen.tsx` with current-month, future-months, and past-months chips.
-- Updated worklog archive references for the richer payroll browsing flow.
+- Added `user_suspended` and `user_reactivated` as tracked inbox notification types.
+- Patched `admin_manage_member` so suspend/reactivate actions enqueue access-state notifications for the affected user.
+- Updated worklog archive references for the richer member-status notification flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the payroll date-period filter slice task on 2026-03-23.
+- Completed the user-status notifications slice task on 2026-03-24.

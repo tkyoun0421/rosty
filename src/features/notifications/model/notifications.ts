@@ -2,6 +2,8 @@ export type NotificationItem = {
   id: string;
   type:
     | 'user_approved'
+    | 'user_suspended'
+    | 'user_reactivated'
     | 'schedule_created'
     | 'schedule_cancelled'
     | 'assignment_confirmed'
@@ -32,7 +34,11 @@ function matchesNotificationCategory(
     case 'all':
       return true;
     case 'access':
-      return notification.type === 'user_approved';
+      return (
+        notification.type === 'user_approved' ||
+        notification.type === 'user_suspended' ||
+        notification.type === 'user_reactivated'
+      );
     case 'schedule':
       return (
         notification.type === 'schedule_created' ||

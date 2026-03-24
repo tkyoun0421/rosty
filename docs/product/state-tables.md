@@ -116,6 +116,8 @@
 | 타입 | 수신자 | 기본 이동 대상 |
 | --- | --- | --- |
 | `user_approved` | 승인된 사용자 본인 | Employee Home 또는 Manager Home |
+| `user_suspended` | 정지된 사용자 본인 | Suspended |
+| `user_reactivated` | 복구된 사용자 본인 | Employee Home 또는 Manager Home |
 | `schedule_created` | 관련 직원 | Schedule Detail |
 | `schedule_cancelled` | 영향받은 배정 직원 | Schedule Detail |
 | `assignment_confirmed` | 배정 대상 사용자 | Assignment Detail |

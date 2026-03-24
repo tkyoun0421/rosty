@@ -39,7 +39,7 @@
 | `assignment_status` | `proposed`, `confirmed`, `cancel_requested`, `cancelled`, `completed` |
 | `cancellation_request_status` | `requested`, `approved`, `rejected` |
 | `schedule_time_status` | `planned`, `actual_recorded`, `corrected` |
-| `notification_type` | `user_approved`, `schedule_created`, `schedule_cancelled`, `assignment_confirmed`, `cancellation_requested`, `cancellation_approved`, `cancellation_rejected` |
+| `notification_type` | `user_approved`, `user_suspended`, `user_reactivated`, `schedule_created`, `schedule_cancelled`, `assignment_confirmed`, `cancellation_requested`, `cancellation_approved`, `cancellation_rejected` |
 | `device_platform` | `ios`, `android` |
 
 메모:

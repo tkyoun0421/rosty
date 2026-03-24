@@ -47,6 +47,16 @@ describe('notifications model helpers', () => {
       ...notifications,
       {
         id: 'notification-3',
+        type: 'user_reactivated' as const,
+        title: 'Access restored',
+        body: 'Your access was reactivated.',
+        targetRoute: '/employee-home',
+        targetId: null,
+        isRead: false,
+        createdAt: '2026-03-20T08:30:00.000Z',
+      },
+      {
+        id: 'notification-4',
         type: 'schedule_created' as const,
         title: 'Schedule created',
         body: 'A new banquet schedule was created.',
@@ -56,6 +66,15 @@ describe('notifications model helpers', () => {
         createdAt: '2026-03-20T08:00:00.000Z',
       },
     ];
+
+    expect(
+      filterNotifications({
+        notifications: richerNotifications,
+        tab: 'all',
+        category: 'access',
+        query: '',
+      }),
+    ).toHaveLength(1);
 
     expect(
       filterNotifications({
