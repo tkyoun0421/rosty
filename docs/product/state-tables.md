@@ -119,6 +119,7 @@
 | `user_suspended` | 정지된 사용자 본인 | Suspended |
 | `user_reactivated` | 복구된 사용자 본인 | Employee Home 또는 Manager Home |
 | `schedule_created` | 관련 직원 | Schedule Detail |
+| `schedule_updated` | 관련 직원 | Schedule Detail |
 | `schedule_cancelled` | 영향받은 배정 직원 | Schedule Detail |
 | `assignment_confirmed` | 배정 대상 사용자 | Assignment Detail |
 | `cancellation_requested` | 처리 대상 운영진 | Cancellation Queue 또는 Assignment Detail |

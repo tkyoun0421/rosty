@@ -68,6 +68,16 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
         },
         {
           id: 'seed-notification-employee-3',
+          type: 'schedule_updated',
+          title: 'Schedule updated',
+          body: `The schedule for ${createdSchedule?.eventDate ?? '2026-03-29'} · ${createdSchedule?.memo ?? 'Convention Hall banquet'} was updated. Review the latest details.`,
+          targetRoute: '/schedule-detail?scheduleId=schedule-3',
+          targetId: 'schedule-3',
+          isRead: false,
+          createdAt: '2026-03-21T07:45:00.000Z',
+        },
+        {
+          id: 'seed-notification-employee-4',
           type: 'schedule_created',
           title: 'Schedule created',
           body: `A new schedule for ${createdSchedule?.eventDate ?? '2026-03-29'} · ${createdSchedule?.memo ?? 'Convention Hall banquet'} was created.`,
@@ -77,7 +87,7 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
           createdAt: '2026-03-21T08:00:00.000Z',
         },
         {
-          id: 'seed-notification-employee-4',
+          id: 'seed-notification-employee-5',
           type: 'assignment_confirmed',
           title: 'Assignment confirmed',
           body: `Your assignment for ${confirmedSchedule?.eventDate ?? '2026-03-22'} · ${confirmedSchedule?.memo ?? 'Grand Hall wedding'} was confirmed.`,
@@ -87,7 +97,7 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
           createdAt: '2026-03-21T09:00:00.000Z',
         },
         {
-          id: 'seed-notification-employee-5',
+          id: 'seed-notification-employee-6',
           type: 'schedule_cancelled',
           title: 'Schedule cancelled',
           body: `The schedule for ${createdSchedule?.eventDate ?? '2026-03-29'} · ${createdSchedule?.memo ?? 'Convention Hall banquet'} was cancelled. Your assignment was removed.`,
@@ -97,7 +107,7 @@ function createSeedNotifications(session: AuthSession): NotificationsSnapshot {
           createdAt: '2026-03-20T12:00:00.000Z',
         },
         {
-          id: 'seed-notification-employee-6',
+          id: 'seed-notification-employee-7',
           type: 'cancellation_approved',
           title: 'Cancellation approved',
           body: 'Your cancellation request was approved.',

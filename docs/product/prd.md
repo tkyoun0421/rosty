@@ -444,11 +444,12 @@ V1의 핵심은 두 가지다.
 - 같은 이벤트에 대해 푸시 알림도 시도한다.
 - 푸시 전송 실패 시 인앱 알림은 유지한다.
 - 수신자는 이벤트의 `직접 관련자`로 제한한다.
-- V1 이벤트 타입은 아래 아홉 가지다.
+- V1 이벤트 타입은 아래 열 가지다.
   - `user_approved`
   - `user_suspended`
   - `user_reactivated`
   - `schedule_created`
+  - `schedule_updated`
   - `schedule_cancelled`
   - `assignment_confirmed`
   - `cancellation_requested`
@@ -574,4 +575,3 @@ V1 구현 기준에서 공통으로 맞춰야 하는 핵심 타입은 아래와 
 7. 운영진이 취소 요청을 승인 또는 거절한다.
 8. 운영진이 실제 근무 시간을 입력하고 예상 급여가 계산된다.
 9. 관련 당사자는 알림함과 푸시로 핵심 이벤트를 확인할 수 있다.
-

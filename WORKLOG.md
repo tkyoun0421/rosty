@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the user-status notifications slice.
+Pending the next locked staffing or scheduling feature after completing the schedule-updated notifications slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/user-status-notifications-slice/summary.md`
-- Archive plan: `docs/development-plans/user-status-notifications-slice/plan.md`
+- Archive summary: `docs/development-plans/schedule-updated-notifications-slice/summary.md`
+- Archive plan: `docs/development-plans/schedule-updated-notifications-slice/plan.md`
 
 ## Last Completed
 
-Completed the user-status notifications slice:
+Completed the schedule-updated notifications slice:
 
-- Added `user_suspended` and `user_reactivated` as tracked inbox notification types.
-- Patched `admin_manage_member` so suspend/reactivate actions enqueue access-state notifications for the affected user.
-- Updated worklog archive references for the richer member-status notification flow.
+- Added `schedule_updated` as a tracked inbox notification type.
+- Added a schedule update trigger so collecting schedule edits enqueue schedule-updated notifications for active employees.
+- Updated worklog archive references for the richer schedule-change notification flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -37,7 +37,7 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - Real Google OAuth still needs manual device or emulator confirmation on a dev build or standalone app.
 - The real project still has no persistent admin account because this session does not yet have the intended target auth user email or UUID for the bootstrap command.
 - The fetched legacy single-hall tables remain in the remote project until a later cleanup task is explicitly locked.
-- Push delivery, device-token registration, and schedule-update notifications are still unimplemented.
+- Push delivery and device-token registration are still unimplemented.
 
 ## Latest Verification
 
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the user-status notifications slice task on 2026-03-24.
+- Completed the schedule-updated notifications slice task on 2026-03-24.
