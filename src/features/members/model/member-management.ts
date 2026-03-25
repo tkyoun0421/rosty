@@ -93,6 +93,10 @@ export function canApproveMember(member: MemberRecord): boolean {
   return member.status === 'pending_approval';
 }
 
+export function getApprovableMembers(members: MemberRecord[]): MemberRecord[] {
+  return members.filter(canApproveMember);
+}
+
 export function canSuspendMember(
   members: MemberRecord[],
   member: MemberRecord,

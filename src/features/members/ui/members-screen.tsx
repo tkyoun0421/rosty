@@ -22,6 +22,7 @@ import {
   describeMemberApproval,
   filterMembersList,
   formatMemberAuditTimestamp,
+  getApprovableMembers,
   getActiveMembers,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
@@ -68,6 +69,7 @@ export function MembersScreen({
   const [tab, setTab] = useState<MemberListTab>('all');
   const [roleChip, setRoleChip] = useState<MemberRoleChip>('all');
   const [query, setQuery] = useState('');
+  const [bulkNotice, setBulkNotice] = useState<string | null>(null);
 
   if (!hasSupabaseConfig) {
     return (
@@ -149,6 +151,37 @@ export function MembersScreen({
     roleChip,
     query,
   });
+  const approvableMembers = getApprovableMembers(filteredMembers);
+
+  async function handleBulkApproveVisible() {
+    if (approvableMembers.length === 0) {
+      return;
+    }
+
+    let approvedCount = 0;
+    setBulkNotice(null);
+
+    try {
+      for (const member of approvableMembers) {
+        await mutation.mutateAsync({
+          kind: 'approve',
+          member,
+          members,
+        });
+        approvedCount += 1;
+      }
+
+      setBulkNotice(
+        `${approvedCount} pending members from the current view were approved.`,
+      );
+    } catch {
+      setBulkNotice(
+        approvedCount > 0
+          ? `Approved ${approvedCount} members before the current bulk approval stopped.`
+          : 'The bulk approval could not be completed.',
+      );
+    }
+  }
 
   return (
     <MembersFrame
@@ -178,6 +211,13 @@ export function MembersScreen({
         <View style={styles.errorCard}>
           <Text style={styles.errorTitle}>Member update failed</Text>
           <Text style={styles.errorBody}>{mutation.error.message}</Text>
+        </View>
+      ) : null}
+
+      {bulkNotice ? (
+        <View style={styles.noticeCard}>
+          <Text style={styles.noticeTitle}>Bulk member update</Text>
+          <Text style={styles.noticeBody}>{bulkNotice}</Text>
         </View>
       ) : null}
 
@@ -251,6 +291,29 @@ export function MembersScreen({
         allMembers={members}
         mutation={mutation}
       />
+
+      {approvableMembers.length > 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ disabled: mutation.isPending }}
+          disabled={mutation.isPending}
+          onPress={() => {
+            void handleBulkApproveVisible();
+          }}
+          style={[
+            styles.bulkActionCard,
+            mutation.isPending ? styles.disabledChip : null,
+          ]}
+        >
+          <Text style={styles.bulkActionTitle}>
+            Approve visible pending members ({approvableMembers.length})
+          </Text>
+          <Text style={styles.bulkActionBody}>
+            Run the current admin approval action across the pending members in
+            this filtered view.
+          </Text>
+        </Pressable>
+      ) : null}
 
       <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
     </MembersFrame>
@@ -797,6 +860,22 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   shortcutBody: {
+    color: '#44514c',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  bulkActionCard: {
+    borderRadius: 24,
+    backgroundColor: '#d8e5de',
+    padding: 18,
+    gap: 6,
+  },
+  bulkActionTitle: {
+    color: '#14342b',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  bulkActionBody: {
     color: '#44514c',
     fontSize: 14,
     lineHeight: 20,

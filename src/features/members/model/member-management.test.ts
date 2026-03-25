@@ -7,6 +7,7 @@ import {
   describeMemberApproval,
   filterMembersList,
   formatMemberAuditTimestamp,
+  getApprovableMembers,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   isLastActiveAdmin,
@@ -79,6 +80,7 @@ describe('member management protections', () => {
 describe('member workflow actions', () => {
   it('allows approving pending users', () => {
     expect(canApproveMember(membersSeed[1])).toBe(true);
+    expect(getApprovableMembers(membersSeed)).toHaveLength(1);
   });
 
   it('allows reactivating suspended users', () => {

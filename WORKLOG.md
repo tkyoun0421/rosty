@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the members audit-detail slice.
+Pending the next locked staffing or scheduling feature after completing the members bulk-approve slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/members-audit-detail-slice/summary.md`
-- Archive plan: `docs/development-plans/members-audit-detail-slice/plan.md`
+- Archive summary: `docs/development-plans/members-bulk-approve-slice/summary.md`
+- Archive plan: `docs/development-plans/members-bulk-approve-slice/plan.md`
 
 ## Last Completed
 
-Completed the members audit-detail slice:
+Completed the members bulk-approve slice:
 
-- Extended the members read path with created/approved audit metadata.
-- Updated `src/features/members/ui/members-screen.tsx` so admin member cards surface created and approved detail inline.
-- Updated worklog archive references for the richer admin member review flow.
+- Added a bulk helper for the currently visible pending members.
+- Updated `src/features/members/ui/members-screen.tsx` so admins can approve the pending members in the current filtered view with one action.
+- Updated worklog archive references for the richer admin bulk-review flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the members audit-detail slice task on 2026-03-25.
+- Completed the members bulk-approve slice task on 2026-03-25.
