@@ -27,6 +27,8 @@ import {
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   getPendingMembers,
+  getReactivatableMembers,
+  getSuspendableMembers,
   getSuspendedMembers,
   type MemberListTab,
   type MemberRoleChip,
@@ -152,33 +154,57 @@ export function MembersScreen({
     query,
   });
   const approvableMembers = getApprovableMembers(filteredMembers);
+  const suspendableMembers = getSuspendableMembers(members, filteredMembers);
+  const reactivatableMembers = getReactivatableMembers(filteredMembers);
 
-  async function handleBulkApproveVisible() {
-    if (approvableMembers.length === 0) {
+  async function runBulkMemberAction(input: {
+    kind: 'approve' | 'suspend' | 'reactivate';
+    targets: MemberRecord[];
+    successMessage: string;
+    partialMessage: (completedCount: number) => string;
+  }) {
+    if (input.targets.length === 0) {
       return;
     }
 
-    let approvedCount = 0;
+    let completedCount = 0;
     setBulkNotice(null);
 
     try {
-      for (const member of approvableMembers) {
-        await mutation.mutateAsync({
-          kind: 'approve',
-          member,
-          members,
-        });
-        approvedCount += 1;
+      for (const member of input.targets) {
+        switch (input.kind) {
+          case 'approve':
+            await mutation.mutateAsync({
+              kind: 'approve',
+              member,
+              members,
+            });
+            break;
+          case 'suspend':
+            await mutation.mutateAsync({
+              kind: 'suspend',
+              member,
+              members,
+            });
+            break;
+          case 'reactivate':
+            await mutation.mutateAsync({
+              kind: 'reactivate',
+              member,
+              members,
+            });
+            break;
+        }
+
+        completedCount += 1;
       }
 
-      setBulkNotice(
-        `${approvedCount} pending members from the current view were approved.`,
-      );
+      setBulkNotice(input.successMessage);
     } catch {
       setBulkNotice(
-        approvedCount > 0
-          ? `Approved ${approvedCount} members before the current bulk approval stopped.`
-          : 'The bulk approval could not be completed.',
+        completedCount > 0
+          ? input.partialMessage(completedCount)
+          : 'The bulk member update could not be completed.',
       );
     }
   }
@@ -298,7 +324,13 @@ export function MembersScreen({
           accessibilityState={{ disabled: mutation.isPending }}
           disabled={mutation.isPending}
           onPress={() => {
-            void handleBulkApproveVisible();
+            void runBulkMemberAction({
+              kind: 'approve',
+              targets: approvableMembers,
+              successMessage: `${approvableMembers.length} pending members from the current view were approved.`,
+              partialMessage: (completedCount) =>
+                `Approved ${completedCount} pending members before the current bulk action stopped.`,
+            });
           }}
           style={[
             styles.bulkActionCard,
@@ -311,6 +343,64 @@ export function MembersScreen({
           <Text style={styles.bulkActionBody}>
             Run the current admin approval action across the pending members in
             this filtered view.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {suspendableMembers.length > 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ disabled: mutation.isPending }}
+          disabled={mutation.isPending}
+          onPress={() => {
+            void runBulkMemberAction({
+              kind: 'suspend',
+              targets: suspendableMembers,
+              successMessage: `${suspendableMembers.length} visible members were suspended.`,
+              partialMessage: (completedCount) =>
+                `Suspended ${completedCount} visible members before the current bulk action stopped.`,
+            });
+          }}
+          style={[
+            styles.bulkActionCard,
+            mutation.isPending ? styles.disabledChip : null,
+          ]}
+        >
+          <Text style={styles.bulkActionTitle}>
+            Suspend visible eligible members ({suspendableMembers.length})
+          </Text>
+          <Text style={styles.bulkActionBody}>
+            Run the current admin suspend action across the eligible members in
+            this filtered view.
+          </Text>
+        </Pressable>
+      ) : null}
+
+      {reactivatableMembers.length > 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ disabled: mutation.isPending }}
+          disabled={mutation.isPending}
+          onPress={() => {
+            void runBulkMemberAction({
+              kind: 'reactivate',
+              targets: reactivatableMembers,
+              successMessage: `${reactivatableMembers.length} visible members were reactivated.`,
+              partialMessage: (completedCount) =>
+                `Reactivated ${completedCount} visible members before the current bulk action stopped.`,
+            });
+          }}
+          style={[
+            styles.bulkActionCard,
+            mutation.isPending ? styles.disabledChip : null,
+          ]}
+        >
+          <Text style={styles.bulkActionTitle}>
+            Reactivate visible suspended members ({reactivatableMembers.length})
+          </Text>
+          <Text style={styles.bulkActionBody}>
+            Run the current admin reactivate action across the suspended members
+            in this filtered view.
           </Text>
         </Pressable>
       ) : null}

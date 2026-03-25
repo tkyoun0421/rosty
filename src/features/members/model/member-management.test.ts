@@ -10,6 +10,8 @@ import {
   getApprovableMembers,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
+  getReactivatableMembers,
+  getSuspendableMembers,
   isLastActiveAdmin,
   type MemberRecord,
 } from '@/features/members/model/member-management';
@@ -85,6 +87,7 @@ describe('member workflow actions', () => {
 
   it('allows reactivating suspended users', () => {
     expect(canReactivateMember(membersSeed[2])).toBe(true);
+    expect(getReactivatableMembers(membersSeed)).toHaveLength(1);
   });
 
   it('allows changing a non-admin role', () => {
@@ -138,5 +141,12 @@ describe('member workflow actions', () => {
     );
     expect(describeMemberApproval(membersSeed[1])).toBe('Pending approval');
     expect(describeMemberApproval(membersSeed[2])).toBe('2026-03-15');
+  });
+
+  it('returns only currently suspendable members for bulk admin actions', () => {
+    expect(getSuspendableMembers(membersSeed, membersSeed)).toHaveLength(1);
+    expect(
+      getSuspendableMembers(membersSeed, membersSeed).map((member) => member.id),
+    ).toEqual(['employee-1']);
   });
 });

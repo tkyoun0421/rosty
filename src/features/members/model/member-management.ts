@@ -97,6 +97,13 @@ export function getApprovableMembers(members: MemberRecord[]): MemberRecord[] {
   return members.filter(canApproveMember);
 }
 
+export function getSuspendableMembers(
+  allMembers: MemberRecord[],
+  visibleMembers: MemberRecord[],
+): MemberRecord[] {
+  return visibleMembers.filter((member) => canSuspendMember(allMembers, member));
+}
+
 export function canSuspendMember(
   members: MemberRecord[],
   member: MemberRecord,
@@ -109,6 +116,12 @@ export function canSuspendMember(
 
 export function canReactivateMember(member: MemberRecord): boolean {
   return member.status === 'suspended';
+}
+
+export function getReactivatableMembers(
+  members: MemberRecord[],
+): MemberRecord[] {
+  return members.filter(canReactivateMember);
 }
 
 export function canChangeMemberRole(
