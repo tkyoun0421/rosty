@@ -2,25 +2,24 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the members bulk-role-change slice.
+Document the canonical remaining roadmap after the current staffing, scheduling, payroll, notification, search, and admin slices.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/members-bulk-role-change-slice/summary.md`
-- Archive plan: `docs/development-plans/members-bulk-role-change-slice/plan.md`
+- Archive summary: `docs/development-plans/remaining-roadmap/summary.md`
+- Archive plan: `docs/development-plans/remaining-roadmap/plan.md`
 
 ## Last Completed
 
-Completed the members bulk-role-change slice:
+Created the remaining roadmap snapshot:
 
-- Added helpers for the currently role-changeable member subsets per target role.
-- Updated `src/features/members/ui/members-screen.tsx` so admins can bulk set the eligible members in the current filtered view to employee, manager, or admin.
-- Updated worklog archive references for the richer admin bulk-role flow.
-- Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
+- Added a canonical roadmap doc that separates ready work from blocked rollout and device-QA work.
+- Updated `WORKLOG.md` so the active planning reference points to the remaining-roadmap docs.
+- Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification after the documentation update.
 
 ## Next Action
 
-Apply the shared scheduling/payroll migration to the real Supabase project, then lock the next staffing, notification, or scheduling slice.
+Lock the next remaining slice from the canonical roadmap and continue executing it one by one.
 
 ## Blockers
 
@@ -45,4 +44,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the members bulk-role-change slice task on 2026-03-25.
+- Updated the canonical remaining roadmap on 2026-03-25.
