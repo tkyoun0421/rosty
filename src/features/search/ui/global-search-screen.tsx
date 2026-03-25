@@ -7,7 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
 import { useGlobalSearchQuery } from '@/features/search/api/fetch-global-search';
-import { filterGlobalSearchResults } from '@/features/search/model/global-search';
+import {
+  filterGlobalSearchResults,
+  shouldShowGlobalSearchSection,
+  type GlobalSearchSectionChip,
+} from '@/features/search/model/global-search';
 
 type GlobalSearchScreenProps = {
   session: AuthSession;
@@ -21,6 +25,7 @@ export function GlobalSearchScreen({
   const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
   const [query, setQuery] = useState('');
+  const [sectionChip, setSectionChip] = useState<GlobalSearchSectionChip>('all');
   const searchQuery = useGlobalSearchQuery(session, query);
 
   if (searchQuery.isLoading || !searchQuery.data) {
@@ -78,49 +83,101 @@ export function GlobalSearchScreen({
         />
       </View>
 
-      <SearchSection title="Schedules">
-        {schedules.map((schedule) => (
-          <Pressable
-            key={schedule.id}
-            accessibilityRole="button"
-            onPress={() => {
-              router.push(`/schedule-detail?scheduleId=${encodeURIComponent(schedule.id)}` as never);
-            }}
-            style={styles.resultCard}
-          >
-            <Text style={styles.resultTitle}>{schedule.title}</Text>
-            <Text style={styles.resultBody}>{schedule.eventDate}</Text>
-          </Pressable>
-        ))}
-      </SearchSection>
+      <View style={styles.chipRow}>
+        <ChipButton
+          active={sectionChip === 'all'}
+          label={`All (${schedules.length + assignments.length + (session.role !== 'employee' ? members.length : 0)})`}
+          onPress={() => setSectionChip('all')}
+        />
+        <ChipButton
+          active={sectionChip === 'schedules'}
+          label={`Schedules (${schedules.length})`}
+          onPress={() => setSectionChip('schedules')}
+        />
+        <ChipButton
+          active={sectionChip === 'assignments'}
+          label={`Assignments (${assignments.length})`}
+          onPress={() => setSectionChip('assignments')}
+        />
+        {session.role !== 'employee' ? (
+          <ChipButton
+            active={sectionChip === 'members'}
+            label={`Members (${members.length})`}
+            onPress={() => setSectionChip('members')}
+          />
+        ) : null}
+      </View>
 
-      <SearchSection title="My Assignments">
-        {assignments.map((assignment) => (
-          <Pressable
-            key={assignment.scheduleId}
-            accessibilityRole="button"
-            onPress={() => {
-              router.push(`/assignment-detail?scheduleId=${encodeURIComponent(assignment.scheduleId)}` as never);
-            }}
-            style={styles.resultCard}
-          >
-            <Text style={styles.resultTitle}>{assignment.title}</Text>
-            <Text style={styles.resultBody}>{assignment.positions.join(', ')}</Text>
-          </Pressable>
-        ))}
-      </SearchSection>
-
-      {session.role !== 'employee' ? (
-        <SearchSection title="Members">
-          {members.map((member) => (
-            <View key={member.id} style={styles.resultCard}>
-              <Text style={styles.resultTitle}>{member.fullName}</Text>
-              <Text style={styles.resultBody}>
-                {member.role} · {member.phoneNumber}
-              </Text>
-            </View>
-          ))}
+      {shouldShowGlobalSearchSection(sectionChip, 'schedules') ? (
+        <SearchSection title="Schedules">
+          {schedules.length === 0 ? (
+            <EmptyResultCard body="No schedules matched the current search view." />
+          ) : (
+            schedules.map((schedule) => (
+              <Pressable
+                key={schedule.id}
+                accessibilityRole="button"
+                onPress={() => {
+                  router.push(`/schedule-detail?scheduleId=${encodeURIComponent(schedule.id)}` as never);
+                }}
+                style={styles.resultCard}
+              >
+                <Text style={styles.resultTitle}>{schedule.title}</Text>
+                <Text style={styles.resultBody}>{schedule.eventDate}</Text>
+              </Pressable>
+            ))
+          )}
         </SearchSection>
+      ) : null}
+
+      {shouldShowGlobalSearchSection(sectionChip, 'assignments') ? (
+        <SearchSection title="My Assignments">
+          {assignments.length === 0 ? (
+            <EmptyResultCard body="No assignments matched the current search view." />
+          ) : (
+            assignments.map((assignment) => (
+              <Pressable
+                key={assignment.scheduleId}
+                accessibilityRole="button"
+                onPress={() => {
+                  router.push(`/assignment-detail?scheduleId=${encodeURIComponent(assignment.scheduleId)}` as never);
+                }}
+                style={styles.resultCard}
+              >
+                <Text style={styles.resultTitle}>{assignment.title}</Text>
+                <Text style={styles.resultBody}>{assignment.positions.join(', ')}</Text>
+              </Pressable>
+            ))
+          )}
+        </SearchSection>
+      ) : null}
+
+      {session.role !== 'employee' &&
+      shouldShowGlobalSearchSection(sectionChip, 'members') ? (
+        <SearchSection title="Members">
+          {members.length === 0 ? (
+            <EmptyResultCard body="No members matched the current search view." />
+          ) : (
+            members.map((member) => (
+              <View key={member.id} style={styles.resultCard}>
+                <Text style={styles.resultTitle}>{member.fullName}</Text>
+                <Text style={styles.resultBody}>
+                  {member.role} · {member.phoneNumber}
+                </Text>
+              </View>
+            ))
+          )}
+        </SearchSection>
+      ) : null}
+
+      {sectionChip === 'all' &&
+      schedules.length === 0 &&
+      assignments.length === 0 &&
+      (session.role === 'employee' || members.length === 0) ? (
+        <NoticeCard
+          title="No search results"
+          body="Adjust the current query or result-type chip to see another subset."
+        />
       ) : null}
 
       <View style={styles.footerActions}>
@@ -191,6 +248,39 @@ function SearchSection({
       <Text style={styles.sectionTitle}>{title}</Text>
       {children}
     </View>
+  );
+}
+
+function EmptyResultCard({ body }: { body: string }) {
+  return (
+    <View style={styles.emptyCard}>
+      <Text style={styles.emptyTitle}>Nothing in this section</Text>
+      <Text style={styles.emptyBody}>{body}</Text>
+    </View>
+  );
+}
+
+function ChipButton({
+  active,
+  label,
+  onPress,
+}: {
+  active: boolean;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={[styles.chipButton, active ? styles.chipButtonActive : null]}
+    >
+      <Text
+        style={[styles.chipButtonLabel, active ? styles.chipButtonLabelActive : null]}
+      >
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -267,6 +357,28 @@ const styles = StyleSheet.create({
     color: '#14342b',
     fontSize: 14,
   },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chipButton: {
+    borderRadius: 999,
+    backgroundColor: '#efe0c8',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  chipButtonActive: {
+    backgroundColor: '#7a2e1f',
+  },
+  chipButtonLabel: {
+    color: '#5b3329',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  chipButtonLabelActive: {
+    color: '#fff8ef',
+  },
   section: {
     borderRadius: 24,
     backgroundColor: '#fff8ef',
@@ -277,6 +389,22 @@ const styles = StyleSheet.create({
     color: '#14342b',
     fontSize: 19,
     fontWeight: '800',
+  },
+  emptyCard: {
+    borderRadius: 18,
+    backgroundColor: '#efe0c8',
+    padding: 16,
+    gap: 4,
+  },
+  emptyTitle: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  emptyBody: {
+    color: '#44514c',
+    fontSize: 13,
+    lineHeight: 18,
   },
   resultCard: {
     borderRadius: 18,

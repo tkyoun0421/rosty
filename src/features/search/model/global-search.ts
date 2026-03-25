@@ -25,6 +25,12 @@ export type GlobalSearchSnapshot = {
   members: GlobalSearchMemberResult[];
 };
 
+export type GlobalSearchSectionChip =
+  | 'all'
+  | 'schedules'
+  | 'assignments'
+  | 'members';
+
 function includesQuery(value: string, query: string): boolean {
   return value.toLowerCase().includes(query.toLowerCase());
 }
@@ -41,4 +47,11 @@ export function filterGlobalSearchResults<T>(
   }
 
   return items.filter((item) => includesQuery(toSearchableText(item), normalized));
+}
+
+export function shouldShowGlobalSearchSection(
+  chip: GlobalSearchSectionChip,
+  section: Exclude<GlobalSearchSectionChip, 'all'>,
+): boolean {
+  return chip === 'all' || chip === section;
 }
