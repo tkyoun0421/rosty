@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Implement the `Members Backend Hardening` bulk-RPC hardening step from the single master plan.
+Implement the next `Members Admin 추가 폴리시` slice after lifecycle audit detail.
 
 ## Plan Doc
 
@@ -10,15 +10,15 @@ Implement the `Members Backend Hardening` bulk-RPC hardening step from the singl
 
 ## Last Completed
 
-Completed the `Members Backend Hardening` batch-RPC slice:
+Completed the `Members Admin 추가 폴리시 -> Member lifecycle audit detail` slice:
 
-- Added `admin_manage_members_bulk(...)` as the limited server path for bulk member actions.
-- Updated the members admin client and `Members` bulk action UI to use the new batch RPC instead of client-side sequential network loops.
-- Updated the master plan and schema doc so the hardening lane reflects the shipped state.
+- Extended the members read surface with `updatedAt`.
+- Updated `src/features/members/ui/members-screen.tsx` so each member card shows created, approved, updated, and lifecycle summary detail inline.
+- Updated the master plan so the next member-polish step is now the bulk role-change confirmation/result lane.
 
 ## Next Action
 
-Lock the next `ready` item from `docs/development-plan.md`, starting with `Members Admin 추가 폴리시`.
+Lock the next `ready` step under `Members Admin 추가 폴리시`, starting with bulk role-change confirmation and result polish.
 
 ## Blockers
 
@@ -43,4 +43,4 @@ Lock the next `ready` item from `docs/development-plan.md`, starting with `Membe
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the members batch-RPC hardening slice on 2026-03-25.
+- Completed the member lifecycle audit-detail slice on 2026-03-25.

@@ -14,6 +14,7 @@ export type MemberRecord = {
   role: UserRole;
   status: MemberStatus;
   createdAt: string;
+  updatedAt: string;
   approvedAt: string | null;
 };
 
@@ -189,4 +190,25 @@ export function describeMemberApproval(member: MemberRecord): string {
   }
 
   return formatMemberAuditTimestamp(member.approvedAt);
+}
+
+export function describeMemberLifecycle(member: MemberRecord): string {
+  const created = formatMemberAuditTimestamp(member.createdAt);
+  const approved = formatMemberAuditTimestamp(member.approvedAt);
+  const updated = formatMemberAuditTimestamp(member.updatedAt);
+
+  switch (member.status) {
+    case 'profile_incomplete':
+      return `Started on ${created} and still waiting for profile completion.`;
+    case 'pending_approval':
+      return `Created on ${created} and still waiting for admin approval.`;
+    case 'active':
+      return member.approvedAt
+        ? `Approved on ${approved} and currently active. Last member update ${updated}.`
+        : `Currently active. Last member update ${updated}.`;
+    case 'suspended':
+      return `Approved on ${approved} and currently suspended. Last member update ${updated}.`;
+    case 'deactivated':
+      return `Approved on ${approved} and later deactivated. Last member update ${updated}.`;
+  }
 }

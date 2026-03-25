@@ -101,7 +101,7 @@
 - `Members`는 deactivated 계정을 별도 read-only 섹션으로도 보여준다.
 - 현재 shipped `Members`는 status top tab과 role chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - 현재 shipped `Members`는 local search로 이름, 전화번호, 역할 기준으로도 현재 목록을 다시 좁혀 볼 수 있다.
-- 현재 shipped `Members`는 member card 안에서 created/approved audit detail도 읽을 수 있다.
+- 현재 shipped `Members`는 member card 안에서 created/approved/updated audit detail과 lifecycle summary도 읽을 수 있다.
 - 현재 shipped `Members`는 현재 필터 결과 안의 eligible user를 대상으로 bulk approve, suspend, reactivate, role-change action도 지원한다.
 - `Invitation`은 활성, 사용됨, 만료, 비활성 링크를 함께 보여주고 재발급 시 기존 활성 링크를 비활성 이력으로 남긴다.
 - Invitation은 방금 발급한 링크와 현재 활성 링크를 바로 복사하거나 네이티브 공유 시트로 전달할 수 있다.

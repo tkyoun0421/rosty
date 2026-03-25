@@ -5,6 +5,7 @@ import {
   canSuspendMember,
   countActiveAdmins,
   describeMemberApproval,
+  describeMemberLifecycle,
   filterMembersList,
   formatMemberAuditTimestamp,
   getApprovableMembers,
@@ -26,6 +27,7 @@ const membersSeed: MemberRecord[] = [
     role: 'admin',
     status: 'active',
     createdAt: '2026-03-18T00:00:00.000Z',
+    updatedAt: '2026-03-21T00:00:00.000Z',
     approvedAt: '2026-03-19T00:00:00.000Z',
   },
   {
@@ -36,6 +38,7 @@ const membersSeed: MemberRecord[] = [
     role: 'employee',
     status: 'pending_approval',
     createdAt: '2026-03-20T00:00:00.000Z',
+    updatedAt: '2026-03-20T00:00:00.000Z',
     approvedAt: null,
   },
   {
@@ -46,6 +49,7 @@ const membersSeed: MemberRecord[] = [
     role: 'employee',
     status: 'suspended',
     createdAt: '2026-03-14T00:00:00.000Z',
+    updatedAt: '2026-03-22T00:00:00.000Z',
     approvedAt: '2026-03-15T00:00:00.000Z',
   },
   {
@@ -56,6 +60,7 @@ const membersSeed: MemberRecord[] = [
     role: 'employee',
     status: 'deactivated',
     createdAt: '2026-03-08T00:00:00.000Z',
+    updatedAt: '2026-03-23T00:00:00.000Z',
     approvedAt: '2026-03-10T00:00:00.000Z',
   },
 ];
@@ -142,6 +147,7 @@ describe('member workflow actions', () => {
     );
     expect(describeMemberApproval(membersSeed[1])).toBe('Pending approval');
     expect(describeMemberApproval(membersSeed[2])).toBe('2026-03-15');
+    expect(describeMemberLifecycle(membersSeed[2])).toContain('currently suspended');
   });
 
   it('returns only currently suspendable members for bulk admin actions', () => {

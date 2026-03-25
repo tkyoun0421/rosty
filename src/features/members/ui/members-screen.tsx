@@ -20,6 +20,7 @@ import {
   canReactivateMember,
   canSuspendMember,
   describeMemberApproval,
+  describeMemberLifecycle,
   filterMembersList,
   formatMemberAuditTimestamp,
   getApprovableMembers,
@@ -617,6 +618,17 @@ function MemberCard({ member, allMembers, mutation }: MemberCardProps) {
           <Text style={styles.auditLabel}>Approved</Text>
           <Text style={styles.auditValue}>{describeMemberApproval(member)}</Text>
         </View>
+        <View style={styles.auditCard}>
+          <Text style={styles.auditLabel}>Updated</Text>
+          <Text style={styles.auditValue}>
+            {formatMemberAuditTimestamp(member.updatedAt)}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.lifecycleCard}>
+        <Text style={styles.lifecycleLabel}>Lifecycle</Text>
+        <Text style={styles.lifecycleBody}>{describeMemberLifecycle(member)}</Text>
       </View>
 
       <View style={styles.roleRow}>
@@ -1098,6 +1110,25 @@ const styles = StyleSheet.create({
     color: '#14342b',
     fontSize: 13,
     fontWeight: '700',
+  },
+  lifecycleCard: {
+    borderRadius: 16,
+    backgroundColor: '#d8e5de',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
+  },
+  lifecycleLabel: {
+    color: '#14342b',
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  lifecycleBody: {
+    color: '#44514c',
+    fontSize: 13,
+    lineHeight: 18,
   },
   statusBadge: {
     alignSelf: 'flex-start',

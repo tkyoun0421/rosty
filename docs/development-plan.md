@@ -139,7 +139,7 @@
 
 ### 5. Members Admin 추가 폴리시
 
-상태: `준비됨`
+상태: `진행중`
 
 목표:
 
@@ -150,6 +150,35 @@
 - richer audit history
 - bulk role-change confirmation / result summary polish
 - admin-side restore or review affordance
+
+#### 5-1. Member lifecycle audit detail
+
+상태: `완료`
+
+세부 단계:
+
+1. members read surface에 `updatedAt` 추가
+2. created / approved / updated 기준의 lifecycle helper 추가
+3. `Members` 카드에 lifecycle summary와 updated audit detail 노출
+4. regression test로 status별 메시지 고정
+
+완료 조건:
+
+- admin이 member card 하나에서 생성, 승인, 최근 상태 반영 시점을 빠르게 읽을 수 있음
+
+#### 5-2. Bulk role-change confirmation / result polish
+
+상태: `준비됨`
+
+세부 단계:
+
+1. bulk role change 전 확인 affordance 추가 여부 결정
+2. bulk result notice를 더 구체적으로 정리
+3. 현재 role과 target role 차이를 더 명확히 표시할지 결정
+
+완료 조건:
+
+- admin이 bulk role change를 더 안전하게 실행할 수 있음
 
 ### 6. Search / Discovery 개선
 
@@ -185,10 +214,10 @@
 
 다음 구현 항목:
 
-- `5. Members Admin 추가 폴리시`
+- `5-2. Bulk role-change confirmation / result polish`
 
 이유:
 
-- `Members`는 지금 broad한 기능을 갖췄고, 다음 자연스러운 개선은 richer audit history나 admin-side review polish다.
+- `Members`는 지금 broad한 기능과 lifecycle detail을 갖췄고, 다음 자연스러운 개선은 bulk role change를 더 안전하게 다듬는 것이다.
 - 외부 환경이나 디바이스 QA가 필요 없다.
 - 최근에 hardening한 bulk member flow와도 자연스럽게 이어진다.

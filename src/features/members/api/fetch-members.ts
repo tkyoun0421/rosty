@@ -22,6 +22,7 @@ type MemberRow = {
   status: UserStatus | 'deactivated';
   approved_at: string | null;
   created_at: string;
+  updated_at: string;
 };
 
 export async function fetchMembers(): Promise<MemberRecord[]> {
@@ -32,7 +33,7 @@ export async function fetchMembers(): Promise<MemberRecord[]> {
   const { data, error } = await supabaseClient
     .from('profiles')
     .select(
-      'id, full_name, phone_number, gender, role, status, approved_at, created_at',
+      'id, full_name, phone_number, gender, role, status, approved_at, created_at, updated_at',
     )
     .order('created_at', { ascending: false })
     .returns<MemberRow[]>();
@@ -49,6 +50,7 @@ export async function fetchMembers(): Promise<MemberRecord[]> {
     role: member.role,
     status: member.status,
     createdAt: member.created_at,
+    updatedAt: member.updated_at,
     approvedAt: member.approved_at,
   }));
 }
