@@ -148,6 +148,16 @@ export function canChangeMemberRole(
   return true;
 }
 
+export function getRoleChangeableMembers(
+  allMembers: MemberRecord[],
+  visibleMembers: MemberRecord[],
+  nextRole: UserRole,
+): MemberRecord[] {
+  return visibleMembers.filter((member) =>
+    canChangeMemberRole(allMembers, member, nextRole),
+  );
+}
+
 export function getLastAdminProtectionMessage(
   members: MemberRecord[],
   member: MemberRecord,

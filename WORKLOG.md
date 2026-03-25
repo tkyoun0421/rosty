@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the global-search section-filter slice.
+Pending the next locked staffing or scheduling feature after completing the members bulk-role-change slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/global-search-section-filter-slice/summary.md`
-- Archive plan: `docs/development-plans/global-search-section-filter-slice/plan.md`
+- Archive summary: `docs/development-plans/members-bulk-role-change-slice/summary.md`
+- Archive plan: `docs/development-plans/members-bulk-role-change-slice/plan.md`
 
 ## Last Completed
 
-Completed the global-search section-filter slice:
+Completed the members bulk-role-change slice:
 
-- Added result-type chip helpers for the shared global search route.
-- Updated `src/features/search/ui/global-search-screen.tsx` so users can filter visible search sections and see section-level empty states.
-- Updated worklog archive references for the richer shared search flow.
+- Added helpers for the currently role-changeable member subsets per target role.
+- Updated `src/features/members/ui/members-screen.tsx` so admins can bulk set the eligible members in the current filtered view to employee, manager, or admin.
+- Updated worklog archive references for the richer admin bulk-role flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the global-search section-filter slice task on 2026-03-25.
+- Completed the members bulk-role-change slice task on 2026-03-25.

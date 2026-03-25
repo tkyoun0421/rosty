@@ -28,6 +28,7 @@ import {
   getLastAdminProtectionMessage,
   getPendingMembers,
   getReactivatableMembers,
+  getRoleChangeableMembers,
   getSuspendableMembers,
   getSuspendedMembers,
   type MemberListTab,
@@ -156,12 +157,17 @@ export function MembersScreen({
   const approvableMembers = getApprovableMembers(filteredMembers);
   const suspendableMembers = getSuspendableMembers(members, filteredMembers);
   const reactivatableMembers = getReactivatableMembers(filteredMembers);
+  const bulkRoleTargets = roleOptions.map((roleOption) => ({
+    role: roleOption,
+    members: getRoleChangeableMembers(members, filteredMembers, roleOption),
+  }));
 
   async function runBulkMemberAction(input: {
-    kind: 'approve' | 'suspend' | 'reactivate';
+    kind: 'approve' | 'suspend' | 'reactivate' | 'change-role';
     targets: MemberRecord[];
     successMessage: string;
     partialMessage: (completedCount: number) => string;
+    nextRole?: UserRole;
   }) {
     if (input.targets.length === 0) {
       return;
@@ -192,6 +198,18 @@ export function MembersScreen({
               kind: 'reactivate',
               member,
               members,
+            });
+            break;
+          case 'change-role':
+            if (!input.nextRole) {
+              throw new Error('A next role is required for bulk role changes.');
+            }
+
+            await mutation.mutateAsync({
+              kind: 'change-role',
+              member,
+              members,
+              nextRole: input.nextRole,
             });
             break;
         }
@@ -404,6 +422,43 @@ export function MembersScreen({
           </Text>
         </Pressable>
       ) : null}
+
+      {bulkRoleTargets.map((target) => {
+        if (target.members.length === 0) {
+          return null;
+        }
+
+        return (
+          <Pressable
+            key={target.role}
+            accessibilityRole="button"
+            accessibilityState={{ disabled: mutation.isPending }}
+            disabled={mutation.isPending}
+            onPress={() => {
+              void runBulkMemberAction({
+                kind: 'change-role',
+                targets: target.members,
+                nextRole: target.role,
+                successMessage: `${target.members.length} visible members were moved to ${target.role}.`,
+                partialMessage: (completedCount) =>
+                  `Moved ${completedCount} visible members to ${target.role} before the current bulk action stopped.`,
+              });
+            }}
+            style={[
+              styles.bulkActionCard,
+              mutation.isPending ? styles.disabledChip : null,
+            ]}
+          >
+            <Text style={styles.bulkActionTitle}>
+              Set visible eligible members to {target.role} ({target.members.length})
+            </Text>
+            <Text style={styles.bulkActionBody}>
+              Run the current admin role-change action across the eligible
+              members in this filtered view.
+            </Text>
+          </Pressable>
+        );
+      })}
 
       <FooterActions onBackHome={onBackHome} onSignOut={signOut} />
     </MembersFrame>

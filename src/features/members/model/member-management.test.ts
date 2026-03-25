@@ -11,6 +11,7 @@ import {
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   getReactivatableMembers,
+  getRoleChangeableMembers,
   getSuspendableMembers,
   isLastActiveAdmin,
   type MemberRecord,
@@ -148,5 +149,18 @@ describe('member workflow actions', () => {
     expect(
       getSuspendableMembers(membersSeed, membersSeed).map((member) => member.id),
     ).toEqual(['employee-1']);
+  });
+
+  it('returns only currently role-changeable members for a bulk role update', () => {
+    expect(
+      getRoleChangeableMembers(membersSeed, membersSeed, 'manager').map(
+        (member) => member.id,
+      ),
+    ).toEqual(['employee-1', 'employee-2']);
+    expect(
+      getRoleChangeableMembers(membersSeed, membersSeed, 'admin').map(
+        (member) => member.id,
+      ),
+    ).toEqual(['employee-1', 'employee-2']);
   });
 });

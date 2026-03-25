@@ -102,7 +102,7 @@
 - 현재 shipped `Members`는 status top tab과 role chip으로 현재 목록을 다시 좁혀 볼 수 있다.
 - 현재 shipped `Members`는 local search로 이름, 전화번호, 역할 기준으로도 현재 목록을 다시 좁혀 볼 수 있다.
 - 현재 shipped `Members`는 member card 안에서 created/approved audit detail도 읽을 수 있다.
-- 현재 shipped `Members`는 현재 필터 결과 안의 pending/suspendable/reactivatable user를 대상으로 bulk status action도 지원한다.
+- 현재 shipped `Members`는 현재 필터 결과 안의 eligible user를 대상으로 bulk approve, suspend, reactivate, role-change action도 지원한다.
 - `Invitation`은 활성, 사용됨, 만료, 비활성 링크를 함께 보여주고 재발급 시 기존 활성 링크를 비활성 이력으로 남긴다.
 - Invitation은 방금 발급한 링크와 현재 활성 링크를 바로 복사하거나 네이티브 공유 시트로 전달할 수 있다.
 - Pay Policy는 Members와 Manager Home에서 바로 열 수 있고, 직원별 override를 비우고 저장하면 홀 기본 시급 fallback으로 복귀한다.
