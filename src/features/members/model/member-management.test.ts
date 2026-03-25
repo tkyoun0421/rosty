@@ -4,7 +4,9 @@ import {
   canReactivateMember,
   canSuspendMember,
   countActiveAdmins,
+  describeMemberApproval,
   filterMembersList,
+  formatMemberAuditTimestamp,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
   isLastActiveAdmin,
@@ -19,6 +21,7 @@ const membersSeed: MemberRecord[] = [
     gender: 'unspecified',
     role: 'admin',
     status: 'active',
+    createdAt: '2026-03-18T00:00:00.000Z',
     approvedAt: '2026-03-19T00:00:00.000Z',
   },
   {
@@ -28,6 +31,7 @@ const membersSeed: MemberRecord[] = [
     gender: 'female',
     role: 'employee',
     status: 'pending_approval',
+    createdAt: '2026-03-20T00:00:00.000Z',
     approvedAt: null,
   },
   {
@@ -37,6 +41,7 @@ const membersSeed: MemberRecord[] = [
     gender: 'male',
     role: 'employee',
     status: 'suspended',
+    createdAt: '2026-03-14T00:00:00.000Z',
     approvedAt: '2026-03-15T00:00:00.000Z',
   },
   {
@@ -46,6 +51,7 @@ const membersSeed: MemberRecord[] = [
     gender: 'female',
     role: 'employee',
     status: 'deactivated',
+    createdAt: '2026-03-08T00:00:00.000Z',
     approvedAt: '2026-03-10T00:00:00.000Z',
   },
 ];
@@ -122,5 +128,13 @@ describe('member workflow actions', () => {
         query: '9999',
       }),
     ).toHaveLength(1);
+  });
+
+  it('formats audit timestamps and approval state for member cards', () => {
+    expect(formatMemberAuditTimestamp(membersSeed[0].createdAt)).toBe(
+      '2026-03-18',
+    );
+    expect(describeMemberApproval(membersSeed[1])).toBe('Pending approval');
+    expect(describeMemberApproval(membersSeed[2])).toBe('2026-03-15');
   });
 });

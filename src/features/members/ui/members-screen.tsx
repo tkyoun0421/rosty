@@ -19,7 +19,9 @@ import {
   canChangeMemberRole,
   canReactivateMember,
   canSuspendMember,
+  describeMemberApproval,
   filterMembersList,
+  formatMemberAuditTimestamp,
   getActiveMembers,
   getDeactivatedMembers,
   getLastAdminProtectionMessage,
@@ -415,6 +417,19 @@ function MemberCard({ member, allMembers, mutation }: MemberCardProps) {
       </View>
 
       <Text style={styles.memberMeta}>Role: {member.role}</Text>
+
+      <View style={styles.auditGrid}>
+        <View style={styles.auditCard}>
+          <Text style={styles.auditLabel}>Created</Text>
+          <Text style={styles.auditValue}>
+            {formatMemberAuditTimestamp(member.createdAt)}
+          </Text>
+        </View>
+        <View style={styles.auditCard}>
+          <Text style={styles.auditLabel}>Approved</Text>
+          <Text style={styles.auditValue}>{describeMemberApproval(member)}</Text>
+        </View>
+      </View>
 
       <View style={styles.roleRow}>
         {roleOptions.map((roleOption) => {
@@ -854,6 +869,31 @@ const styles = StyleSheet.create({
     color: '#495550',
     fontSize: 13,
     lineHeight: 18,
+  },
+  auditGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  auditCard: {
+    minWidth: '46%',
+    borderRadius: 16,
+    backgroundColor: '#fff8ef',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 4,
+  },
+  auditLabel: {
+    color: '#56635d',
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  auditValue: {
+    color: '#14342b',
+    fontSize: 13,
+    fontWeight: '700',
   },
   statusBadge: {
     alignSelf: 'flex-start',

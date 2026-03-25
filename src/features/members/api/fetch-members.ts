@@ -48,6 +48,7 @@ export async function fetchMembers(): Promise<MemberRecord[]> {
     gender: member.gender,
     role: member.role,
     status: member.status,
+    createdAt: member.created_at,
     approvedAt: member.approved_at,
   }));
 }

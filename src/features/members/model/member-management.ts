@@ -13,6 +13,7 @@ export type MemberRecord = {
   gender: ProfileGender;
   role: UserRole;
   status: MemberStatus;
+  createdAt: string;
   approvedAt: string | null;
 };
 
@@ -139,4 +140,26 @@ export function getLastAdminProtectionMessage(
   }
 
   return 'The last active admin cannot be suspended or downgraded.';
+}
+
+export function formatMemberAuditTimestamp(value: string | null): string {
+  if (!value) {
+    return 'Not recorded';
+  }
+
+  const [datePart] = value.split('T');
+
+  return datePart && datePart.length > 0 ? datePart : 'Not recorded';
+}
+
+export function describeMemberApproval(member: MemberRecord): string {
+  if (member.status === 'pending_approval') {
+    return 'Pending approval';
+  }
+
+  if (member.status === 'profile_incomplete') {
+    return 'Profile incomplete';
+  }
+
+  return formatMemberAuditTimestamp(member.approvedAt);
 }

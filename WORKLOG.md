@@ -2,20 +2,20 @@
 
 ## Current Task
 
-Pending the next locked staffing or scheduling feature after completing the schedule-updated notifications slice.
+Pending the next locked staffing or scheduling feature after completing the members audit-detail slice.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/schedule-updated-notifications-slice/summary.md`
-- Archive plan: `docs/development-plans/schedule-updated-notifications-slice/plan.md`
+- Archive summary: `docs/development-plans/members-audit-detail-slice/summary.md`
+- Archive plan: `docs/development-plans/members-audit-detail-slice/plan.md`
 
 ## Last Completed
 
-Completed the schedule-updated notifications slice:
+Completed the members audit-detail slice:
 
-- Added `schedule_updated` as a tracked inbox notification type.
-- Added a schedule update trigger so collecting schedule edits enqueue schedule-updated notifications for active employees.
-- Updated worklog archive references for the richer schedule-change notification flow.
+- Extended the members read path with created/approved audit metadata.
+- Updated `src/features/members/ui/members-screen.tsx` so admin member cards surface created and approved detail inline.
+- Updated worklog archive references for the richer admin member review flow.
 - Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification.
 
 ## Next Action
@@ -45,4 +45,4 @@ Apply the shared scheduling/payroll migration to the real Supabase project, then
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the schedule-updated notifications slice task on 2026-03-24.
+- Completed the members audit-detail slice task on 2026-03-25.
