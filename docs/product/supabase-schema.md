@@ -84,6 +84,7 @@ RLS:
 - `complete_profile_setup` RPC는 `authenticated` 사용자만 호출한다.
 - RPC는 `auth.uid()` 기준으로 onboarding 가능한 프로필만 저장하고, 기존 역할이 있으면 유지한 채 `pending_approval`로 전환한다.
 - `admin_manage_member` RPC는 active admin만 호출하고, 승인/정지/복구/역할 변경을 제한된 액션 집합으로만 처리한다.
+- `admin_manage_members_bulk` RPC는 active admin만 호출하고, 여러 멤버에 대한 approve/suspend/reactivate/change-role을 하나의 제한된 서버 경로로 묶는다.
 - `update_my_profile` RPC는 active 사용자가 Settings에서 제한된 자기 프로필 필드만 수정하게 한다.
 - `deactivate_my_account` RPC는 active 사용자가 `다가오는 confirmed assignment`가 없을 때만 본인 계정을 `deactivated`로 전환하게 한다.
 

@@ -1,137 +1,194 @@
-# Development Master Plan
+# 개발 마스터 플랜
 
-## Purpose
+## 목적
 
-This is the single active plan for the repo.
+이 문서는 현재 저장소의 유일한 active plan이다.
 
-Do not create a new per-slice active plan folder or file while this document is in use.
-The old per-slice plan files were intentionally removed to keep planning in one place.
+- 새 기능을 시작할 때마다 별도 plan 파일이나 plan 폴더를 만들지 않는다.
+- 구현 순서, 선행조건, 완료조건은 이 문서 하나에서 계속 갱신한다.
+- 이미 삭제한 예전 slice별 계획 문서는 더 이상 기준 문서로 쓰지 않는다.
 
-## Current Strategy
+## 운영 원칙
 
-We will work from one ordered plan and close items one by one.
+1. 실서비스 검증을 막는 blocker를 먼저 푼다.
+2. `지금 repo 안에서 가능한 일`과 `외부 환경이 필요한 일`을 명확히 나눈다.
+3. 다음 작업을 바로 집을 수 있도록 각 항목을 가능한 한 실행 단위로 쪼갠다.
+4. 새 작업을 시작하면 이 문서와 `WORKLOG.md`를 먼저 갱신한다.
 
-Priority rules:
+## 상태 표기
 
-1. Prefer work that removes blockers for live validation.
-2. Separate `blocked by environment` from `ready in repo`.
-3. Keep only one active plan document: this file.
-4. Update this file as items are completed instead of spawning new active plan folders.
+- `진행중`: 지금 바로 착수하거나 이미 잠근 항목
+- `완료`: 구현과 기본 검증이 끝난 항목
+- `준비됨`: repo 안에서 바로 구현 가능
+- `차단됨`: 실 Supabase, 실제 auth user, 디바이스 QA, 의존성 승인 같은 외부 조건 필요
+- `선택`: 지금 당장 안 해도 되지만 이후 품질/운영성 개선에 유효
 
-## Status Legend
+## 남은 작업 순서
 
-- `in_progress`: currently locked
-- `ready`: can be implemented in-repo now
-- `blocked`: depends on external rollout, secrets, or device QA
-- `optional`: useful polish but not required to continue the core roadmap
+### 1. 실 백엔드 전환
 
-## Ordered Plan
+상태: `차단됨`
 
-### 1. Real Backend Rollout
+목표:
 
-Status: `blocked`
+- seeded fallback에 기대는 주요 route를 real Supabase read/write로 전환한다.
 
-- Apply the tracked scheduling/payroll migrations to the real Supabase project.
-- Apply the tracked settings, availability, assignment, cancellation, and notifications migrations to the real Supabase project.
-- Bootstrap the first persistent admin against the intended auth user.
-- Re-run the core app flows against live data instead of seeded fallbacks.
+세부 단계:
 
-Exit:
+1. tracked scheduling/payroll migration을 real Supabase에 적용
+2. tracked settings, availability, assignment, cancellation, notifications migration을 real Supabase에 적용
+3. first admin bootstrap을 실제 auth user에 실행
+4. live data 기준으로 핵심 route smoke QA 재실행
 
-- Live routes stop depending on seeded fallback snapshots.
-- First admin exists in the real project.
+완료 조건:
 
-### 2. Native Google OAuth QA
+- assignments/payroll/settings/notifications route가 seeded fallback 없이 live project에서 동작
+- 실제 admin 계정이 존재
 
-Status: `blocked`
+### 2. 네이티브 Google OAuth QA
 
-- Validate the full Google OAuth round-trip on a dev build or standalone build.
-- Confirm `rosty://auth/callback` works on a real device or emulator.
+상태: `차단됨`
 
-Exit:
+목표:
 
-- Native login works end-to-end outside Expo Go.
+- Expo Go가 아닌 dev build/standalone에서 real Google OAuth 왕복을 검증한다.
 
-### 3. Push Registration and Delivery
+세부 단계:
 
-Status: `blocked by dependency approval`
+1. dev build 또는 standalone 빌드 준비
+2. `rosty://auth/callback` 복귀 확인
+3. 로그인 후 session/profile route 분기 확인
 
-- Add `device_tokens` schema and app registration flow.
-- Add real push permission/status handling.
-- Attempt push delivery for existing notification events.
-- Replace the current Settings placeholder with real push state.
+완료 조건:
 
-Exit:
+- 브라우저 dead-end 없이 앱으로 복귀
+- active/pending/suspended 흐름이 실제 계정으로 확인됨
 
-- Signed-in users can register tokens.
-- Core inbox events also attempt push delivery.
+### 3. 푸시 등록 및 푸시 발송
+
+상태: `차단됨`
+차단 이유: 구현 전 의존성/권한 승인 필요
+
+목표:
+
+- inbox 알림을 push delivery까지 연결한다.
+
+세부 단계:
+
+1. `device_tokens` schema 추가
+2. 앱의 push permission / token registration 구현
+3. 기존 notification event별 push delivery 시도 추가
+4. `Settings`의 placeholder status를 실제 상태로 교체
+
+완료 조건:
+
+- 로그인 사용자가 device token을 등록
+- 주요 inbox event가 push도 시도
 
 ### 4. Members Backend Hardening
 
-Status: `ready`
+상태: `완료`
 
-- Replace current client-driven sequential bulk member actions with limited batch RPCs if needed.
-- Decide whether bulk approve/status/role updates need atomicity or partial-failure reporting.
+목표:
 
-Exit:
+- 현재 client-side sequential bulk member action을 제한 RPC 기반으로 옮겨서 더 안전하고 일관되게 만든다.
 
-- Bulk member actions are intentionally hardened instead of best-effort loops only.
+#### 4-1. Bulk Member RPC 추가
 
-### 5. Members Admin Polish
+상태: `완료`
 
-Status: `ready`
+세부 단계:
 
-- Richer audit history beyond the current inline created/approved detail.
-- Optional bulk role-change confirmation or post-action summary UX.
+1. `admin_manage_members_bulk(...)` 같은 제한 RPC 추가
+2. bulk approve / suspend / reactivate / change-role를 한 경로로 수렴
+3. empty input, duplicate id, invalid action 같은 기본 검증 추가
+4. 기존 `admin_manage_member(...)` 검증과 마지막 admin 보호 규칙을 그대로 재사용
 
-Exit:
+완료 조건:
 
-- Admins can review enough member lifecycle history without leaving the product flow.
+- bulk member action이 client loop가 아니라 RPC 1회 호출로 수행
 
-### 6. Search and Discovery Polish
+#### 4-2. 앱 bulk action 연결
 
-Status: `ready`
+상태: `완료`
 
-- Improve search ranking and result depth.
-- Consider saved search state or chip persistence.
+세부 단계:
 
-Exit:
+1. bulk API client 추가
+2. `Members` bulk action card를 새 bulk RPC로 연결
+3. invalidate / self-session refresh를 bulk 대상 전체 기준으로 정리
+4. partial failure 메시지 또는 atomic failure 메시지 정책 확정
 
-- Search feels stable for repeated operational use, not just first-pass lookup.
+완료 조건:
 
-### 7. Scheduling and Staffing Polish
+- 현재 `Members`의 bulk action UI가 batch RPC를 사용
 
-Status: `ready`
+#### 4-3. 검증 강화
 
-- Slot preset management flow for admins.
-- Optional assignment/workspace ergonomics beyond the current first slice.
-- Optional queue/search polish where operationally useful.
+상태: `완료`
 
-Exit:
+세부 단계:
 
-- Operators can maintain the slot preset baseline and remove the highest-friction staffing steps inside the app.
+1. migration artifact test 추가
+2. bulk API client test 추가
+3. 필요하면 hook/mutation 경계 테스트 추가
 
-### 8. Payroll Polish
+완료 조건:
 
-Status: `ready`
+- bulk member hardening이 regression으로 잠겨 있음
 
-- Download-style export beyond clipboard copy.
-- Optional saved period presets or richer operator summary views.
+### 5. Members Admin 추가 폴리시
 
-Exit:
+상태: `준비됨`
 
-- Payroll handoff works in the preferred export format without manual paste workflows.
+목표:
 
-## Next Recommended Ready Item
+- 현재 broad한 `Members` 기능 위에 운영 편의성을 더한다.
 
-`Members Backend Hardening`
+후속 후보:
 
-Reason:
+- richer audit history
+- bulk role-change confirmation / result summary polish
+- admin-side restore or review affordance
 
-- It improves recently shipped bulk flows immediately.
-- It does not require external rollout or device QA.
-- It keeps the current repo direction coherent instead of opening another unrelated lane.
+### 6. Search / Discovery 개선
 
-## Note
+상태: `준비됨`
 
-- This file is the canonical active plan until explicitly replaced.
+후속 후보:
+
+- ranking 보강
+- saved search state
+- query와 chip state persistence
+
+### 7. Scheduling / Staffing 개선
+
+상태: `준비됨`
+
+후속 후보:
+
+- slot preset management
+- assignment workspace ergonomics
+- queue/list/search polish
+
+### 8. Payroll 개선
+
+상태: `준비됨`
+
+후속 후보:
+
+- 다운로드형 export
+- saved period preset
+- richer operator summary view
+
+## 지금 바로 다음 구현
+
+다음 구현 항목:
+
+- `5. Members Admin 추가 폴리시`
+
+이유:
+
+- `Members`는 지금 broad한 기능을 갖췄고, 다음 자연스러운 개선은 richer audit history나 admin-side review polish다.
+- 외부 환경이나 디바이스 QA가 필요 없다.
+- 최근에 hardening한 bulk member flow와도 자연스럽게 이어진다.

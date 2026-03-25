@@ -1,4 +1,7 @@
-import { manageMemberAccount } from '@/features/members/api/manage-member-account';
+import {
+  manageMemberAccount,
+  manageMembersBulk,
+} from '@/features/members/api/manage-member-account';
 
 const mockRpc = jest.fn();
 const mockReturns = jest.fn();
@@ -105,5 +108,28 @@ describe('manageMemberAccount', () => {
         action: 'reactivate',
       }),
     ).rejects.toThrow('Member management update could not be completed.');
+  });
+
+  it('calls the bulk member RPC with the requested payload', async () => {
+    mockSingle.mockResolvedValue({
+      data: {
+        total_requested: 2,
+        total_updated: 2,
+      },
+      error: null,
+    });
+
+    await expect(
+      manageMembersBulk({
+        memberIds: ['member-1', 'member-2'],
+        action: 'suspend',
+      }),
+    ).resolves.toBeUndefined();
+
+    expect(mockRpc).toHaveBeenCalledWith('admin_manage_members_bulk', {
+      p_member_ids: ['member-1', 'member-2'],
+      p_action: 'suspend',
+      p_next_role: null,
+    });
   });
 });

@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Maintain one canonical master plan and solve the remaining roadmap one item at a time from that document.
+Implement the `Members Backend Hardening` bulk-RPC hardening step from the single master plan.
 
 ## Plan Doc
 
@@ -10,15 +10,15 @@ Maintain one canonical master plan and solve the remaining roadmap one item at a
 
 ## Last Completed
 
-Consolidated planning into one master plan:
+Completed the `Members Backend Hardening` batch-RPC slice:
 
-- Added `docs/development-plan.md` as the single active roadmap.
-- Removed the old per-slice planning structure and updated references to the single master plan.
-- Updated `WORKLOG.md` and development guidance to point at the single master plan.
+- Added `admin_manage_members_bulk(...)` as the limited server path for bulk member actions.
+- Updated the members admin client and `Members` bulk action UI to use the new batch RPC instead of client-side sequential network loops.
+- Updated the master plan and schema doc so the hardening lane reflects the shipped state.
 
 ## Next Action
 
-Start the first `ready` item from `docs/development-plan.md` and keep updating that same file as work lands.
+Lock the next `ready` item from `docs/development-plan.md`, starting with `Members Admin 추가 폴리시`.
 
 ## Blockers
 
@@ -43,4 +43,4 @@ Start the first `ready` item from `docs/development-plan.md` and keep updating t
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Consolidated the roadmap into `docs/development-plan.md` on 2026-03-25.
+- Completed the members batch-RPC hardening slice on 2026-03-25.

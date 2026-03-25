@@ -163,67 +163,55 @@ export function MembersScreen({
   }));
 
   async function runBulkMemberAction(input: {
-    kind: 'approve' | 'suspend' | 'reactivate' | 'change-role';
+    kind: 'bulk-approve' | 'bulk-suspend' | 'bulk-reactivate' | 'bulk-change-role';
     targets: MemberRecord[];
     successMessage: string;
-    partialMessage: (completedCount: number) => string;
     nextRole?: UserRole;
   }) {
     if (input.targets.length === 0) {
       return;
     }
 
-    let completedCount = 0;
     setBulkNotice(null);
 
     try {
-      for (const member of input.targets) {
-        switch (input.kind) {
-          case 'approve':
-            await mutation.mutateAsync({
-              kind: 'approve',
-              member,
-              members,
-            });
-            break;
-          case 'suspend':
-            await mutation.mutateAsync({
-              kind: 'suspend',
-              member,
-              members,
-            });
-            break;
-          case 'reactivate':
-            await mutation.mutateAsync({
-              kind: 'reactivate',
-              member,
-              members,
-            });
-            break;
-          case 'change-role':
-            if (!input.nextRole) {
-              throw new Error('A next role is required for bulk role changes.');
-            }
+      switch (input.kind) {
+        case 'bulk-approve':
+          await mutation.mutateAsync({
+            kind: 'bulk-approve',
+            targets: input.targets,
+          });
+          break;
+        case 'bulk-suspend':
+          await mutation.mutateAsync({
+            kind: 'bulk-suspend',
+            targets: input.targets,
+            members,
+          });
+          break;
+        case 'bulk-reactivate':
+          await mutation.mutateAsync({
+            kind: 'bulk-reactivate',
+            targets: input.targets,
+          });
+          break;
+        case 'bulk-change-role':
+          if (!input.nextRole) {
+            throw new Error('A next role is required for bulk role changes.');
+          }
 
-            await mutation.mutateAsync({
-              kind: 'change-role',
-              member,
-              members,
-              nextRole: input.nextRole,
-            });
-            break;
-        }
-
-        completedCount += 1;
+          await mutation.mutateAsync({
+            kind: 'bulk-change-role',
+            targets: input.targets,
+            members,
+            nextRole: input.nextRole,
+          });
+          break;
       }
 
       setBulkNotice(input.successMessage);
     } catch {
-      setBulkNotice(
-        completedCount > 0
-          ? input.partialMessage(completedCount)
-          : 'The bulk member update could not be completed.',
-      );
+      setBulkNotice(null);
     }
   }
 
@@ -343,11 +331,9 @@ export function MembersScreen({
           disabled={mutation.isPending}
           onPress={() => {
             void runBulkMemberAction({
-              kind: 'approve',
+              kind: 'bulk-approve',
               targets: approvableMembers,
               successMessage: `${approvableMembers.length} pending members from the current view were approved.`,
-              partialMessage: (completedCount) =>
-                `Approved ${completedCount} pending members before the current bulk action stopped.`,
             });
           }}
           style={[
@@ -372,11 +358,9 @@ export function MembersScreen({
           disabled={mutation.isPending}
           onPress={() => {
             void runBulkMemberAction({
-              kind: 'suspend',
+              kind: 'bulk-suspend',
               targets: suspendableMembers,
               successMessage: `${suspendableMembers.length} visible members were suspended.`,
-              partialMessage: (completedCount) =>
-                `Suspended ${completedCount} visible members before the current bulk action stopped.`,
             });
           }}
           style={[
@@ -401,11 +385,9 @@ export function MembersScreen({
           disabled={mutation.isPending}
           onPress={() => {
             void runBulkMemberAction({
-              kind: 'reactivate',
+              kind: 'bulk-reactivate',
               targets: reactivatableMembers,
               successMessage: `${reactivatableMembers.length} visible members were reactivated.`,
-              partialMessage: (completedCount) =>
-                `Reactivated ${completedCount} visible members before the current bulk action stopped.`,
             });
           }}
           style={[
@@ -436,12 +418,10 @@ export function MembersScreen({
             disabled={mutation.isPending}
             onPress={() => {
               void runBulkMemberAction({
-                kind: 'change-role',
+                kind: 'bulk-change-role',
                 targets: target.members,
                 nextRole: target.role,
                 successMessage: `${target.members.length} visible members were moved to ${target.role}.`,
-                partialMessage: (completedCount) =>
-                  `Moved ${completedCount} visible members to ${target.role} before the current bulk action stopped.`,
               });
             }}
             style={[
