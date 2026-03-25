@@ -36,7 +36,7 @@ Lock product decisions before documentation or implementation work starts.
 ## Handoff Criteria
 
 - `Documentation` can update repo docs without inventing product behavior.
-- `Documentation` can create or update a concrete plan in `docs/development-plans/`.
+- `Documentation` can create or update the concrete master plan in `docs/development-plan.md`.
 - `Development` can identify what must change and what must not change.
 - `Testing` can derive acceptance scenarios from the PM output.
 

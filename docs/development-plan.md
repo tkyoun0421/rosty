@@ -4,7 +4,8 @@
 
 This is the single active plan for the repo.
 
-Do not create a new per-slice active plan folder or file while this document is in use. Historical slice plans under `docs/development-plans/` remain as archive only.
+Do not create a new per-slice active plan folder or file while this document is in use.
+The old per-slice plan files were intentionally removed to keep planning in one place.
 
 ## Current Strategy
 
@@ -131,7 +132,6 @@ Reason:
 - It does not require external rollout or device QA.
 - It keeps the current repo direction coherent instead of opening another unrelated lane.
 
-## Historical Note
+## Note
 
-- `docs/development-plans/` is now archive-only for completed slices.
 - This file is the canonical active plan until explicitly replaced.

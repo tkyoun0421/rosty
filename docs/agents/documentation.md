@@ -15,13 +15,13 @@ Turn locked product decisions into repo documents that are implementation-ready.
 - Updated PRD
 - Updated schema or RLS docs
 - Updated IA and state tables
-- Development plans under `docs/development-plans/`
+- The master implementation plan at `docs/development-plan.md`
 - Supporting operational docs or release notes when needed
 
 ## Required Actions
 
 - Update docs before implementation when behavior changes.
-- Create or update the task plan in `docs/development-plans/` before tracked implementation work starts.
+- Create or update the task plan in `docs/development-plan.md` before tracked implementation work starts.
 - Keep cross-document terminology and state names consistent.
 - Add or update links between related docs when new documents are introduced.
 - Surface contradictions instead of guessing new product rules.

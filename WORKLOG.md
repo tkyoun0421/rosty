@@ -13,7 +13,7 @@ Maintain one canonical master plan and solve the remaining roadmap one item at a
 Consolidated planning into one master plan:
 
 - Added `docs/development-plan.md` as the single active roadmap.
-- Reclassified `docs/development-plans/` as archive-only and removed the redundant active roadmap folder.
+- Removed the old per-slice planning structure and updated references to the single master plan.
 - Updated `WORKLOG.md` and development guidance to point at the single master plan.
 
 ## Next Action
