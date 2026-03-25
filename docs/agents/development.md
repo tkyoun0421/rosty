@@ -24,7 +24,7 @@ Implement the mobile app and Supabase-backed backend changes required by approve
 
 ## Required Actions
 
-- Confirm a current plan exists in `docs/development-plans/` before editing repo-tracked implementation files.
+- Confirm the current master plan exists at [`docs/development-plan.md`](../development-plan.md) before editing repo-tracked implementation files.
 - Update [`WORKLOG.md`](../../WORKLOG.md) before implementation starts with the active task and linked plan document.
 - Build only from locked documentation.
 - Implement against the plan document, not against ad hoc memory.
@@ -38,7 +38,7 @@ Implement the mobile app and Supabase-backed backend changes required by approve
 
 ## Forbidden Actions
 
-- Starting tracked implementation work without a plan document
+- Starting tracked implementation work without the master plan document
 - Skipping the pre-implementation or post-testing `WORKLOG.md` update
 - Inventing unresolved product behavior
 - Bypassing RLS with direct production changes through MCP
@@ -48,7 +48,7 @@ Implement the mobile app and Supabase-backed backend changes required by approve
 ## Handoff Criteria
 
 - `Testing` receives the changed flows, expected outcomes, and runnable commands.
-- `Testing` can trace the implementation back to the linked plan document.
+- `Testing` can trace the implementation back to the linked master plan document.
 - Documentation drift is either already fixed or explicitly flagged for immediate follow-up.
 - Database-affecting work is represented as migrations or controlled implementation artifacts.
 - The finished task is committed and pushed, or an explicit blocker is recorded in [`WORKLOG.md`](../../WORKLOG.md).

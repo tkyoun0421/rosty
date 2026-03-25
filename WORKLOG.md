@@ -2,24 +2,23 @@
 
 ## Current Task
 
-Document the canonical remaining roadmap after the current staffing, scheduling, payroll, notification, search, and admin slices.
+Maintain one canonical master plan and solve the remaining roadmap one item at a time from that document.
 
 ## Plan Doc
 
-- Archive summary: `docs/development-plans/remaining-roadmap/summary.md`
-- Archive plan: `docs/development-plans/remaining-roadmap/plan.md`
+- Master plan: `docs/development-plan.md`
 
 ## Last Completed
 
-Created the remaining roadmap snapshot:
+Consolidated planning into one master plan:
 
-- Added a canonical roadmap doc that separates ready work from blocked rollout and device-QA work.
-- Updated `WORKLOG.md` so the active planning reference points to the remaining-roadmap docs.
-- Reconfirmed the repo gate with lint, typecheck, unit tests, and export build verification after the documentation update.
+- Added `docs/development-plan.md` as the single active roadmap.
+- Reclassified `docs/development-plans/` as archive-only and removed the redundant active roadmap folder.
+- Updated `WORKLOG.md` and development guidance to point at the single master plan.
 
 ## Next Action
 
-Lock the next remaining slice from the canonical roadmap and continue executing it one by one.
+Start the first `ready` item from `docs/development-plan.md` and keep updating that same file as work lands.
 
 ## Blockers
 
@@ -44,4 +43,4 @@ Lock the next remaining slice from the canonical roadmap and continue executing 
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Updated the canonical remaining roadmap on 2026-03-25.
+- Consolidated the roadmap into `docs/development-plan.md` on 2026-03-25.
