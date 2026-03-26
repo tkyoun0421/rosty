@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Implement the next `Search / Discovery 개선` slice after global search state persistence.
+Implement the next `ready` lane after the current `Search / Discovery 개선` polish work.
 
 ## Plan Doc
 
@@ -10,15 +10,15 @@ Implement the next `Search / Discovery 개선` slice after global search state p
 
 ## Last Completed
 
-Completed the `Search / Discovery 개선 -> Global Search state persistence` slice:
+Completed the `Search / Discovery 개선 -> Search ranking / result depth polish` slice:
 
-- Added a dedicated search UI store for query and result-type chip state.
-- Updated `src/features/search/ui/global-search-screen.tsx` so search state survives route re-entry and clears on sign-out.
-- Updated the master plan so the next search slice now moves to ranking/result depth polish.
+- Added stronger-match ranking for global search results.
+- Updated `src/features/search/ui/global-search-screen.tsx` so schedule and assignment cards show richer state context in the result list.
+- Updated the master plan so the next `ready` lane now moves to scheduling/staffing work.
 
 ## Next Action
 
-Lock the next `ready` step under `Search / Discovery 개선`, starting with search ranking/result depth polish.
+Lock the next `ready` item from `docs/development-plan.md`, starting with `Scheduling / Staffing 개선`.
 
 ## Blockers
 
@@ -43,4 +43,4 @@ Lock the next `ready` step under `Search / Discovery 개선`, starting with sear
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the global-search state persistence slice on 2026-03-26.
+- Completed the global-search ranking/result-depth slice on 2026-03-26.

@@ -4,12 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
 import type { AuthSession } from '@/features/auth/model/auth-types';
+import { formatAssignmentStatus } from '@/features/assignments/model/my-assignments';
 import { useGlobalSearchQuery } from '@/features/search/api/fetch-global-search';
 import {
   filterGlobalSearchResults,
+  rankGlobalSearchResults,
   shouldShowGlobalSearchSection,
 } from '@/features/search/model/global-search';
 import { useGlobalSearchStore } from '@/features/search/model/global-search-store';
+import {
+  formatCollectionState,
+  formatScheduleStatus,
+} from '@/features/schedules/model/schedules';
 
 type GlobalSearchScreenProps = {
   session: AuthSession;
@@ -38,19 +44,38 @@ export function GlobalSearchScreen({
   }
 
   const snapshot = searchQuery.data;
-  const schedules = filterGlobalSearchResults(
-    snapshot.schedules,
-    (schedule) => `${schedule.title} ${schedule.eventDate}`,
+  const schedules = rankGlobalSearchResults(
+    filterGlobalSearchResults(
+      snapshot.schedules,
+      (schedule) =>
+        `${schedule.title} ${schedule.eventDate} ${schedule.status} ${schedule.collectionState}`,
+      query,
+    ),
+    (schedule) => schedule.title,
+    (schedule) =>
+      `${schedule.eventDate} ${schedule.status} ${schedule.collectionState}`,
     query,
   );
-  const assignments = filterGlobalSearchResults(
-    snapshot.assignments,
-    (assignment) => `${assignment.title} ${assignment.positions.join(' ')}`,
+  const assignments = rankGlobalSearchResults(
+    filterGlobalSearchResults(
+      snapshot.assignments,
+      (assignment) =>
+        `${assignment.title} ${assignment.eventDate} ${assignment.positions.join(' ')} ${assignment.status}`,
+      query,
+    ),
+    (assignment) => assignment.title,
+    (assignment) =>
+      `${assignment.eventDate} ${assignment.positions.join(' ')} ${assignment.status}`,
     query,
   );
-  const members = filterGlobalSearchResults(
-    snapshot.members,
-    (member) => `${member.fullName} ${member.phoneNumber} ${member.role}`,
+  const members = rankGlobalSearchResults(
+    filterGlobalSearchResults(
+      snapshot.members,
+      (member) => `${member.fullName} ${member.phoneNumber} ${member.role}`,
+      query,
+    ),
+    (member) => member.fullName,
+    (member) => `${member.role} ${member.phoneNumber}`,
     query,
   );
 
@@ -124,7 +149,10 @@ export function GlobalSearchScreen({
                 style={styles.resultCard}
               >
                 <Text style={styles.resultTitle}>{schedule.title}</Text>
-                <Text style={styles.resultBody}>{schedule.eventDate}</Text>
+                <Text style={styles.resultBody}>
+                  {schedule.eventDate} · {formatScheduleStatus(schedule.status)} ·{' '}
+                  {formatCollectionState(schedule.collectionState)}
+                </Text>
               </Pressable>
             ))
           )}
@@ -146,7 +174,10 @@ export function GlobalSearchScreen({
                 style={styles.resultCard}
               >
                 <Text style={styles.resultTitle}>{assignment.title}</Text>
-                <Text style={styles.resultBody}>{assignment.positions.join(', ')}</Text>
+                <Text style={styles.resultBody}>
+                  {assignment.eventDate} · {formatAssignmentStatus(assignment.status)} ·{' '}
+                  {assignment.positions.join(', ')}
+                </Text>
               </Pressable>
             ))
           )}

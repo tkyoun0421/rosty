@@ -221,7 +221,7 @@
 
 #### 6-2. Search ranking / result depth polish
 
-상태: `준비됨`
+상태: `완료`
 
 세부 단계:
 
@@ -257,10 +257,10 @@
 
 다음 구현 항목:
 
-- `6-2. Search ranking / result depth polish`
+- `7. Scheduling / Staffing 개선`
 
 이유:
 
-- 검색은 이제 상태를 유지하므로, 다음 개선 포인트는 결과 품질과 정보 밀도다.
+- 검색은 상태와 결과 품질 보강까지 들어갔으니, 다음 자연스러운 ready lane은 scheduling/staffing 개선이다.
 - 외부 환경이나 디바이스 QA가 필요 없다.
-- 검색 결과의 우선순위와 추가 정보만 다듬으면 바로 체감 개선을 만들 수 있다.
+- 운영 화면의 마찰을 줄이는 쪽이 다음 체감 개선으로 이어진다.

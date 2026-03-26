@@ -117,11 +117,15 @@ export async function fetchGlobalSearch(
       id: schedule.id,
       title: schedule.title,
       eventDate: schedule.eventDate,
+      status: schedule.status,
+      collectionState: schedule.collectionState,
     })),
     assignments: [...assignments.upcoming, ...assignments.past].map((assignment) => ({
       scheduleId: assignment.scheduleId,
       title: assignment.title,
+      eventDate: assignment.eventDate,
       positions: assignment.positions,
+      status: assignment.status,
     })),
     members: members.items,
   };
