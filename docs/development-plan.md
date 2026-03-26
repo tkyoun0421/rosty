@@ -235,13 +235,28 @@
 
 ### 7. Scheduling / Staffing 개선
 
-상태: `준비됨`
+상태: `진행중`
 
 후속 후보:
 
 - slot preset management
 - assignment workspace ergonomics
 - queue/list/search polish
+
+#### 7-1. Cancellation Queue local search
+
+상태: `완료`
+
+세부 단계:
+
+1. queue item에서 검색 가능한 텍스트 범위 정의
+2. current tab / status chip 위에 local search field 추가
+3. 검색 결과와 empty state를 queue 맥락에 맞게 정리
+4. regression test로 검색 동작 잠금
+
+완료 조건:
+
+- operator가 cancellation queue 안에서 requester, schedule, position, reason 기준으로 바로 좁혀 볼 수 있음
 
 ### 8. Payroll 개선
 
@@ -263,4 +278,4 @@
 
 - 검색은 상태와 결과 품질 보강까지 들어갔으니, 다음 자연스러운 ready lane은 scheduling/staffing 개선이다.
 - 외부 환경이나 디바이스 QA가 필요 없다.
-- 운영 화면의 마찰을 줄이는 쪽이 다음 체감 개선으로 이어진다.
+- 다음엔 slot preset management나 assignment workspace ergonomics처럼 더 큰 operator workflow 개선으로 넘어가는 게 맞다.

@@ -43,6 +43,7 @@ describe('filterCancellationQueueItems', () => {
         items,
         tab: 'pending',
         statusChip: 'all',
+        query: '',
       }),
     ).toHaveLength(1);
     expect(
@@ -50,6 +51,7 @@ describe('filterCancellationQueueItems', () => {
         items,
         tab: 'reviewed',
         statusChip: 'all',
+        query: '',
       }),
     ).toHaveLength(2);
   });
@@ -60,6 +62,7 @@ describe('filterCancellationQueueItems', () => {
         items,
         tab: 'reviewed',
         statusChip: 'approved',
+        query: '',
       }),
     ).toHaveLength(1);
     expect(
@@ -67,6 +70,26 @@ describe('filterCancellationQueueItems', () => {
         items,
         tab: 'reviewed',
         statusChip: 'rejected',
+        query: '',
+      }),
+    ).toHaveLength(1);
+  });
+
+  it('filters queue items by local search query', () => {
+    expect(
+      filterCancellationQueueItems({
+        items,
+        tab: 'reviewed',
+        statusChip: 'all',
+        query: 'garden',
+      }),
+    ).toHaveLength(1);
+    expect(
+      filterCancellationQueueItems({
+        items,
+        tab: 'pending',
+        statusChip: 'all',
+        query: 'family',
       }),
     ).toHaveLength(1);
   });

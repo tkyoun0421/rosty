@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Implement the next `ready` lane after the current `Search / Discovery 개선` polish work.
+Implement the current `Scheduling / Staffing 개선` lane after the cancellation queue search slice.
 
 ## Plan Doc
 
@@ -10,15 +10,15 @@ Implement the next `ready` lane after the current `Search / Discovery 개선` po
 
 ## Last Completed
 
-Completed the `Search / Discovery 개선 -> Search ranking / result depth polish` slice:
+Completed the `Scheduling / Staffing 개선 -> Cancellation Queue local search` slice:
 
-- Added stronger-match ranking for global search results.
-- Updated `src/features/search/ui/global-search-screen.tsx` so schedule and assignment cards show richer state context in the result list.
-- Updated the master plan so the next `ready` lane now moves to scheduling/staffing work.
+- Added local search matching for requester, schedule, position, and reason in the cancellation queue.
+- Updated `src/features/assignments/ui/cancellation-queue-screen.tsx` with a queue search field on top of the existing tabs and review chips.
+- Updated the master plan so the scheduling/staffing lane reflects the shipped queue search slice.
 
 ## Next Action
 
-Lock the next `ready` item from `docs/development-plan.md`, starting with `Scheduling / Staffing 개선`.
+Lock the next `ready` item under `Scheduling / Staffing 개선`, starting with the next highest-friction operator workflow.
 
 ## Blockers
 
@@ -43,4 +43,4 @@ Lock the next `ready` item from `docs/development-plan.md`, starting with `Sched
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the global-search ranking/result-depth slice on 2026-03-26.
+- Completed the cancellation queue search slice on 2026-03-26.

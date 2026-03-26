@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/features/auth/model/auth-store';
@@ -28,6 +28,7 @@ export function CancellationQueueScreen({
   const [tab, setTab] = useState<CancellationQueueTab>('pending');
   const [statusChip, setStatusChip] =
     useState<CancellationQueueStatusChip>('all');
+  const [query, setQuery] = useState('');
 
   if (queueQuery.isLoading || !queueQuery.data) {
     return (
@@ -49,6 +50,7 @@ export function CancellationQueueScreen({
     items: snapshot.items,
     tab,
     statusChip,
+    query,
   });
 
   return (
@@ -76,6 +78,7 @@ export function CancellationQueueScreen({
             items: snapshot.items,
             tab: 'pending',
             statusChip: 'all',
+            query: '',
           }).length})`}
           onPress={() => setTab('pending')}
         />
@@ -85,8 +88,21 @@ export function CancellationQueueScreen({
             items: snapshot.items,
             tab: 'reviewed',
             statusChip: 'all',
+            query: '',
           }).length})`}
           onPress={() => setTab('reviewed')}
+        />
+      </View>
+
+      <View style={styles.inputWrap}>
+        <Text style={styles.fieldLabel}>Search requests</Text>
+        <TextInput
+          autoCapitalize="none"
+          onChangeText={setQuery}
+          placeholder="Search requester, schedule, position, or reason"
+          placeholderTextColor="#8f8a80"
+          style={styles.textInput}
+          value={query}
         />
       </View>
 
@@ -115,8 +131,8 @@ export function CancellationQueueScreen({
           title={tab === 'pending' ? 'No pending requests' : 'No reviewed requests'}
           body={
             tab === 'pending'
-              ? 'There are no cancellation requests waiting for review right now.'
-              : 'Switch the current review filter to see a different subset.'
+              ? 'Adjust the current search query or check back when a new request arrives.'
+              : 'Adjust the current review filter or search query to see a different subset.'
           }
         />
       ) : (
@@ -334,6 +350,24 @@ const styles = StyleSheet.create({
   tabRow: {
     flexDirection: 'row',
     gap: 10,
+  },
+  inputWrap: {
+    gap: 6,
+  },
+  fieldLabel: {
+    color: '#14342b',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  textInput: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#d0c2ae',
+    backgroundColor: '#fff8ef',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: '#14342b',
+    fontSize: 14,
   },
   tabButton: {
     borderRadius: 999,
