@@ -134,6 +134,7 @@
 - 목록 화면은 `상단 탭 + 간단 칩` 필터 구조를 공유한다.
 - 첫 shipped `Global Search` slice는 schedules, 내 assignments, role-gated member results를 한 화면에서 보여준다.
 - 현재 shipped `Global Search`는 result-type chip으로 schedules, assignments, members 섹션을 다시 좁혀 볼 수 있다.
+- 현재 shipped `Global Search`는 query와 result-type chip 상태를 route 재진입 후에도 이어서 쓸 수 있다.
 - 직원은 개인 정보 중심 화면만 본다.
 - 운영진은 운영 큐와 작업 화면으로 빠르게 이동하는 흐름을 우선한다.
 

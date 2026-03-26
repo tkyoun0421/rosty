@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,8 +8,8 @@ import { useGlobalSearchQuery } from '@/features/search/api/fetch-global-search'
 import {
   filterGlobalSearchResults,
   shouldShowGlobalSearchSection,
-  type GlobalSearchSectionChip,
 } from '@/features/search/model/global-search';
+import { useGlobalSearchStore } from '@/features/search/model/global-search-store';
 
 type GlobalSearchScreenProps = {
   session: AuthSession;
@@ -24,8 +22,11 @@ export function GlobalSearchScreen({
 }: GlobalSearchScreenProps) {
   const router = useRouter();
   const signOut = useAuthStore((state) => state.signOut);
-  const [query, setQuery] = useState('');
-  const [sectionChip, setSectionChip] = useState<GlobalSearchSectionChip>('all');
+  const clearSearchUi = useGlobalSearchStore((state) => state.clear);
+  const query = useGlobalSearchStore((state) => state.query);
+  const sectionChip = useGlobalSearchStore((state) => state.sectionChip);
+  const setQuery = useGlobalSearchStore((state) => state.setQuery);
+  const setSectionChip = useGlobalSearchStore((state) => state.setSectionChip);
   const searchQuery = useGlobalSearchQuery(session, query);
 
   if (searchQuery.isLoading || !searchQuery.data) {
@@ -191,6 +192,7 @@ export function GlobalSearchScreen({
         <Pressable
           accessibilityRole="button"
           onPress={() => {
+            clearSearchUi();
             void signOut();
           }}
           style={styles.primaryButton}

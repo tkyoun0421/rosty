@@ -196,13 +196,42 @@
 
 ### 6. Search / Discovery 개선
 
-상태: `준비됨`
+상태: `진행중`
 
 후속 후보:
 
 - ranking 보강
 - saved search state
 - query와 chip state persistence
+
+#### 6-1. Global Search state persistence
+
+상태: `완료`
+
+세부 단계:
+
+1. search query와 result-type chip을 route 바깥 상태로 분리
+2. `Global Search`가 그 상태를 읽고 갱신하게 연결
+3. search route를 다시 열어도 직전 query/chip이 유지되게 확인
+4. regression test로 state helper/store를 잠금
+
+완료 조건:
+
+- 사용자가 search route를 나갔다 돌아와도 최근 검색 상태를 다시 이어갈 수 있음
+
+#### 6-2. Search ranking / result depth polish
+
+상태: `준비됨`
+
+세부 단계:
+
+1. schedule / assignment / member 결과의 우선순위 기준 재정리
+2. 각 섹션에서 보여줄 최소 추가 정보 범위 정의
+3. 결과 품질이 낮은 케이스를 regression으로 잠금
+
+완료 조건:
+
+- 반복 검색에서도 결과 품질이 예측 가능하게 유지됨
 
 ### 7. Scheduling / Staffing 개선
 
@@ -228,10 +257,10 @@
 
 다음 구현 항목:
 
-- `6. Search / Discovery 개선`
+- `6-2. Search ranking / result depth polish`
 
 이유:
 
-- `Members` lane는 core bulk/polish가 일단 닫혔고, 다음 자연스러운 ready lane은 검색/발견성 개선이다.
+- 검색은 이제 상태를 유지하므로, 다음 개선 포인트는 결과 품질과 정보 밀도다.
 - 외부 환경이나 디바이스 QA가 필요 없다.
-- 이미 있는 검색 기능 위에 바로 얹을 수 있다.
+- 검색 결과의 우선순위와 추가 정보만 다듬으면 바로 체감 개선을 만들 수 있다.
