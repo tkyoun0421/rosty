@@ -15,6 +15,8 @@ import {
   getRoleChangeableMembers,
   getSuspendableMembers,
   isLastActiveAdmin,
+  summarizeMemberNames,
+  summarizeMemberRoleMix,
   type MemberRecord,
 } from '@/features/members/model/member-management';
 
@@ -168,5 +170,14 @@ describe('member workflow actions', () => {
         (member) => member.id,
       ),
     ).toEqual(['employee-1', 'employee-2']);
+  });
+
+  it('summarizes role mix and member names for bulk action previews', () => {
+    expect(summarizeMemberRoleMix(membersSeed)).toBe(
+      'employee 3, admin 1',
+    );
+    expect(summarizeMemberNames(membersSeed, 2)).toBe(
+      'Admin One, Employee One +2 more',
+    );
   });
 });

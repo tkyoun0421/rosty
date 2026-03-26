@@ -159,6 +159,36 @@ export function getRoleChangeableMembers(
   );
 }
 
+export function summarizeMemberRoleMix(members: MemberRecord[]): string {
+  const counts: Record<UserRole, number> = {
+    employee: 0,
+    manager: 0,
+    admin: 0,
+  };
+
+  for (const member of members) {
+    counts[member.role] += 1;
+  }
+
+  return (Object.entries(counts) as [UserRole, number][])
+    .filter(([, count]) => count > 0)
+    .map(([role, count]) => `${role} ${count}`)
+    .join(', ');
+}
+
+export function summarizeMemberNames(
+  members: MemberRecord[],
+  limit = 3,
+): string {
+  const names = members.slice(0, limit).map((member) => member.fullName);
+
+  if (members.length <= limit) {
+    return names.join(', ');
+  }
+
+  return `${names.join(', ')} +${members.length - limit} more`;
+}
+
 export function getLastAdminProtectionMessage(
   members: MemberRecord[],
   member: MemberRecord,

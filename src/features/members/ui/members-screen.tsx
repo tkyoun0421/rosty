@@ -32,6 +32,8 @@ import {
   getRoleChangeableMembers,
   getSuspendableMembers,
   getSuspendedMembers,
+  summarizeMemberNames,
+  summarizeMemberRoleMix,
   type MemberListTab,
   type MemberRoleChip,
   type MemberRecord,
@@ -74,6 +76,10 @@ export function MembersScreen({
   const [roleChip, setRoleChip] = useState<MemberRoleChip>('all');
   const [query, setQuery] = useState('');
   const [bulkNotice, setBulkNotice] = useState<string | null>(null);
+  const [bulkRoleConfirmation, setBulkRoleConfirmation] = useState<{
+    nextRole: UserRole;
+    targets: MemberRecord[];
+  } | null>(null);
 
   if (!hasSupabaseConfig) {
     return (
@@ -211,6 +217,7 @@ export function MembersScreen({
       }
 
       setBulkNotice(input.successMessage);
+      setBulkRoleConfirmation(null);
     } catch {
       setBulkNotice(null);
     }
@@ -251,6 +258,56 @@ export function MembersScreen({
         <View style={styles.noticeCard}>
           <Text style={styles.noticeTitle}>Bulk member update</Text>
           <Text style={styles.noticeBody}>{bulkNotice}</Text>
+        </View>
+      ) : null}
+
+      {bulkRoleConfirmation ? (
+        <View style={styles.confirmationCard}>
+          <Text style={styles.confirmationTitle}>Confirm bulk role change</Text>
+          <Text style={styles.confirmationBody}>
+            Move {bulkRoleConfirmation.targets.length} visible members to{' '}
+            {bulkRoleConfirmation.nextRole}.
+          </Text>
+          <Text style={styles.confirmationBody}>
+            Current role mix: {summarizeMemberRoleMix(bulkRoleConfirmation.targets)}
+          </Text>
+          <Text style={styles.confirmationBody}>
+            Members: {summarizeMemberNames(bulkRoleConfirmation.targets)}
+          </Text>
+          <View style={styles.confirmationActions}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: mutation.isPending }}
+              disabled={mutation.isPending}
+              onPress={() => {
+                void runBulkMemberAction({
+                  kind: 'bulk-change-role',
+                  targets: bulkRoleConfirmation.targets,
+                  nextRole: bulkRoleConfirmation.nextRole,
+                  successMessage: `Moved ${bulkRoleConfirmation.targets.length} visible members to ${bulkRoleConfirmation.nextRole}.`,
+                });
+              }}
+              style={[
+                styles.confirmButton,
+                mutation.isPending ? styles.disabledChip : null,
+              ]}
+            >
+              <Text style={styles.confirmButtonLabel}>Confirm change</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              disabled={mutation.isPending}
+              onPress={() => {
+                setBulkRoleConfirmation(null);
+              }}
+              style={[
+                styles.cancelButton,
+                mutation.isPending ? styles.disabledChip : null,
+              ]}
+            >
+              <Text style={styles.cancelButtonLabel}>Cancel</Text>
+            </Pressable>
+          </View>
         </View>
       ) : null}
 
@@ -418,11 +475,10 @@ export function MembersScreen({
             accessibilityState={{ disabled: mutation.isPending }}
             disabled={mutation.isPending}
             onPress={() => {
-              void runBulkMemberAction({
-                kind: 'bulk-change-role',
-                targets: target.members,
+              setBulkNotice(null);
+              setBulkRoleConfirmation({
                 nextRole: target.role,
-                successMessage: `${target.members.length} visible members were moved to ${target.role}.`,
+                targets: target.members,
               });
             }}
             style={[
@@ -1220,6 +1276,50 @@ const styles = StyleSheet.create({
     color: '#44514c',
     fontSize: 13,
     lineHeight: 18,
+  },
+  confirmationCard: {
+    borderRadius: 20,
+    backgroundColor: '#f3e5cd',
+    padding: 16,
+    gap: 6,
+  },
+  confirmationTitle: {
+    color: '#14342b',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  confirmationBody: {
+    color: '#5b4a37',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  confirmationActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  confirmButton: {
+    flex: 1,
+    borderRadius: 999,
+    backgroundColor: '#14342b',
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  confirmButtonLabel: {
+    color: '#fff8ef',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  cancelButton: {
+    flex: 1,
+    borderRadius: 999,
+    backgroundColor: '#dfcfb8',
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  cancelButtonLabel: {
+    color: '#14342b',
+    fontSize: 13,
+    fontWeight: '800',
   },
   errorCard: {
     borderRadius: 20,

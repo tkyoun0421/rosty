@@ -168,7 +168,7 @@
 
 #### 5-2. Bulk role-change confirmation / result polish
 
-상태: `준비됨`
+상태: `완료`
 
 세부 단계:
 
@@ -179,6 +179,20 @@
 완료 조건:
 
 - admin이 bulk role change를 더 안전하게 실행할 수 있음
+
+#### 5-3. Admin-side restore or review affordance
+
+상태: `준비됨`
+
+세부 단계:
+
+1. deactivated member에 대해 restore 가능 여부를 제품 규칙으로 확정
+2. restore가 불가라면 더 명확한 review affordance를 추가
+3. restore가 가능하다면 server rule과 UI action을 함께 설계
+
+완료 조건:
+
+- deactivated member를 admin이 어떻게 다뤄야 하는지 제품과 구현 모두 명확해짐
 
 ### 6. Search / Discovery 개선
 
@@ -214,10 +228,10 @@
 
 다음 구현 항목:
 
-- `5-2. Bulk role-change confirmation / result polish`
+- `6. Search / Discovery 개선`
 
 이유:
 
-- `Members`는 지금 broad한 기능과 lifecycle detail을 갖췄고, 다음 자연스러운 개선은 bulk role change를 더 안전하게 다듬는 것이다.
+- `Members` lane는 core bulk/polish가 일단 닫혔고, 다음 자연스러운 ready lane은 검색/발견성 개선이다.
 - 외부 환경이나 디바이스 QA가 필요 없다.
-- 최근에 hardening한 bulk member flow와도 자연스럽게 이어진다.
+- 이미 있는 검색 기능 위에 바로 얹을 수 있다.

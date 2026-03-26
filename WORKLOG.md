@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Implement the next `Members Admin 추가 폴리시` slice after lifecycle audit detail.
+Implement the next `ready` lane after finishing the current `Members Admin 추가 폴리시` polish work.
 
 ## Plan Doc
 
@@ -10,15 +10,15 @@ Implement the next `Members Admin 추가 폴리시` slice after lifecycle audit 
 
 ## Last Completed
 
-Completed the `Members Admin 추가 폴리시 -> Member lifecycle audit detail` slice:
+Completed the `Members Admin 추가 폴리시 -> Bulk role-change confirmation / result polish` slice:
 
-- Extended the members read surface with `updatedAt`.
-- Updated `src/features/members/ui/members-screen.tsx` so each member card shows created, approved, updated, and lifecycle summary detail inline.
-- Updated the master plan so the next member-polish step is now the bulk role-change confirmation/result lane.
+- Added role-mix and member-name preview helpers for bulk role actions.
+- Updated `src/features/members/ui/members-screen.tsx` so bulk role change now shows a confirmation step and clearer result notice.
+- Updated the master plan so the next `ready` lane moves to search/discovery work.
 
 ## Next Action
 
-Lock the next `ready` step under `Members Admin 추가 폴리시`, starting with bulk role-change confirmation and result polish.
+Lock the next `ready` item from `docs/development-plan.md`, starting with `Search / Discovery 개선`.
 
 ## Blockers
 
@@ -43,4 +43,4 @@ Lock the next `ready` step under `Members Admin 추가 폴리시`, starting with
 - `corepack pnpm typecheck`
 - `corepack pnpm test`
 - `corepack pnpm build`
-- Completed the member lifecycle audit-detail slice on 2026-03-25.
+- Completed the member bulk role-change confirmation/result slice on 2026-03-26.
