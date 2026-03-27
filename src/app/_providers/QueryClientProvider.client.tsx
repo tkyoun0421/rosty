@@ -13,6 +13,8 @@ export function QueryClientProvider({ children }: Readonly<{ children: React.Rea
         defaultOptions: {
           queries: {
             retry: false,
+            refetchOnWindowFocus: false,
+            staleTime: 1000 * 60,
           },
           mutations: {
             retry: false,

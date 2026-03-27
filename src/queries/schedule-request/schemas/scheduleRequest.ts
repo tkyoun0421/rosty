@@ -43,10 +43,20 @@ export const employeeScheduleRequestsResponseSchema = z.object({
   requests: z.array(scheduleRequestRecordSchema),
 });
 
+export const scheduleRequestResponseSchema = z.object({
+  request: scheduleRequestRecordSchema,
+});
+
 export function parseEmployeeScheduleRequestsResponse(
   payload: unknown,
 ): EmployeeScheduleRequestsResponse {
   return employeeScheduleRequestsResponseSchema.parse(payload);
+}
+
+export function parseScheduleRequestResponse(payload: unknown): {
+  request: ScheduleRequestRecord;
+} {
+  return scheduleRequestResponseSchema.parse(payload);
 }
 
 export function toEmployeeScheduleRequest(record: ScheduleRequestRecord): EmployeeScheduleRequest {

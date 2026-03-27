@@ -31,6 +31,7 @@ If a form submits data, validates input, or manages submit state, it belongs pri
 - `components = dummy UI only`
 
 `actions` live under `mutations/<domain>/actions` and hold the write-side execution core. They should stay free of React runtime concerns. `hooks` adapt actions and query results to React state and UI libraries. `types` hold screen-facing or app-facing shapes. `schemas` hold zod validation, parsing, and input contracts. `dal` holds fetch, persist, storage, and other slice-local data access code. `lib` holds SDK wrappers and runtime-bound adapters that are not the slice's main data access path.
+Async `dal` functions return successful domain values only. Expected operational failures should throw a shared app error shape, while schema parse failures and contract violations should surface as ordinary errors.
 Components must stay presentational. They receive values, formatted strings, and handlers through props, but should not own query, mutation, form, or fetch logic.
 
 ## Import Rules
