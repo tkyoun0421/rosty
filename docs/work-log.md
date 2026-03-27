@@ -13,6 +13,57 @@ Track what was completed, what was in progress at the end of a session, and what
 
 ## Current Handoff
 
+### 2026-03-28
+
+- Completed
+  - 직원 스케줄 신청 흐름이 `현재 근무에 대한 availability-only 신청` 방식으로 바뀌어 날짜/시간대/역할 직접 선택이 제거되었습니다.
+  - `src/app/api/dev/work/route.ts`와 `queries/work` 슬라이스가 추가되어 현재 모집 중인 근무를 별도 조회할 수 있게 되었습니다.
+  - 관리자 검토 흐름이 포지션 선택 기반 배정/반려로 바뀌었고, 직원 배정 스케줄 화면도 배정 포지션과 배정 시각 기준으로 표시되도록 정렬되었습니다.
+  - 관리자용 `/admin/work` 화면과 `mutations/work` 쓰기 슬라이스가 추가되어 현재 근무를 생성하고 즉시 현재 근무 카드에 반영할 수 있게 되었습니다.
+  - 배정 포지션 canonical 목록과 한국 시간 범위 포맷 유틸이 공통화되었고, 관련 테스트가 새 모델 기준으로 갱신되었습니다.
+- Last In Progress
+  - 현재 근무 생성까지는 열렸지만, 여전히 단일 current work만 다루는 dev in-memory 구조라 여러 날짜 근무를 누적 관리하지는 못합니다.
+- Next Up
+  - `Work / WorkApplication / WorkAssignment`를 실제 저장 구조에서도 분리할지 결정하고, 최소한 current work 단일 레코드 제약을 넘는 다건 근무 관리 방향을 정합니다.
+  - 이후 Supabase 이관 시 현재 in-memory API를 어떤 테이블과 관계로 옮길지 설계합니다.
+- Blockers / Notes
+  - 현재 구현은 도메인 정의에 맞춰 의미는 정렬됐지만, 데이터 저장 구조는 아직 완전 분리 전 단계이며 current work는 단일 레코드로만 운용됩니다.
+- Related Commit
+  - `uncommitted`
+
+### 2026-03-28
+
+- Completed
+  - `docs/domain/working-model.md`가 추가되어 근무, 근무 신청, 근무 배정, 포지션의 canonical 정의가 문서로 고정되었습니다.
+  - `docs/prd.md`에 도메인 기준 문서 참조가 추가되어 이후 설계와 구현이 같은 용어를 참조할 수 있게 되었습니다.
+- Last In Progress
+  - 근무 개념 정의는 고정되었고, 다음은 현재 구현의 `schedule request` 중심 모델을 새 도메인 정의와 어떻게 맞출지 정리하는 일입니다.
+- Next Up
+  - 현재 구현에서 `근무`, `근무 신청`, `근무 배정`이 뒤섞인 지점을 식별합니다.
+  - 관리자 근무 생성, 직원 availability 신청, 관리자 포지션 배정 흐름으로 타입과 화면을 재정렬하는 계획을 만듭니다.
+- Blockers / Notes
+  - 현재 코드와 새 도메인 문서 사이에 개념 차이가 커서, 기능 추가보다 모델 정렬을 먼저 보는 편이 안전합니다.
+- Related Commit
+  - `uncommitted`
+
+### 2026-03-28
+
+- Completed
+  - 직원용 `/schedule/assigned` 화면이 추가되어 승인된 요청을 날짜, 시간대, 장소, 관리자 메모 기준으로 확인할 수 있습니다.
+  - 직원/관리자 홈 카드가 현재 Release 1 흐름에 맞게 실제 경로로 연결되고, 직원 신청 화면에서 배정 스케줄 화면으로 바로 이동할 수 있습니다.
+  - 직원 신청 현황에 상태 필터와 정렬이 추가되었고, 한국 시간 기준 공용 날짜 포맷 유틸이 `shared/utils`로 정리되었습니다.
+  - 직원 신청 목록이 30초 주기 인앱 재조회로 자동 갱신되도록 설정되어 관리자 처리 결과가 화면에 다시 반영됩니다.
+- Last In Progress
+  - Release 1의 배정 확인, 최소 대시보드, 자동 상태 갱신은 green이며, 다음은 알림 기초 범위와 처리 기록 보강입니다.
+- Next Up
+  - Release 1 인앱 알림 기초 범위를 UI와 데이터 흐름에 반영합니다.
+  - 승인/반려 처리 이력의 현재 기록을 더 명확히 노출하고 Supabase 이관 준비 범위를 정리합니다.
+- Blockers / Notes
+  - 스케줄 persistence는 아직 in-memory dev API이며 Supabase 이관이 남아 있습니다.
+  - 승인/반려 이력은 현재 처리 시각과 담당자만 기록하며, 변경 이력 조회와 알림 이력은 아직 미구현입니다.
+- Related Commit
+  - `uncommitted`
+
 ### 2026-03-27
 
 - Completed

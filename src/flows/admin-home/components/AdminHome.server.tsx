@@ -6,22 +6,23 @@ import { APP_ROUTES } from "#shared/constants/routes";
 
 const ADMIN_SECTIONS = [
   {
-    title: "요청 승인 / 반려",
-    description: "직원 신청을 검토하고 상태를 확정하는 관리자 승인 루프입니다.",
+    title: "신청 배정 / 반려",
+    description: "직원 신청을 검토하고 포지션 배정 또는 반려를 확정하는 관리자 루프입니다.",
     href: APP_ROUTES.adminScheduleRequests,
     cta: "요청 검토하러 가기",
   },
   {
     title: "전체 일정 조회",
-    description: "주간/월간 스케줄 확인, 충돌 검토, 배정 현황 시각화가 이어질 영역입니다.",
+    description:
+      "현재 릴리즈에서 배정 완료된 신청과 처리 상태를 같은 검토 흐름에서 다시 확인합니다.",
     href: APP_ROUTES.adminScheduleRequests,
-    cta: "현재 구현 범위 보기",
+    cta: "승인 현황 보기",
   },
   {
-    title: "운영 대시보드",
-    description: "공지, 근태, 급여, 주요 운영 지표를 다음 단계에서 이 영역에 통합합니다.",
-    href: APP_ROUTES.adminHome,
-    cta: "다음 단계 준비 중",
+    title: "근무 생성",
+    description: "직원이 신청할 현재 근무 날짜와 시간을 생성하거나 갱신합니다.",
+    href: APP_ROUTES.adminWork,
+    cta: "근무 만들기",
   },
 ] as const;
 
@@ -33,8 +34,8 @@ export function AdminHome() {
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">Admin Home</p>
           <h1 className="mt-3 text-3xl font-semibold">관리자 대시보드</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            승인과 배정 중심의 운영 화면입니다. 현재 릴리즈에서는 직원 신청을 검토하고 상태를
-            반영하는 흐름부터 닫습니다.
+            근무 생성과 배정 중심의 운영 화면입니다. 현재 릴리즈에서는 직원 신청 검토와 포지션 배정
+            결과 확인 흐름을 우선 고정합니다.
           </p>
         </div>
         <a

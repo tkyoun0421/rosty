@@ -1,0 +1,6 @@
+interface:
+  display_name: "Night Work"
+  short_description: "Continue repo work autonomously overnight."
+  default_prompt: "Use $night-work to keep working in this repository while I am away."
+policy:
+  allow_implicit_invocation: false

@@ -2,25 +2,25 @@ import { z } from "zod";
 
 import type {
   EmployeeScheduleRequest,
-  ScheduleRequestRole,
+  ScheduleAssignmentPosition,
   ScheduleRequestStatus,
-  ScheduleRequestTimeSlot,
 } from "#queries/schedule-request/types/scheduleRequest";
 import type {
   EmployeeScheduleRequestsResponse,
   ScheduleRequestRecord,
 } from "#queries/schedule-request/dal/scheduleRequest";
 
-const scheduleRequestTimeSlotValues = [
-  "morning",
-  "afternoon",
-  "evening",
-] as const satisfies readonly ScheduleRequestTimeSlot[];
-const scheduleRequestRoleValues = [
-  "consulting",
-  "service",
-  "ceremony",
-] as const satisfies readonly ScheduleRequestRole[];
+const scheduleAssignmentPositionValues = [
+  "teamLead",
+  "scan",
+  "main",
+  "dress",
+  "waitingRoom",
+  "congratulatorySong",
+  "manager",
+  "guide",
+  "dressRoom",
+] as const satisfies readonly ScheduleAssignmentPosition[];
 const scheduleRequestStatusValues = [
   "pending",
   "approved",
@@ -30,13 +30,18 @@ const scheduleRequestStatusValues = [
 export const scheduleRequestRecordSchema = z.object({
   id: z.string().min(1),
   employeeId: z.string().min(1),
+  workId: z.string().min(1),
   workDate: z.string().min(1),
-  timeSlot: z.enum(scheduleRequestTimeSlotValues),
-  role: z.enum(scheduleRequestRoleValues),
+  workStartAt: z.string().datetime(),
+  workEndAt: z.string().datetime(),
   note: z.string(),
   status: z.enum(scheduleRequestStatusValues),
   submittedAt: z.string().datetime(),
   adminComment: z.string().nullable(),
+  assignmentPosition: z.enum(scheduleAssignmentPositionValues).nullable(),
+  assignedLocation: z.string().nullable(),
+  assignedAt: z.string().datetime().nullable(),
+  assignedBy: z.string().nullable(),
 });
 
 export const employeeScheduleRequestsResponseSchema = z.object({
@@ -62,6 +67,12 @@ export function parseScheduleRequestResponse(payload: unknown): {
 export function toEmployeeScheduleRequest(record: ScheduleRequestRecord): EmployeeScheduleRequest {
   return {
     ...record,
+    workStartAt: new Date(record.workStartAt),
+    workEndAt: new Date(record.workEndAt),
     submittedAt: new Date(record.submittedAt),
+    assignmentPosition: record.assignmentPosition ?? null,
+    assignedLocation: record.assignedLocation ?? null,
+    assignedAt: record.assignedAt ? new Date(record.assignedAt) : null,
+    assignedBy: record.assignedBy ?? null,
   };
 }

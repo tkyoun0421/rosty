@@ -4,51 +4,35 @@ import { useEffect, useState } from "react";
 
 import { useReviewScheduleRequest } from "#mutations/schedule-request/hooks/useReviewScheduleRequest";
 import type { ReviewScheduleRequestInput } from "#mutations/schedule-request/schemas/reviewScheduleRequest";
+import {
+  SCHEDULE_ASSIGNMENT_POSITION_LABELS,
+  SCHEDULE_REQUEST_STATUS_LABELS,
+} from "#queries/schedule-request/constants/scheduleRequest";
 import { useAdminScheduleRequests } from "#queries/schedule-request/hooks/useAdminScheduleRequests";
 import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
 import type {
   AdminScheduleReviewItemViewModel,
   AdminScheduleReviewViewProps,
 } from "#flows/admin-schedule-review/types/adminScheduleReviewView";
-
-const STATUS_LABELS = {
-  pending: "승인 대기",
-  approved: "승인 완료",
-  rejected: "반려",
-} as const;
-
-const ROLE_LABELS = {
-  consulting: "상담",
-  service: "뷔페 세팅",
-  ceremony: "예식 진행",
-} as const;
-
-const TIME_SLOT_LABELS = {
-  morning: "오전 (09:00 - 13:00)",
-  afternoon: "오후 (13:00 - 17:00)",
-  evening: "저녁 (17:00 - 21:00)",
-} as const;
-
-function formatSubmittedAt(value: Date) {
-  return new Intl.DateTimeFormat("ko-KR", {
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(value);
-}
+import { formatKoreanDateTime } from "#shared/utils/formatKoreanDateTime";
+import { formatKoreanTimeRange } from "#shared/utils/formatKoreanTimeRange";
 
 function toViewModel(request: EmployeeScheduleRequest): AdminScheduleReviewItemViewModel {
   return {
     id: request.id,
     employeeId: request.employeeId,
     workDate: request.workDate,
-    timeSlotLabel: TIME_SLOT_LABELS[request.timeSlot],
-    roleLabel: ROLE_LABELS[request.role],
-    statusLabel: STATUS_LABELS[request.status],
-    submittedAtLabel: formatSubmittedAt(request.submittedAt),
+    workTimeLabel: formatKoreanTimeRange(request.workStartAt, request.workEndAt),
+    statusLabel: SCHEDULE_REQUEST_STATUS_LABELS[request.status],
+    submittedAtLabel: formatKoreanDateTime(request.submittedAt),
     note: request.note || "추가 메모 없음",
     adminComment: request.adminComment,
+    assignmentPositionLabel: request.assignmentPosition
+      ? SCHEDULE_ASSIGNMENT_POSITION_LABELS[request.assignmentPosition]
+      : null,
+    assignedLocation: request.assignedLocation ?? null,
+    assignedAtLabel: request.assignedAt ? formatKoreanDateTime(request.assignedAt) : null,
+    assignedBy: request.assignedBy ?? null,
     isProcessed: request.status !== "pending",
   };
 }
@@ -57,12 +41,17 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
   const requestsQuery = useAdminScheduleRequests();
   const reviewRequest = useReviewScheduleRequest();
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [assignmentPosition, setAssignmentPosition] = useState<
+    EmployeeScheduleRequest["assignmentPosition"] | ""
+  >("");
   const [adminComment, setAdminComment] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const requests = requestsQuery.data ?? [];
   const items = requests.map(toViewModel);
-  const selectedRequest = items.find((item) => item.id === selectedRequestId) ?? null;
+  const selectedRequestRecord =
+    requests.find((request) => request.id === selectedRequestId) ?? null;
+  const selectedRequest = selectedRequestRecord ? toViewModel(selectedRequestRecord) : null;
 
   useEffect(() => {
     if (items.length === 0) {
@@ -78,13 +67,15 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
   }, [items, selectedRequestId]);
 
   useEffect(() => {
-    if (!selectedRequest) {
+    if (!selectedRequestRecord) {
+      setAssignmentPosition("");
       setAdminComment("");
       return;
     }
 
-    setAdminComment(selectedRequest.adminComment ?? "");
-  }, [selectedRequest?.id]);
+    setAssignmentPosition(selectedRequestRecord.assignmentPosition ?? "");
+    setAdminComment(selectedRequestRecord.adminComment ?? "");
+  }, [selectedRequestRecord]);
 
   async function submit(status: ReviewScheduleRequestInput["status"]) {
     if (!selectedRequest || selectedRequest.isProcessed) {
@@ -98,10 +89,12 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
         requestId: selectedRequest.id,
         status,
         adminComment,
+        assignmentPosition: status === "approved" && assignmentPosition ? assignmentPosition : null,
       });
 
+      setAssignmentPosition(updated.assignmentPosition ?? "");
       setAdminComment(updated.adminComment ?? "");
-      setSuccessMessage(status === "approved" ? "요청을 승인했습니다." : "요청을 반려했습니다.");
+      setSuccessMessage(status === "approved" ? "배정을 완료했습니다." : "신청을 반려했습니다.");
     } catch {
       // Mutation state is rendered by the view.
     }
@@ -121,6 +114,11 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
     },
     detail: {
       selectedRequest,
+      assignmentPosition,
+      onAssignmentPositionChange: (value) => {
+        setAssignmentPosition(value);
+        setSuccessMessage(null);
+      },
       adminComment,
       onAdminCommentChange: (value) => {
         setAdminComment(value);
@@ -131,10 +129,14 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
       isSubmitting: reviewRequest.isPending,
       submitErrorMessage: reviewRequest.error?.message ?? null,
       successMessage,
-      areActionsDisabled:
-        !selectedRequest || selectedRequest.isProcessed || reviewRequest.isPending,
+      isApproveDisabled:
+        !selectedRequest ||
+        selectedRequest.isProcessed ||
+        reviewRequest.isPending ||
+        !assignmentPosition,
+      isRejectDisabled: !selectedRequest || selectedRequest.isProcessed || reviewRequest.isPending,
       helperMessage: selectedRequest?.isProcessed
-        ? "이미 처리된 요청은 다시 승인하거나 반려할 수 없습니다."
+        ? "이미 처리된 신청은 다시 배정하거나 반려할 수 없습니다."
         : null,
     },
   };

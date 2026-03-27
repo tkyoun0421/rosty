@@ -15,11 +15,17 @@ export function EmployeeSchedulePage() {
           </p>
           <h1 className="mt-3 text-3xl font-semibold">근무 스케줄 신청</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            직원이 가능한 날짜와 시간대를 제출하고, 제출한 요청의 상태를 한 화면에서 확인하는 첫
-            번째 스케줄 MVP 흐름입니다.
+            관리자가 먼저 만든 현재 근무에 대해 직원이 참여 가능 여부를 제출하고, 제출한 신청의 배정
+            상태를 한 화면에서 확인하는 Release 1 흐름입니다.
           </p>
         </div>
         <div className="flex gap-3">
+          <Link
+            href={APP_ROUTES.employeeAssignedSchedule}
+            className="inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white"
+          >
+            배정 스케줄 보기
+          </Link>
           <Link
             href={APP_ROUTES.employeeHome}
             className="inline-flex rounded-full border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--muted)]"

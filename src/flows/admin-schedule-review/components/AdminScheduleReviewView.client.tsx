@@ -1,5 +1,6 @@
 "use client";
 
+import { SCHEDULE_ASSIGNMENT_POSITION_OPTIONS } from "#queries/schedule-request/constants/scheduleRequest";
 import type { AdminScheduleReviewViewProps } from "#flows/admin-schedule-review/types/adminScheduleReviewView";
 
 export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewViewProps) {
@@ -9,7 +10,7 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
         <div>
           <h2 className="text-2xl font-semibold">관리자 요청 검토</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            직원이 제출한 근무 신청을 검토하고 승인 또는 반려를 처리합니다.
+            직원 신청을 검토하고 실제 배정 포지션을 확정하거나 반려를 처리합니다.
           </p>
         </div>
 
@@ -51,20 +52,18 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                         <p className="text-base font-semibold text-[var(--foreground)]">
                           {item.employeeId}
                         </p>
-                        <p className="mt-1 text-sm text-[var(--muted)]">{item.workDate}</p>
+                        <p className="mt-1 text-sm text-[var(--muted)]">
+                          {item.workDate} · {item.workTimeLabel}
+                        </p>
                       </div>
                       <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
                         {item.statusLabel}
                       </span>
                     </div>
-                    <dl className="mt-4 grid gap-2 text-sm text-[var(--muted)] sm:grid-cols-2">
+                    <dl className="mt-4 grid gap-2 text-sm text-[var(--muted)]">
                       <div>
-                        <dt className="font-medium text-[var(--foreground)]">시간대</dt>
-                        <dd className="mt-1">{item.timeSlotLabel}</dd>
-                      </div>
-                      <div>
-                        <dt className="font-medium text-[var(--foreground)]">역할</dt>
-                        <dd className="mt-1">{item.roleLabel}</dd>
+                        <dt className="font-medium text-[var(--foreground)]">제출 메모</dt>
+                        <dd className="mt-1">{item.note}</dd>
                       </div>
                     </dl>
                   </button>
@@ -92,7 +91,7 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                     {detail.selectedRequest.employeeId}
                   </p>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    {detail.selectedRequest.workDate} · {detail.selectedRequest.timeSlotLabel}
+                    {detail.selectedRequest.workDate} · {detail.selectedRequest.workTimeLabel}
                   </p>
                 </div>
                 <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
@@ -102,13 +101,15 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
 
               <dl className="mt-4 grid gap-3 text-sm text-[var(--muted)] sm:grid-cols-2">
                 <div>
-                  <dt className="font-medium text-[var(--foreground)]">근무 역할</dt>
-                  <dd className="mt-1">{detail.selectedRequest.roleLabel}</dd>
-                </div>
-                <div>
                   <dt className="font-medium text-[var(--foreground)]">제출 시각</dt>
                   <dd className="mt-1">{detail.selectedRequest.submittedAtLabel}</dd>
                 </div>
+                {detail.selectedRequest.assignmentPositionLabel ? (
+                  <div>
+                    <dt className="font-medium text-[var(--foreground)]">배정 포지션</dt>
+                    <dd className="mt-1">{detail.selectedRequest.assignmentPositionLabel}</dd>
+                  </div>
+                ) : null}
                 <div className="sm:col-span-2">
                   <dt className="font-medium text-[var(--foreground)]">신청 메모</dt>
                   <dd className="mt-1">{detail.selectedRequest.note}</dd>
@@ -119,8 +120,48 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                     <dd className="mt-1">{detail.selectedRequest.adminComment}</dd>
                   </div>
                 ) : null}
+                {detail.selectedRequest.assignedLocation ? (
+                  <div>
+                    <dt className="font-medium text-[var(--foreground)]">배정 장소</dt>
+                    <dd className="mt-1">{detail.selectedRequest.assignedLocation}</dd>
+                  </div>
+                ) : null}
+                {detail.selectedRequest.assignedAtLabel ? (
+                  <div>
+                    <dt className="font-medium text-[var(--foreground)]">배정 시각</dt>
+                    <dd className="mt-1">{detail.selectedRequest.assignedAtLabel}</dd>
+                  </div>
+                ) : null}
+                {detail.selectedRequest.assignedBy ? (
+                  <div className="sm:col-span-2">
+                    <dt className="font-medium text-[var(--foreground)]">배정 담당자</dt>
+                    <dd className="mt-1">{detail.selectedRequest.assignedBy}</dd>
+                  </div>
+                ) : null}
               </dl>
             </div>
+
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              배정 포지션
+              <select
+                aria-label="배정 포지션"
+                className="rounded-2xl border border-[var(--border)] px-4 py-3"
+                value={detail.assignmentPosition}
+                onChange={(event) =>
+                  detail.onAssignmentPositionChange(
+                    event.target.value as typeof detail.assignmentPosition,
+                  )
+                }
+                disabled={detail.selectedRequest.isProcessed || detail.isSubmitting}
+              >
+                <option value="">포지션 선택</option>
+                {SCHEDULE_ASSIGNMENT_POSITION_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
 
             <label className="flex flex-col gap-2 text-sm font-medium">
               관리자 메모
@@ -156,18 +197,18 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
               <button
                 type="button"
                 onClick={() => void detail.onApprove()}
-                disabled={detail.areActionsDisabled}
+                disabled={detail.isApproveDisabled}
                 className="inline-flex rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
               >
-                승인
+                배정 확정
               </button>
               <button
                 type="button"
                 onClick={() => void detail.onReject()}
-                disabled={detail.areActionsDisabled}
+                disabled={detail.isRejectDisabled}
                 className="inline-flex rounded-full border border-[var(--border)] px-5 py-3 text-sm font-medium text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                반려
+                신청 반려
               </button>
             </div>
           </div>

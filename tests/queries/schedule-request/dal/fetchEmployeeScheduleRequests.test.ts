@@ -7,13 +7,18 @@ import { isAppError } from "#shared/lib/appError";
 const REQUEST_RECORD = {
   id: "request-001",
   employeeId: "employee-01",
+  workId: "work-2026-04-12",
   workDate: "2026-04-12",
-  timeSlot: "morning" as const,
-  role: "service" as const,
+  workStartAt: "2026-04-12T02:00:00.000Z",
+  workEndAt: "2026-04-12T09:00:00.000Z",
   note: "Support opening",
   status: "pending" as const,
   submittedAt: "2026-03-27T09:00:00.000Z",
   adminComment: null,
+  assignmentPosition: null,
+  assignedLocation: null,
+  assignedAt: null,
+  assignedBy: null,
 };
 
 function createJsonResponse(body: unknown, status = 200) {

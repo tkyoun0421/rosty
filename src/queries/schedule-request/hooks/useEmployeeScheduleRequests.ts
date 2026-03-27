@@ -9,5 +9,7 @@ export function useEmployeeScheduleRequests() {
   return useQuery({
     queryKey: queryKeys.scheduleRequests.employeeList(),
     queryFn: fetchEmployeeScheduleRequests,
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: true,
   });
 }

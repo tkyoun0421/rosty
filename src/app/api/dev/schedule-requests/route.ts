@@ -1,58 +1,25 @@
 import { NextResponse } from "next/server";
 
+import {
+  ADMIN_ID,
+  EMPLOYEE_ID,
+  getCurrentWorkRecord,
+  listScheduleRequestRecords,
+  prependScheduleRequestRecord,
+  replaceScheduleRequestRecord,
+} from "#app/api/dev/lib/scheduleData";
 import type { ScheduleRequestRecord } from "#queries/schedule-request/dal/scheduleRequest";
 import type {
-  ScheduleRequestRole,
+  ScheduleAssignmentPosition,
   ScheduleRequestStatus,
-  ScheduleRequestTimeSlot,
 } from "#queries/schedule-request/types/scheduleRequest";
+import {
+  SCHEDULE_ASSIGNMENT_POSITION_OPTIONS,
+  resolveAssignedLocationLabel,
+} from "#queries/schedule-request/constants/scheduleRequest";
 
-const EMPLOYEE_ID = "employee-01";
-const TIME_SLOTS: ScheduleRequestTimeSlot[] = ["morning", "afternoon", "evening"];
-const ROLES: ScheduleRequestRole[] = ["consulting", "service", "ceremony"];
 const REVIEWABLE_STATUSES: ScheduleRequestStatus[] = ["approved", "rejected"];
-
-const INITIAL_REQUESTS: ScheduleRequestRecord[] = [
-  {
-    id: "request-001",
-    employeeId: EMPLOYEE_ID,
-    workDate: "2026-04-12",
-    timeSlot: "morning",
-    role: "service",
-    note: "예식 시작 전 세팅 가능",
-    status: "pending",
-    submittedAt: "2026-03-27T09:00:00.000Z",
-    adminComment: null,
-  },
-  {
-    id: "request-002",
-    employeeId: "employee-02",
-    workDate: "2026-04-13",
-    timeSlot: "afternoon",
-    role: "consulting",
-    note: "상담 지원 가능",
-    status: "pending",
-    submittedAt: "2026-03-27T08:30:00.000Z",
-    adminComment: null,
-  },
-  {
-    id: "request-003",
-    employeeId: EMPLOYEE_ID,
-    workDate: "2026-04-19",
-    timeSlot: "afternoon",
-    role: "ceremony",
-    note: "예식 진행 경험 있음",
-    status: "approved",
-    submittedAt: "2026-03-26T06:30:00.000Z",
-    adminComment: "메인 홀 우선 배치",
-  },
-];
-
-let scheduleRequests = [...INITIAL_REQUESTS];
-
-function isValidDateString(value: string) {
-  return !Number.isNaN(new Date(`${value}T00:00:00`).getTime());
-}
+const ASSIGNMENT_POSITIONS = SCHEDULE_ASSIGNMENT_POSITION_OPTIONS.map((option) => option.value);
 
 function isReviewStatus(
   value: string,
@@ -60,8 +27,13 @@ function isReviewStatus(
   return REVIEWABLE_STATUSES.includes(value as ScheduleRequestStatus);
 }
 
+function isAssignmentPosition(value: string): value is ScheduleAssignmentPosition {
+  return ASSIGNMENT_POSITIONS.includes(value as ScheduleAssignmentPosition);
+}
+
 export async function GET(request: Request) {
   const scope = new URL(request.url).searchParams.get("scope");
+  const scheduleRequests = listScheduleRequestRecords();
   const requests =
     scope === "admin"
       ? scheduleRequests
@@ -72,43 +44,31 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => null)) as {
-    workDate?: unknown;
-    timeSlot?: unknown;
-    role?: unknown;
+    workId?: unknown;
     note?: unknown;
   } | null;
+  const currentWork = getCurrentWorkRecord();
+  const scheduleRequests = listScheduleRequestRecords();
 
-  if (
-    !body ||
-    typeof body.workDate !== "string" ||
-    typeof body.timeSlot !== "string" ||
-    typeof body.role !== "string"
-  ) {
+  if (!body || typeof body.workId !== "string") {
     return NextResponse.json({ message: "필수 입력값이 누락되었습니다." }, { status: 400 });
   }
 
-  if (!isValidDateString(body.workDate)) {
-    return NextResponse.json({ message: "올바른 날짜를 선택해 주세요." }, { status: 400 });
-  }
-
-  if (!TIME_SLOTS.includes(body.timeSlot as ScheduleRequestTimeSlot)) {
-    return NextResponse.json({ message: "지원하지 않는 시간대입니다." }, { status: 400 });
-  }
-
-  if (!ROLES.includes(body.role as ScheduleRequestRole)) {
-    return NextResponse.json({ message: "지원하지 않는 근무 역할입니다." }, { status: 400 });
+  if (!currentWork || body.workId !== currentWork.id) {
+    return NextResponse.json(
+      { message: "현재 신청 가능한 근무가 없거나 이미 마감되었습니다." },
+      { status: 409 },
+    );
   }
 
   const alreadyRequested = scheduleRequests.some(
     (scheduleRequest) =>
-      scheduleRequest.employeeId === EMPLOYEE_ID &&
-      scheduleRequest.workDate === body.workDate &&
-      scheduleRequest.timeSlot === body.timeSlot,
+      scheduleRequest.employeeId === EMPLOYEE_ID && scheduleRequest.workId === body.workId,
   );
 
   if (alreadyRequested) {
     return NextResponse.json(
-      { message: "같은 날짜와 시간대에는 한 번만 신청할 수 있습니다." },
+      { message: "같은 근무에는 한 번만 신청할 수 있습니다." },
       { status: 409 },
     );
   }
@@ -116,16 +76,21 @@ export async function POST(request: Request) {
   const created: ScheduleRequestRecord = {
     id: `request-${String(scheduleRequests.length + 1).padStart(3, "0")}`,
     employeeId: EMPLOYEE_ID,
-    workDate: body.workDate,
-    timeSlot: body.timeSlot as ScheduleRequestTimeSlot,
-    role: body.role as ScheduleRequestRole,
+    workId: currentWork.id,
+    workDate: currentWork.workDate,
+    workStartAt: currentWork.startAt,
+    workEndAt: currentWork.endAt,
     note: typeof body.note === "string" ? body.note.trim() : "",
     status: "pending",
     submittedAt: new Date().toISOString(),
     adminComment: null,
+    assignmentPosition: null,
+    assignedLocation: null,
+    assignedAt: null,
+    assignedBy: null,
   };
 
-  scheduleRequests = [created, ...scheduleRequests];
+  prependScheduleRequestRecord(created);
 
   return NextResponse.json({ request: created }, { status: 201 });
 }
@@ -135,7 +100,9 @@ export async function PATCH(request: Request) {
     requestId?: unknown;
     status?: unknown;
     adminComment?: unknown;
+    assignmentPosition?: unknown;
   } | null;
+  const scheduleRequests = listScheduleRequestRecords();
 
   if (!body || typeof body.requestId !== "string" || typeof body.status !== "string") {
     return NextResponse.json({ message: "처리할 요청 정보가 올바르지 않습니다." }, { status: 400 });
@@ -143,6 +110,13 @@ export async function PATCH(request: Request) {
 
   if (!isReviewStatus(body.status)) {
     return NextResponse.json({ message: "지원하지 않는 처리 상태입니다." }, { status: 400 });
+  }
+
+  if (
+    body.status === "approved" &&
+    (typeof body.assignmentPosition !== "string" || !isAssignmentPosition(body.assignmentPosition))
+  ) {
+    return NextResponse.json({ message: "배정 포지션을 선택해 주세요." }, { status: 400 });
   }
 
   const target = scheduleRequests.find((scheduleRequest) => scheduleRequest.id === body.requestId);
@@ -159,16 +133,21 @@ export async function PATCH(request: Request) {
   }
 
   const adminComment = typeof body.adminComment === "string" ? body.adminComment.trim() : "";
+  const assignedAt = new Date().toISOString();
+  const assignmentPosition =
+    body.status === "approved" ? (body.assignmentPosition as ScheduleAssignmentPosition) : null;
 
   const updated: ScheduleRequestRecord = {
     ...target,
     status: body.status,
     adminComment: adminComment.length > 0 ? adminComment : null,
+    assignmentPosition,
+    assignedLocation: assignmentPosition ? resolveAssignedLocationLabel(assignmentPosition) : null,
+    assignedAt: body.status === "approved" ? assignedAt : null,
+    assignedBy: body.status === "approved" ? ADMIN_ID : null,
   };
 
-  scheduleRequests = scheduleRequests.map((scheduleRequest) =>
-    scheduleRequest.id === updated.id ? updated : scheduleRequest,
-  );
+  replaceScheduleRequestRecord(updated);
 
   return NextResponse.json({ request: updated });
 }

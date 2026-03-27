@@ -1,45 +1,51 @@
 import type React from "react";
 
-import type {
-  ScheduleRequestRole,
-  ScheduleRequestTimeSlot,
-} from "#queries/schedule-request/types/scheduleRequest";
+import type { ScheduleRequestStatus } from "#queries/schedule-request/types/scheduleRequest";
 
 export type EmployeeScheduleRequestItemViewModel = {
   id: string;
   workDate: string;
-  timeSlotLabel: string;
+  workTimeLabel: string;
   statusLabel: string;
-  roleLabel: string;
   submittedAtLabel: string;
   note: string;
   adminComment: string | null;
+  assignmentPositionLabel: string | null;
 };
 
 export type EmployeeScheduleViewProps = {
+  currentWork: {
+    isLoading: boolean;
+    errorMessage: string | null;
+    isAvailable: boolean;
+    workDate: string | null;
+    workTimeLabel: string | null;
+    helperMessage: string;
+  };
   form: {
     values: {
-      workDate: string;
-      timeSlot: ScheduleRequestTimeSlot;
-      role: ScheduleRequestRole;
       note: string;
     };
     errors: {
-      workDate: string | null;
       note: string | null;
     };
     isSubmitting: boolean;
+    isDisabled: boolean;
     submitErrorMessage: string | null;
     successMessage: string | null;
-    onWorkDateChange: (value: string) => void;
-    onTimeSlotChange: (value: ScheduleRequestTimeSlot) => void;
-    onRoleChange: (value: ScheduleRequestRole) => void;
     onNoteChange: (value: string) => void;
     onSubmit: (event?: React.BaseSyntheticEvent) => Promise<void>;
   };
   requests: {
     isLoading: boolean;
     errorMessage: string | null;
+    controls: {
+      statusFilter: "all" | ScheduleRequestStatus;
+      sortOrder: "submitted-desc" | "work-date-asc";
+      resultCountLabel: string;
+      onStatusFilterChange: (value: "all" | ScheduleRequestStatus) => void;
+      onSortOrderChange: (value: "submitted-desc" | "work-date-asc") => void;
+    };
     summary: {
       pending: number;
       approved: number;
