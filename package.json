@@ -9,7 +9,9 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:foundation": "powershell -ExecutionPolicy Bypass -File tests/agent-foundation.test.ps1"
+    "test:foundation": "powershell -ExecutionPolicy Bypass -File tests/agent-foundation.test.ps1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -38,6 +40,7 @@
     "@vitejs/plugin-react": "^5.0.2",
     "jsdom": "^27.0.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

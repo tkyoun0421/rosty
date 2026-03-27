@@ -5,6 +5,9 @@ $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $requiredFiles = @(
     ".editorconfig",
     ".gitattributes",
+    ".prettierignore",
+    ".prettierrc.json",
+    "package.json",
     "AGENTS.md",
     "tsconfig.json",
     "vitest.config.ts",
@@ -61,6 +64,23 @@ $requiredContent = @{
         "*.md text eol=lf",
         "*.ps1 text eol=lf"
     )
+    ".prettierignore" = @(
+        ".next",
+        "node_modules",
+        "pnpm-lock.yaml"
+    )
+    ".prettierrc.json" = @(
+        '"printWidth": 100',
+        '"singleQuote": false',
+        '"semi": true',
+        '"trailingComma": "all"',
+        '"endOfLine": "lf"'
+    )
+    "package.json" = @(
+        '"format": "prettier --write ."',
+        '"format:check": "prettier --check ."',
+        '"prettier":'
+    )
     "AGENTS.md" = @(
         "# Project Agents",
         "## Development Baseline",
@@ -75,6 +95,7 @@ $requiredContent = @{
         "Supabase JS 2",
         "shadcn/ui",
         "Tailwind CSS 4",
+        "Prettier 3",
         "### State And Data Rules",
         "Do not solve the same problem with both",
         "Manage query keys through shared key factories",
@@ -215,6 +236,8 @@ $requiredContent = @{
         "UTF-8",
         "-Encoding UTF8",
         "UTF-8 BOM",
+        "Prettier is the formatter of record.",
+        '`pnpm format:check`',
         "## Structural Review Checks",
         "## UI Safety Checks",
         "absolute imports only",

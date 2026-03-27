@@ -8,11 +8,12 @@ import type {
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 
-export const SCHEDULE_TIME_SLOT_OPTIONS: Array<{ value: ScheduleRequestTimeSlot; label: string }> = [
-  { value: "morning", label: "오전 (09:00 - 13:00)" },
-  { value: "afternoon", label: "오후 (13:00 - 17:00)" },
-  { value: "evening", label: "저녁 (17:00 - 21:00)" },
-];
+export const SCHEDULE_TIME_SLOT_OPTIONS: Array<{ value: ScheduleRequestTimeSlot; label: string }> =
+  [
+    { value: "morning", label: "오전 (09:00 - 13:00)" },
+    { value: "afternoon", label: "오후 (13:00 - 17:00)" },
+    { value: "evening", label: "저녁 (17:00 - 21:00)" },
+  ];
 
 export const SCHEDULE_ROLE_OPTIONS: Array<{ value: ScheduleRequestRole; label: string }> = [
   { value: "consulting", label: "상담" },

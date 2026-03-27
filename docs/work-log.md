@@ -16,6 +16,24 @@ Track what was completed, what was in progress at the end of a session, and what
 ### 2026-03-27
 
 - Completed
+  - Prettier 3 was added as the repository formatter with `pnpm format` and `pnpm format:check` scripts.
+  - Root formatting files were added through `.prettierrc.json` and `.prettierignore`.
+  - Agent and development docs were updated to document Prettier as the formatting baseline.
+- Last In Progress
+  - Formatting infrastructure is being locked before resuming Release 1 feature work.
+- Next Up
+  - Implement admin request review with approval and rejection.
+  - Reflect admin decisions back into the employee request status flow.
+  - Start the assigned schedule confirmation view after the approval loop is stable.
+- Blockers / Notes
+  - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
+  - Real-time updates and request filter/sort are still pending.
+- Related Commit
+  - `uncommitted`
+
+### 2026-03-27
+
+- Completed
   - Provider wiring moved under `src/app/_providers` and `AppProviders` was renamed to `QueryClientProvider`.
   - Schedule slices were realigned from `models/dto/dal/form` to `types/schemas/dal`.
   - Development rules and contract tests were updated to lock the new folder taxonomy.
@@ -29,7 +47,7 @@ Track what was completed, what was in progress at the end of a session, and what
   - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
   - Real-time updates and request filter/sort are still pending.
 - Related Commit
-  - `uncommitted`
+  - `7be74a4`
 
 ### 2026-03-27
 
@@ -47,4 +65,4 @@ Track what was completed, what was in progress at the end of a session, and what
   - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
   - Real-time updates and request filter/sort are still pending.
 - Related Commit
-  - `uncommitted`
+  - `ee48e2d`

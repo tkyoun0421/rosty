@@ -24,7 +24,8 @@ export function SignInShell() {
         </p>
         <h1 className="text-4xl font-semibold tracking-tight">웨딩홀 근무 운영 시작</h1>
         <p className="mt-4 text-lg leading-8 text-[var(--muted)]">
-          실제 Google 로그인 연동 전 단계로, 역할별 진입과 화면 구조를 빠르게 검증하는 개발용 셸입니다.
+          실제 Google 로그인 연동 전 단계로, 역할별 진입과 화면 구조를 빠르게 검증하는 개발용
+          셸입니다.
         </p>
       </div>
 

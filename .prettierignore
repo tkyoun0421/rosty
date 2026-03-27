@@ -1,0 +1,7 @@
+.agents
+docs/prd.md
+docs/user-flow.md
+.next
+node_modules
+pnpm-lock.yaml
+skills-lock.json

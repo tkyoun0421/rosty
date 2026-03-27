@@ -35,6 +35,7 @@ Use this stack as the default unless there is a concrete reason the existing bas
 - Backend and auth: `Supabase JS 2`
 - UI primitives: `shadcn/ui`
 - Styling: `Tailwind CSS 4`
+- Formatting: `Prettier 3`
 
 ### State And Data Rules
 

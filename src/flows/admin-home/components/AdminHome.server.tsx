@@ -25,7 +25,8 @@ export function AdminHome() {
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">Admin Home</p>
           <h1 className="mt-3 text-3xl font-semibold">관리자 대시보드 셸</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            승인과 배정 중심의 운영 화면을 위한 첫 허브입니다. 다음 섹션에서 실제 신청 검토와 일정 조회가 이어집니다.
+            승인과 배정 중심의 운영 화면을 위한 첫 허브입니다. 다음 섹션에서 실제 신청 검토와 일정
+            조회가 이어집니다.
           </p>
         </div>
         <a
@@ -38,7 +39,10 @@ export function AdminHome() {
 
       <section className="mt-8 grid gap-5 md:grid-cols-3">
         {ADMIN_SECTIONS.map((section) => (
-          <article key={section.title} className="rounded-3xl border border-[var(--border)] bg-white/80 p-6">
+          <article
+            key={section.title}
+            className="rounded-3xl border border-[var(--border)] bg-white/80 p-6"
+          >
             <h2 className="text-xl font-semibold">{section.title}</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{section.description}</p>
           </article>

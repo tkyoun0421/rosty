@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   SCHEDULE_ROLE_OPTIONS,
@@ -13,7 +13,8 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
         <div>
           <h2 className="text-2xl font-semibold">근무 다음주 요청</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            요청 가능한 날짜와 시간대를 선택하면 관리자 확인 전까지 요청 현황에서 바로 상태를 추적할 수 있습니다.
+            요청 가능한 날짜와 시간대를 선택하면 관리자 확인 전까지 요청 현황에서 바로 상태를 추적할
+            수 있습니다.
           </p>
         </div>
 
@@ -38,7 +39,9 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
               aria-label="시간대"
               className="rounded-2xl border border-[var(--border)] px-4 py-3"
               value={form.values.timeSlot}
-              onChange={(event) => form.onTimeSlotChange(event.target.value as typeof form.values.timeSlot)}
+              onChange={(event) =>
+                form.onTimeSlotChange(event.target.value as typeof form.values.timeSlot)
+              }
             >
               {SCHEDULE_TIME_SLOT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -112,15 +115,21 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
           <div className="grid grid-cols-3 gap-2 text-center text-xs font-medium sm:w-[240px]">
             <div className="rounded-2xl border border-[var(--border)] px-3 py-3">
               <div className="text-[var(--muted)]">대기</div>
-              <div className="mt-1 text-base text-[var(--foreground)]">{requests.summary.pending}</div>
+              <div className="mt-1 text-base text-[var(--foreground)]">
+                {requests.summary.pending}
+              </div>
             </div>
             <div className="rounded-2xl border border-[var(--border)] px-3 py-3">
               <div className="text-[var(--muted)]">승인</div>
-              <div className="mt-1 text-base text-[var(--foreground)]">{requests.summary.approved}</div>
+              <div className="mt-1 text-base text-[var(--foreground)]">
+                {requests.summary.approved}
+              </div>
             </div>
             <div className="rounded-2xl border border-[var(--border)] px-3 py-3">
               <div className="text-[var(--muted)]">반려</div>
-              <div className="mt-1 text-base text-[var(--foreground)]">{requests.summary.rejected}</div>
+              <div className="mt-1 text-base text-[var(--foreground)]">
+                {requests.summary.rejected}
+              </div>
             </div>
           </div>
         </div>
@@ -143,10 +152,15 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
               </div>
             ) : (
               requests.items.map((request) => (
-                <article key={request.id} className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5">
+                <article
+                  key={request.id}
+                  className="rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5"
+                >
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <p className="text-lg font-semibold text-[var(--foreground)]">{request.workDate}</p>
+                      <p className="text-lg font-semibold text-[var(--foreground)]">
+                        {request.workDate}
+                      </p>
                       <p className="mt-1 text-sm text-[var(--muted)]">{request.timeSlotLabel}</p>
                     </div>
                     <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">

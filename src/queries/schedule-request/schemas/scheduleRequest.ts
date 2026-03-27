@@ -11,9 +11,21 @@ import type {
   ScheduleRequestRecord,
 } from "#queries/schedule-request/dal/scheduleRequest";
 
-const scheduleRequestTimeSlotValues = ["morning", "afternoon", "evening"] as const satisfies readonly ScheduleRequestTimeSlot[];
-const scheduleRequestRoleValues = ["consulting", "service", "ceremony"] as const satisfies readonly ScheduleRequestRole[];
-const scheduleRequestStatusValues = ["pending", "approved", "rejected"] as const satisfies readonly ScheduleRequestStatus[];
+const scheduleRequestTimeSlotValues = [
+  "morning",
+  "afternoon",
+  "evening",
+] as const satisfies readonly ScheduleRequestTimeSlot[];
+const scheduleRequestRoleValues = [
+  "consulting",
+  "service",
+  "ceremony",
+] as const satisfies readonly ScheduleRequestRole[];
+const scheduleRequestStatusValues = [
+  "pending",
+  "approved",
+  "rejected",
+] as const satisfies readonly ScheduleRequestStatus[];
 
 export const scheduleRequestRecordSchema = z.object({
   id: z.string().min(1),
@@ -31,7 +43,9 @@ export const employeeScheduleRequestsResponseSchema = z.object({
   requests: z.array(scheduleRequestRecordSchema),
 });
 
-export function parseEmployeeScheduleRequestsResponse(payload: unknown): EmployeeScheduleRequestsResponse {
+export function parseEmployeeScheduleRequestsResponse(
+  payload: unknown,
+): EmployeeScheduleRequestsResponse {
   return employeeScheduleRequestsResponseSchema.parse(payload);
 }
 

@@ -25,6 +25,10 @@ Define the minimum engineering bar for structure, verification, and review so th
 - Garbled text or invalid UTF-8 is treated as a repository defect and must be fixed before closing the task.
 - PowerShell scripts with non-ASCII text should use UTF-8 BOM so Windows PowerShell can parse them safely.
 
+Prettier is the formatter of record.
+
+- Run `pnpm format:check` before closing formatting or config sections.
+
 ## Structural Review Checks
 
 - absolute imports only

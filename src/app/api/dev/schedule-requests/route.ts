@@ -53,7 +53,12 @@ export async function POST(request: Request) {
     note?: unknown;
   } | null;
 
-  if (!body || typeof body.workDate !== "string" || typeof body.timeSlot !== "string" || typeof body.role !== "string") {
+  if (
+    !body ||
+    typeof body.workDate !== "string" ||
+    typeof body.timeSlot !== "string" ||
+    typeof body.role !== "string"
+  ) {
     return NextResponse.json({ message: "필수 항목이 누락되었습니다." }, { status: 400 });
   }
 
@@ -77,7 +82,10 @@ export async function POST(request: Request) {
   );
 
   if (alreadyRequested) {
-    return NextResponse.json({ message: "같은 날짜와 시간대에는 한 번만 요청할 수 있습니다." }, { status: 409 });
+    return NextResponse.json(
+      { message: "같은 날짜와 시간대에는 한 번만 요청할 수 있습니다." },
+      { status: 409 },
+    );
   }
 
   const created: ScheduleRequestRecord = {

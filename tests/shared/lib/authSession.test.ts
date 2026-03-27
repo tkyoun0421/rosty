@@ -1,4 +1,5 @@
 import { resolveHomePathForRole } from "#shared/lib/authSession";
+import { describe, expect, it } from "vitest";
 
 describe("resolveHomePathForRole", () => {
   it("returns the employee home path for employee role", () => {

@@ -33,7 +33,8 @@ export function EmployeeHome() {
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">Employee Home</p>
           <h1 className="mt-3 text-3xl font-semibold">직원 대시보드</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            첫 번째 MVP는 직원이 직접 근무를 신청하고, 제출한 요청의 상태를 바로 확인할 수 있는 흐름부터 닫습니다.
+            첫 번째 MVP는 직원이 직접 근무를 신청하고, 제출한 요청의 상태를 바로 확인할 수 있는
+            흐름부터 닫습니다.
           </p>
         </div>
         <div className="flex gap-3">
@@ -54,7 +55,10 @@ export function EmployeeHome() {
 
       <section className="mt-8 grid gap-5 md:grid-cols-3">
         {EMPLOYEE_SECTIONS.map((section) => (
-          <article key={section.title} className="rounded-3xl border border-[var(--border)] bg-white/80 p-6">
+          <article
+            key={section.title}
+            className="rounded-3xl border border-[var(--border)] bg-white/80 p-6"
+          >
             <h2 className="text-xl font-semibold">{section.title}</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{section.description}</p>
             <Link

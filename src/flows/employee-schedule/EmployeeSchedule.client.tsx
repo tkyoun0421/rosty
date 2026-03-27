@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { EmployeeScheduleView } from "#flows/employee-schedule/components/EmployeeScheduleView.client";
 import { useEmployeeSchedule } from "#flows/employee-schedule/hooks/useEmployeeSchedule";

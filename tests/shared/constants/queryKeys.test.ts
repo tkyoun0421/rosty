@@ -1,4 +1,5 @@
 import { queryKeys } from "#shared/constants/queryKeys";
+import { describe, expect, it } from "vitest";
 
 describe("queryKeys", () => {
   it("builds stable schedule request keys from a shared factory", () => {

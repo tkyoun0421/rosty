@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2022"
-    ],
+    "lib": ["dom", "dom.iterable", "es2022"],
     "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
@@ -24,21 +20,11 @@
       }
     ],
     "paths": {
-      "#app/*": [
-        "./src/app/*"
-      ],
-      "#flows/*": [
-        "./src/flows/*"
-      ],
-      "#mutations/*": [
-        "./src/mutations/*"
-      ],
-      "#queries/*": [
-        "./src/queries/*"
-      ],
-      "#shared/*": [
-        "./src/shared/*"
-      ]
+      "#app/*": ["./src/app/*"],
+      "#flows/*": ["./src/flows/*"],
+      "#mutations/*": ["./src/mutations/*"],
+      "#queries/*": ["./src/queries/*"],
+      "#shared/*": ["./src/shared/*"]
     }
   },
   "include": [
@@ -50,7 +36,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
