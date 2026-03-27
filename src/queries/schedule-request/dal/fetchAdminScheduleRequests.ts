@@ -5,14 +5,14 @@ import {
   toEmployeeScheduleRequest,
 } from "#queries/schedule-request/schemas/scheduleRequest";
 
-export async function fetchEmployeeScheduleRequests(): Promise<EmployeeScheduleRequest[]> {
-  const response = await fetch(`${APP_ROUTES.devScheduleRequests}?scope=employee`, {
+export async function fetchAdminScheduleRequests(): Promise<EmployeeScheduleRequest[]> {
+  const response = await fetch(`${APP_ROUTES.devScheduleRequests}?scope=admin`, {
     method: "GET",
     cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error("요청 현황을 불러오지 못했습니다.");
+    throw new Error("신청 목록을 불러오지 못했습니다.");
   }
 
   const payload = parseEmployeeScheduleRequestsResponse(await response.json());

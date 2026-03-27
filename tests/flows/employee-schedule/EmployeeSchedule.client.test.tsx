@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+
 import { EmployeeSchedule } from "#flows/employee-schedule/EmployeeSchedule.client";
 
 const REQUESTS_RESPONSE = {
@@ -36,7 +37,10 @@ describe("EmployeeSchedule", () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
 
-      if (url.endsWith("/api/dev/schedule-requests") && (!init || init.method === "GET")) {
+      if (
+        url.endsWith("/api/dev/schedule-requests?scope=employee") &&
+        (!init || init.method === "GET")
+      ) {
         return new Response(JSON.stringify({ requests: currentRequests }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -83,7 +87,7 @@ describe("EmployeeSchedule", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText("근무 다음주 요청")).toBeInTheDocument();
+    expect(await screen.findByText("근무 스케줄 신청")).toBeInTheDocument();
     expect(await screen.findByText("2026-04-12")).toBeInTheDocument();
     expect(screen.getByText("승인 완료")).toBeInTheDocument();
 
@@ -100,9 +104,9 @@ describe("EmployeeSchedule", () => {
       target: { value: "closing-consulting" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "근무 요청 등록" }));
+    fireEvent.click(screen.getByRole("button", { name: "근무 신청 등록" }));
 
-    expect(await screen.findByText("요청이 등록되었습니다.")).toBeInTheDocument();
+    expect(await screen.findByText("요청을 등록했습니다.")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText("2026-04-26")).toBeInTheDocument();

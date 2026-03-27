@@ -7,19 +7,19 @@ import { APP_ROUTES } from "#shared/constants/routes";
 const EMPLOYEE_SECTIONS = [
   {
     title: "근무 신청",
-    description: "희망 날짜와 시간대를 바로 신청하고 현재 상태를 확인합니다.",
+    description: "원하는 날짜와 시간대를 직접 제출하고 현재 상태를 바로 확인합니다.",
     href: APP_ROUTES.employeeSchedule,
     cta: "스케줄 신청 열기",
   },
   {
     title: "배정 스케줄",
-    description: "관리자 승인 이후 직원이 확정 스케줄을 확인하는 흐름을 다음 섹션에서 연결합니다.",
+    description: "관리자 승인 이후 확정된 스케줄을 확인하는 흐름이 다음 단계에서 연결됩니다.",
     href: APP_ROUTES.employeeSchedule,
-    cta: "요청 현황 보기",
+    cta: "신청 현황 보기",
   },
   {
     title: "예상 급여",
-    description: "출퇴근과 시급 정보가 연결되면 요약과 상세 흐름을 추가합니다.",
+    description: "출퇴근과 시급 정보가 연결되면 요약과 상세 흐름이 이 영역에 추가됩니다.",
     href: APP_ROUTES.employeeSchedule,
     cta: "준비 중",
   },
@@ -33,8 +33,8 @@ export function EmployeeHome() {
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">Employee Home</p>
           <h1 className="mt-3 text-3xl font-semibold">직원 대시보드</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            첫 번째 MVP는 직원이 직접 근무를 신청하고, 제출한 요청의 상태를 바로 확인할 수 있는
-            흐름부터 닫습니다.
+            현재 릴리즈에서는 직원이 직접 근무를 신청하고, 제출한 요청의 상태를 확인할 수 있는
+            루프부터 완성합니다.
           </p>
         </div>
         <div className="flex gap-3">

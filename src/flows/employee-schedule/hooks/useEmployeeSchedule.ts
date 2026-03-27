@@ -22,7 +22,7 @@ const STATUS_LABELS = {
 
 const ROLE_LABELS = {
   consulting: "상담",
-  service: "뷔페 서빙",
+  service: "뷔페 세팅",
   ceremony: "예식 진행",
 } as const;
 
@@ -82,7 +82,7 @@ export function useEmployeeSchedule(): EmployeeScheduleViewProps {
     try {
       await createRequest.mutateAsync(nextValues);
       form.reset(EMPTY_SCHEDULE_REQUEST_INPUT);
-      setSuccessMessage("요청이 등록되었습니다.");
+      setSuccessMessage("요청을 등록했습니다.");
     } catch {
       // Mutation state is rendered by the view.
     }

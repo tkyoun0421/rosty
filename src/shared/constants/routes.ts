@@ -3,6 +3,7 @@ export const APP_ROUTES = {
   employeeHome: "/",
   employeeSchedule: "/schedule",
   adminHome: "/admin",
+  adminScheduleRequests: "/admin/schedule-requests",
   devSession: "/api/dev/session",
   devLogout: "/api/dev/logout",
   devScheduleRequests: "/api/dev/schedule-requests",

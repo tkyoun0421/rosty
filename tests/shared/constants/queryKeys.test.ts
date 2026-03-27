@@ -10,5 +10,6 @@ describe("queryKeys", () => {
       "list",
       "employee",
     ]);
+    expect(queryKeys.scheduleRequests.adminList()).toEqual(["schedule-requests", "list", "admin"]);
   });
 });
