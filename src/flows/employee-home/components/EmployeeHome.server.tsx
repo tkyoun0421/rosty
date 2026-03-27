@@ -1,19 +1,27 @@
 import "server-only";
 
+import Link from "next/link";
+
 import { APP_ROUTES } from "#shared/constants/routes";
 
 const EMPLOYEE_SECTIONS = [
   {
     title: "근무 신청",
-    description: "다음 섹션에서 실제 신청 폼과 상태 조회를 붙입니다.",
+    description: "희망 날짜와 시간대를 바로 신청하고 현재 상태를 확인합니다.",
+    href: APP_ROUTES.employeeSchedule,
+    cta: "스케줄 신청 열기",
   },
   {
     title: "배정 스케줄",
-    description: "관리자 승인 이후 직원이 확정 스케줄을 확인하는 카드가 들어옵니다.",
+    description: "관리자 승인 이후 직원이 확정 스케줄을 확인하는 흐름을 다음 섹션에서 연결합니다.",
+    href: APP_ROUTES.employeeSchedule,
+    cta: "요청 현황 보기",
   },
   {
     title: "예상 급여",
     description: "출퇴근과 시급 정보가 연결되면 요약과 상세 흐름을 추가합니다.",
+    href: APP_ROUTES.employeeSchedule,
+    cta: "준비 중",
   },
 ] as const;
 
@@ -23,17 +31,25 @@ export function EmployeeHome() {
       <header className="flex flex-col gap-4 rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[0_18px_60px_rgba(53,35,19,0.08)] md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">Employee Home</p>
-          <h1 className="mt-3 text-3xl font-semibold">직원 대시보드 셸</h1>
+          <h1 className="mt-3 text-3xl font-semibold">직원 대시보드</h1>
           <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--muted)]">
-            역할 기반 진입은 연결됐고, 다음 구현부터 스케줄 신청과 배정 확인 흐름을 이 화면에 채웁니다.
+            첫 번째 MVP는 직원이 직접 근무를 신청하고, 제출한 요청의 상태를 바로 확인할 수 있는 흐름부터 닫습니다.
           </p>
         </div>
-        <a
-          href={APP_ROUTES.devLogout}
-          className="inline-flex rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--muted)]"
-        >
-          다른 역할로 전환
-        </a>
+        <div className="flex gap-3">
+          <Link
+            href={APP_ROUTES.employeeSchedule}
+            className="inline-flex rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white"
+          >
+            스케줄 신청으로 이동
+          </Link>
+          <a
+            href={APP_ROUTES.devLogout}
+            className="inline-flex rounded-full border border-[var(--border)] px-4 py-2 text-sm text-[var(--muted)]"
+          >
+            다른 역할로 전환
+          </a>
+        </div>
       </header>
 
       <section className="mt-8 grid gap-5 md:grid-cols-3">
@@ -41,6 +57,12 @@ export function EmployeeHome() {
           <article key={section.title} className="rounded-3xl border border-[var(--border)] bg-white/80 p-6">
             <h2 className="text-xl font-semibold">{section.title}</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{section.description}</p>
+            <Link
+              href={section.href}
+              className="mt-6 inline-flex rounded-full border border-[var(--border)] px-4 py-2 text-sm font-medium"
+            >
+              {section.cta}
+            </Link>
           </article>
         ))}
       </section>

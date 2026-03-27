@@ -251,9 +251,14 @@ foreach ($relativePath in $requiredContent.Keys) {
         }
     }
 }
+
 $textFiles = Get-ChildItem -Path $repoRoot -Recurse -File | Where-Object {
-    $_.Name -in @('.editorconfig', '.gitattributes', '.env', '.env.example') -or
-    $_.Extension -in @('.md', '.ps1', '.ts', '.tsx', '.json', '.mjs', '.yml', '.yaml')
+    $_.FullName -notlike "*\.git\*" -and
+    $_.FullName -notlike "*\.next\*" -and
+    $_.FullName -notlike "*\node_modules\*" -and (
+        $_.Name -in @('.editorconfig', '.gitattributes', '.env', '.env.example') -or
+        $_.Extension -in @('.md', '.ps1', '.ts', '.tsx', '.json', '.mjs', '.yml', '.yaml')
+    )
 }
 
 foreach ($file in $textFiles) {

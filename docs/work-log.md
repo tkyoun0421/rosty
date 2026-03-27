@@ -16,17 +16,17 @@ Track what was completed, what was in progress at the end of a session, and what
 ### 2026-03-27
 
 - Completed
-  - Release 0 scaffold was verified through foundation checks, unit tests, and production build.
-  - Role-based auth shell for employee and admin entry was added.
-  - Application source code was moved under `src` and alias/config/docs were aligned.
+  - Employee schedule request form was added at `/schedule`.
+  - Employee request list and status view were added with React Query and a mock-backed dev API.
+  - Date validation, duplicate slot rejection, and role selection were added for the first Release 1 slice.
 - Last In Progress
-  - Release 1 scope was narrowed to the first employee schedule slice: request creation and request list/status.
+  - The employee-side schedule MVP loop is green with mock data and ready for the admin review slice.
 - Next Up
-  - Implement the employee schedule request form.
-  - Implement the employee schedule request list and status view.
-  - Start the admin approval slice after the employee loop is green.
+  - Implement admin request review with approval and rejection.
+  - Reflect admin decisions back into the employee request status flow.
+  - Start the assigned schedule confirmation view after the approval loop is stable.
 - Blockers / Notes
-  - Google OAuth is not wired to a real Supabase project yet.
-  - `.env` cleanup and secret rotation are being handled separately.
+  - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
+  - Real-time updates and request filter/sort are still pending.
 - Related Commit
   - `uncommitted`
