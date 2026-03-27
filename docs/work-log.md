@@ -16,6 +16,23 @@ Track what was completed, what was in progress at the end of a session, and what
 ### 2026-03-27
 
 - Completed
+  - The root route redirect loop was fixed so employee sessions render the employee home instead of redirecting back to `/`.
+  - A server-page regression test was added for employee render and admin/sign-in redirects.
+- Last In Progress
+  - Routing is stable again and the app is ready to resume the admin approval slice.
+- Next Up
+  - Implement admin request review with approval and rejection.
+  - Reflect admin decisions back into the employee request status flow.
+  - Start the assigned schedule confirmation view after the approval loop is stable.
+- Blockers / Notes
+  - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
+  - Real-time updates and request filter/sort are still pending.
+- Related Commit
+  - `uncommitted`
+
+### 2026-03-27
+
+- Completed
   - Prettier 3 was added as the repository formatter with `pnpm format` and `pnpm format:check` scripts.
   - Root formatting files were added through `.prettierrc.json` and `.prettierignore`.
   - Agent and development docs were updated to document Prettier as the formatting baseline.
@@ -29,7 +46,7 @@ Track what was completed, what was in progress at the end of a session, and what
   - Schedule persistence still uses an in-memory dev API and must later move to Supabase.
   - Real-time updates and request filter/sort are still pending.
 - Related Commit
-  - `uncommitted`
+  - `8e9e5af`
 
 ### 2026-03-27
 
