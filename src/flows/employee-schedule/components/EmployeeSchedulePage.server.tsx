@@ -2,7 +2,7 @@ import "server-only";
 
 import Link from "next/link";
 
-import { EmployeeScheduleScreen } from "#flows/employee-schedule/components/EmployeeScheduleScreen.client";
+import { EmployeeSchedule } from "#flows/employee-schedule/EmployeeSchedule.client";
 import { APP_ROUTES } from "#shared/constants/routes";
 
 export function EmployeeSchedulePage() {
@@ -32,7 +32,7 @@ export function EmployeeSchedulePage() {
         </div>
       </header>
 
-      <EmployeeScheduleScreen />
+      <EmployeeSchedule />
     </main>
   );
 }

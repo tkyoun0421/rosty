@@ -39,6 +39,9 @@ Use this stack as the default unless there is a concrete reason the existing bas
 ### State And Data Rules
 
 - Use `TanStack Query` for server state, caching, invalidation, and async request status.
+- Manage query keys through shared key factories in `src/shared/constants/queryKeys.ts`.
+- Do not inline query key arrays inside hooks or mutation invalidation.
+- Keep components folders dumb. They should render props, not own query, mutation, form, or fetch logic.
 - Use `Zustand` for client-only local state that should not live in React component state.
 - Do not solve the same problem with both `TanStack Query` and `Zustand`.
 - Keep auth and backend integration on `Supabase` unless a documented exception is approved.
@@ -65,6 +68,7 @@ Use this stack as the default unless there is a concrete reason the existing bas
 - When using PowerShell to write docs or config files, always pass `-Encoding UTF8` or use a UTF-8 .NET writer explicitly.
 - Treat invalid UTF-8 or mojibake as a correctness issue, not a cosmetic issue.
 - PowerShell scripts that contain non-ASCII text should use UTF-8 BOM for Windows PowerShell compatibility.
+
 ## Required Documents
 
 - `docs/agents/agent-charter.md`: non-negotiable operating rules and escalation boundaries

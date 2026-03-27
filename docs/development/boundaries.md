@@ -25,8 +25,10 @@ If a form submits data, validates input, or manages submit state, it belongs pri
 - `hooks = UI binding`
 - `utils = pure functions`
 - `lib = third-party or IO adapters`
+- `components = dummy UI only`
 
 `actions` live under `mutations/<domain>/actions` and hold the write-side execution core. They should stay free of React runtime concerns. `hooks` adapt actions and query results to React state and UI libraries. `utils` hold pure calculations and deterministic transformations. `lib` holds SDK wrappers, network clients, storage adapters, and other runtime-bound integrations.
+Components must stay presentational. They receive values, formatted strings, and handlers through props, but should not own query, mutation, form, or fetch logic.
 
 ## Import Rules
 
@@ -36,6 +38,8 @@ If a form submits data, validates input, or manages submit state, it belongs pri
 - Deep imports are not allowed.
 - Folder imports are not allowed.
 - Same-slice imports still use absolute paths.
+- TanStack Query keys must come from a shared query key factory in `src/shared/constants/queryKeys.ts`.
+- Do not inline query key arrays in hooks or mutation invalidation.
 - `mutations` and `queries` do not import each other directly.
 - `flows` is the only layer that composes `mutations` and `queries` together.
 

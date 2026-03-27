@@ -8,6 +8,7 @@ $requiredFiles = @(
     "AGENTS.md",
     "tsconfig.json",
     "vitest.config.ts",
+    "src/shared/constants/queryKeys.ts",
     "docs/prd.md",
     "docs/work-log.md",
     "docs/agents/agent-charter.md",
@@ -74,6 +75,9 @@ $requiredContent = @{
         "Tailwind CSS 4",
         "### State And Data Rules",
         "Do not solve the same problem with both",
+        "Manage query keys through shared key factories",
+        "Do not inline query key arrays",
+        "Keep `components` folders dumb",
         "### Auth Baseline",
         "Supabase Auth + Google OAuth",
         "Do not add email/password auth unless the user explicitly asks for it.",
@@ -104,6 +108,11 @@ $requiredContent = @{
         '"src/app"',
         '"src/flows"',
         '"src/shared"'
+    )
+    "src/shared/constants/queryKeys.ts" = @(
+        "export const queryKeys",
+        "scheduleRequests",
+        "employeeList"
     )
     "docs/prd.md" = @(
         "## 개발 진행 관리",
@@ -182,6 +191,9 @@ $requiredContent = @{
         "## Subfolder Ownership",
         "actions = execution core",
         "hooks = UI binding",
+        "components = dummy UI only",
+        "TanStack Query keys must come from a shared query key factory",
+        "Do not inline query key arrays in hooks or mutation invalidation",
         "utils = pure functions",
         "lib = third-party or IO adapters",
         "## UI Safety",
@@ -199,7 +211,9 @@ $requiredContent = @{
         "absolute imports only",
         "cycle imports are not allowed",
         "actions must stay React-free",
-        "utils must stay pure"
+        "utils must stay pure",
+        "components should stay dumb and prop-driven",
+        "Do not call useQuery, useMutation, useForm, or fetch directly inside components folders."
     )
     "docs/agents/roles/lead.md" = @(
         "# Lead Agent Rules",

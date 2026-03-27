@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { EmployeeScheduleScreen } from "#flows/employee-schedule/components/EmployeeScheduleScreen.client";
+import { EmployeeSchedule } from "#flows/employee-schedule/EmployeeSchedule.client";
 
 const REQUESTS_RESPONSE = {
   requests: [
@@ -29,7 +29,7 @@ const REQUESTS_RESPONSE = {
   ],
 };
 
-describe("EmployeeScheduleScreen", () => {
+describe("EmployeeSchedule", () => {
   it("submits a new request and refreshes the request list", async () => {
     let currentRequests = [...REQUESTS_RESPONSE.requests];
 
@@ -79,7 +79,7 @@ describe("EmployeeScheduleScreen", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <EmployeeScheduleScreen />
+        <EmployeeSchedule />
       </QueryClientProvider>,
     );
 

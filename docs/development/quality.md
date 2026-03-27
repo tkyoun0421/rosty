@@ -36,6 +36,8 @@ Define the minimum engineering bar for structure, verification, and review so th
 - actions must stay React-free
 - utils must stay pure
 - `lib` should be reserved for third-party or IO adapters.
+- components should stay dumb and prop-driven.
+- Do not call useQuery, useMutation, useForm, or fetch directly inside components folders.
 
 ## UI Safety Checks
 

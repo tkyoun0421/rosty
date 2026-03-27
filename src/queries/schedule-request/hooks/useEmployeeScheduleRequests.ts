@@ -3,10 +3,11 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { fetchEmployeeScheduleRequests } from "#queries/schedule-request/lib/fetchEmployeeScheduleRequests";
+import { queryKeys } from "#shared/constants/queryKeys";
 
 export function useEmployeeScheduleRequests() {
   return useQuery({
-    queryKey: ["employee-schedule-requests"],
+    queryKey: queryKeys.scheduleRequests.employeeList(),
     queryFn: fetchEmployeeScheduleRequests,
   });
 }
