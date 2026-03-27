@@ -22,15 +22,20 @@ Examples:
 - `HallListCard.server.tsx`
 - `ReservationForm.client.tsx`
 
-## Hooks and Model Files
+## Hooks and Providers
 
 - Hooks use `camelCase` with a `use` prefix.
 - Examples: `useHallList.ts`, `useReservationSubmit.ts`
-- `models/dto` files use concise domain names such as `hallSummary.ts`.
-- DTO type names use the `Dto` suffix, for example `HallSummaryDto`.
-- `models/dal` files use concise domain names such as `hallSummary.ts`.
-- DAL type names use the `Dal` suffix, for example `HallSummaryDal`.
-- `models/form` files use the `Form` suffix, for example `ReservationForm.ts`.
+- App-only providers live in `src/app/_providers` and use concern-driven `PascalCase` names.
+- Examples: `QueryClientProvider.client.tsx`, `SupabaseProvider.client.tsx`
+
+## Types, Schemas, and Dal Files
+
+- `types` files use concise domain names such as `scheduleRequest.ts` or `employeeScheduleView.ts`.
+- `schemas` files use concise domain names such as `scheduleRequest.ts`.
+- `dal` files use intent-first `camelCase` names for data access or concise domain names for records.
+- Examples: `scheduleRequest.ts`, `fetchScheduleRequests.ts`, `submitScheduleRequest.ts`
+- Do not use `Dto`, `Dal`, or `Form` suffix conventions.
 
 ## Action, Utility, and Lib Files
 
@@ -38,7 +43,7 @@ Examples:
 - Example: `createReservation.ts`
 - `utils` files use intent-first `camelCase` names for pure logic.
 - Example: `buildReservationPayload.ts`
-- `lib` files use intent-first `camelCase` names for third-party or IO adapters.
+- `lib` files use intent-first `camelCase` names for third-party or runtime adapters.
 - Example: `reservationMutationClient.ts`
 - The same naming rule applies in both `shared` and domain-local folders.
 

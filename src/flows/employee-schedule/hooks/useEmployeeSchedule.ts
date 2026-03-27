@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form";
 
 import { useCreateScheduleRequest } from "#mutations/schedule-request/hooks/useCreateScheduleRequest";
 import {
-  EMPTY_SCHEDULE_REQUEST_FORM,
-  scheduleRequestFormSchema,
-  type ScheduleRequestFormValues,
-} from "#mutations/schedule-request/models/form/ScheduleRequestForm";
-import type { EmployeeScheduleViewProps } from "#flows/employee-schedule/models/employeeScheduleView";
+  EMPTY_SCHEDULE_REQUEST_INPUT,
+  scheduleRequestInputSchema,
+  type ScheduleRequestInput,
+} from "#mutations/schedule-request/schemas/scheduleRequest";
+import type { EmployeeScheduleViewProps } from "#flows/employee-schedule/types/employeeScheduleView";
 import { useEmployeeScheduleRequests } from "#queries/schedule-request/hooks/useEmployeeScheduleRequests";
-import type { EmployeeScheduleRequestDal } from "#queries/schedule-request/models/dal/scheduleRequest";
+import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
 
 const STATUS_LABELS = {
   pending: "승인 대기",
@@ -22,8 +22,8 @@ const STATUS_LABELS = {
 
 const ROLE_LABELS = {
   consulting: "상담",
-  service: "음식 서빙",
-  ceremony: "행사 진행",
+  service: "뷔페 서빙",
+  ceremony: "예식 진행",
 } as const;
 
 const TIME_SLOT_LABELS = {
@@ -41,7 +41,7 @@ function formatSubmittedAt(value: Date) {
   }).format(value);
 }
 
-function buildStatusSummary(requests: EmployeeScheduleRequestDal[]) {
+function buildStatusSummary(requests: EmployeeScheduleRequest[]) {
   return {
     pending: requests.filter((request) => request.status === "pending").length,
     approved: requests.filter((request) => request.status === "approved").length,
@@ -53,9 +53,9 @@ export function useEmployeeSchedule(): EmployeeScheduleViewProps {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const requestsQuery = useEmployeeScheduleRequests();
   const createRequest = useCreateScheduleRequest();
-  const form = useForm<ScheduleRequestFormValues>({
-    resolver: zodResolver(scheduleRequestFormSchema),
-    defaultValues: EMPTY_SCHEDULE_REQUEST_FORM,
+  const form = useForm<ScheduleRequestInput>({
+    resolver: zodResolver(scheduleRequestInputSchema),
+    defaultValues: EMPTY_SCHEDULE_REQUEST_INPUT,
   });
 
   const requests = requestsQuery.data ?? [];
@@ -81,8 +81,8 @@ export function useEmployeeSchedule(): EmployeeScheduleViewProps {
 
     try {
       await createRequest.mutateAsync(nextValues);
-      form.reset(EMPTY_SCHEDULE_REQUEST_FORM);
-      setSuccessMessage("신청이 등록되었습니다.");
+      form.reset(EMPTY_SCHEDULE_REQUEST_INPUT);
+      setSuccessMessage("요청이 등록되었습니다.");
     } catch {
       // Mutation state is rendered by the view.
     }
@@ -92,8 +92,8 @@ export function useEmployeeSchedule(): EmployeeScheduleViewProps {
     form: {
       values: {
         workDate: values.workDate ?? "",
-        timeSlot: values.timeSlot ?? EMPTY_SCHEDULE_REQUEST_FORM.timeSlot,
-        role: values.role ?? EMPTY_SCHEDULE_REQUEST_FORM.role,
+        timeSlot: values.timeSlot ?? EMPTY_SCHEDULE_REQUEST_INPUT.timeSlot,
+        role: values.role ?? EMPTY_SCHEDULE_REQUEST_INPUT.role,
         note: values.note ?? "",
       },
       errors: {

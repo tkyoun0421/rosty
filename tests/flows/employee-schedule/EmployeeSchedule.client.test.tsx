@@ -83,7 +83,7 @@ describe("EmployeeSchedule", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText("근무 스케줄 신청")).toBeInTheDocument();
+    expect(await screen.findByText("근무 다음주 요청")).toBeInTheDocument();
     expect(await screen.findByText("2026-04-12")).toBeInTheDocument();
     expect(screen.getByText("승인 완료")).toBeInTheDocument();
 
@@ -100,9 +100,9 @@ describe("EmployeeSchedule", () => {
       target: { value: "closing-consulting" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "근무 신청 등록" }));
+    fireEvent.click(screen.getByRole("button", { name: "근무 요청 등록" }));
 
-    expect(await screen.findByText("신청이 등록되었습니다.")).toBeInTheDocument();
+    expect(await screen.findByText("요청이 등록되었습니다.")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText("2026-04-26")).toBeInTheDocument();

@@ -33,9 +33,11 @@ Define the minimum engineering bar for structure, verification, and review so th
 - `mutations` and `queries` are not directly coupled.
 - `default export` appears only in `app` route-entry files.
 - `index.ts` and barrel exports have not been introduced as convenience shortcuts.
+- app-only providers stay under `src/app/_providers` and are named by concern.
 - actions must stay React-free
 - utils must stay pure
-- `lib` should be reserved for third-party or IO adapters.
+- `dal` owns slice-local data access.
+- `lib` should be reserved for third-party or runtime adapters.
 - components should stay dumb and prop-driven.
 - Do not call useQuery, useMutation, useForm, or fetch directly inside components folders.
 

@@ -3,7 +3,7 @@ import type React from "react";
 import type {
   ScheduleRequestRole,
   ScheduleRequestTimeSlot,
-} from "#queries/schedule-request/models/dto/scheduleRequest";
+} from "#queries/schedule-request/types/scheduleRequest";
 
 export type EmployeeScheduleRequestItemViewModel = {
   id: string;

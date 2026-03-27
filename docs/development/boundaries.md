@@ -9,7 +9,7 @@ Make layer ownership explicit so read logic, write logic, flow orchestration, an
 - `app` owns route entry, layout, and framework wiring only.
 - `flows` owns usecase orchestration, multi-step coordination, and screen-level state.
 - `mutations` owns write-side interaction, submission behavior, validation wiring, and write-specific UI.
-- `queries` owns read-side access, read models, and read-only UI.
+- `queries` owns read-side access, read types, read schemas, and read-only UI.
 - `shared` owns non-domain foundations only.
 
 ## Form Ownership
@@ -23,11 +23,14 @@ If a form submits data, validates input, or manages submit state, it belongs pri
 
 - `actions = execution core`
 - `hooks = UI binding`
+- `types = app-facing shapes`
+- `schemas = validation and parsing`
+- `dal = data access layer`
 - `utils = pure functions`
-- `lib = third-party or IO adapters`
+- `lib = third-party or runtime adapters`
 - `components = dummy UI only`
 
-`actions` live under `mutations/<domain>/actions` and hold the write-side execution core. They should stay free of React runtime concerns. `hooks` adapt actions and query results to React state and UI libraries. `utils` hold pure calculations and deterministic transformations. `lib` holds SDK wrappers, network clients, storage adapters, and other runtime-bound integrations.
+`actions` live under `mutations/<domain>/actions` and hold the write-side execution core. They should stay free of React runtime concerns. `hooks` adapt actions and query results to React state and UI libraries. `types` hold screen-facing or app-facing shapes. `schemas` hold zod validation, parsing, and input contracts. `dal` holds fetch, persist, storage, and other slice-local data access code. `lib` holds SDK wrappers and runtime-bound adapters that are not the slice's main data access path.
 Components must stay presentational. They receive values, formatted strings, and handlers through props, but should not own query, mutation, form, or fetch logic.
 
 ## Import Rules

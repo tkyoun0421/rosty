@@ -8,6 +8,7 @@ $requiredFiles = @(
     "AGENTS.md",
     "tsconfig.json",
     "vitest.config.ts",
+    "src/app/_providers/QueryClientProvider.client.tsx",
     "src/shared/constants/queryKeys.ts",
     "docs/prd.md",
     "docs/work-log.md",
@@ -27,6 +28,7 @@ $requiredFiles = @(
 
 $requiredDirectories = @(
     "src/app",
+    "src/app/_providers",
     "src/flows",
     "src/shared"
 )
@@ -167,9 +169,11 @@ $requiredContent = @{
         "## Top-Level Layers",
         "src/app / src/flows / src/mutations / src/queries / src/shared",
         "## Layer Shapes",
-        "mutations/<domain>/actions + hooks + models + utils + lib + constants + components",
-        "queries/<domain>/hooks + models + utils + lib + constants",
-        "shared/utils and shared/lib are the default homes",
+        "src/app/_providers",
+        "flows/<usecase>/hooks + components + types + schemas + utils + lib",
+        "mutations/<domain>/actions + hooks + components + types + schemas + dal + constants + utils + lib",
+        "queries/<domain>/hooks + components? + types + schemas + dal + constants + utils + lib",
+        "shared/utils and shared/lib are the default homes.",
         "mutations and queries do not import each other directly"
     )
     "docs/development/naming.md" = @(
@@ -177,6 +181,10 @@ $requiredContent = @{
         "## UI Component Files",
         "Name.server.tsx",
         "Name.client.tsx",
+        "## Types, Schemas, and Dal Files",
+        "types",
+        "schemas",
+        "dal",
         "## Action, Utility, and Lib Files",
         "createReservation.ts",
         "buildReservationPayload.ts",
@@ -191,11 +199,12 @@ $requiredContent = @{
         "## Subfolder Ownership",
         "actions = execution core",
         "hooks = UI binding",
+        "dal = data access layer",
         "components = dummy UI only",
         "TanStack Query keys must come from a shared query key factory",
         "Do not inline query key arrays in hooks or mutation invalidation",
         "utils = pure functions",
-        "lib = third-party or IO adapters",
+        "lib = third-party or runtime adapters",
         "## UI Safety",
         "import 'server-only'",
         "'use client'"
@@ -262,6 +271,28 @@ foreach ($relativePath in $requiredContent.Keys) {
     foreach ($pattern in $requiredContent[$relativePath]) {
         if ($content -notmatch [regex]::Escape($pattern)) {
             throw "Missing content '$pattern' in $relativePath"
+        }
+    }
+}
+
+$forbiddenContent = @{
+    "docs/development/structure.md" = @(
+        "models/dto",
+        "models/dal",
+        "models/form"
+    )
+    "docs/development/naming.md" = @(
+        "DTO type names use the `Dto` suffix",
+        "DAL type names use the `Dal` suffix",
+        "models/form"
+    )
+}
+
+foreach ($relativePath in $forbiddenContent.Keys) {
+    $content = Get-Utf8Text -Path (Join-Path $repoRoot $relativePath)
+    foreach ($pattern in $forbiddenContent[$relativePath]) {
+        if ($content -match [regex]::Escape($pattern)) {
+            throw "Forbidden content '$pattern' found in $relativePath"
         }
     }
 }

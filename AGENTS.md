@@ -42,6 +42,7 @@ Use this stack as the default unless there is a concrete reason the existing bas
 - Manage query keys through shared key factories in `src/shared/constants/queryKeys.ts`.
 - Do not inline query key arrays inside hooks or mutation invalidation.
 - Keep components folders dumb. They should render props, not own query, mutation, form, or fetch logic.
+- Keep app-only providers under `src/app/_providers` and name them by concern.
 - Use `Zustand` for client-only local state that should not live in React component state.
 - Do not solve the same problem with both `TanStack Query` and `Zustand`.
 - Keep auth and backend integration on `Supabase` unless a documented exception is approved.

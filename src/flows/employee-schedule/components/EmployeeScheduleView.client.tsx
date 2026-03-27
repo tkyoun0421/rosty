@@ -3,17 +3,17 @@
 import {
   SCHEDULE_ROLE_OPTIONS,
   SCHEDULE_TIME_SLOT_OPTIONS,
-} from "#mutations/schedule-request/models/form/ScheduleRequestForm";
-import type { EmployeeScheduleViewProps } from "#flows/employee-schedule/models/employeeScheduleView";
+} from "#mutations/schedule-request/schemas/scheduleRequest";
+import type { EmployeeScheduleViewProps } from "#flows/employee-schedule/types/employeeScheduleView";
 
 export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewProps) {
   return (
     <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
       <article className="rounded-3xl border border-[var(--border)] bg-white/90 p-6 shadow-[0_18px_60px_rgba(53,35,19,0.06)]">
         <div>
-          <h2 className="text-2xl font-semibold">근무 스케줄 신청</h2>
+          <h2 className="text-2xl font-semibold">근무 다음주 요청</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            신청 가능한 날짜와 시간대를 선택하면 관리자 승인 전까지 요청 현황에서 바로 상태를 추적할 수 있습니다.
+            요청 가능한 날짜와 시간대를 선택하면 관리자 확인 전까지 요청 현황에서 바로 상태를 추적할 수 있습니다.
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
               aria-label="메모"
               rows={4}
               className="rounded-2xl border border-[var(--border)] px-4 py-3"
-              placeholder="추가로 전달할 내용을 남겨주세요."
+              placeholder="추가로 전달할 내용이 있다면 적어 주세요"
               value={form.values.note}
               onChange={(event) => form.onNoteChange(event.target.value)}
             />
@@ -96,7 +96,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
             className="inline-flex rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
             disabled={form.isSubmitting}
           >
-            {form.isSubmitting ? "등록 중..." : "근무 신청 등록"}
+            {form.isSubmitting ? "등록 중..." : "근무 요청 등록"}
           </button>
         </form>
       </article>
@@ -104,7 +104,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
       <article className="rounded-3xl border border-[var(--border)] bg-white/90 p-6 shadow-[0_18px_60px_rgba(53,35,19,0.06)]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold">신청 현황</h2>
+            <h2 className="text-2xl font-semibold">요청 현황</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
               승인 대기, 승인 완료, 반려 상태를 한 번에 확인합니다.
             </p>
@@ -126,7 +126,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
         </div>
 
         {requests.isLoading ? (
-          <p className="mt-6 text-sm text-[var(--muted)]">신청 내역을 불러오는 중입니다...</p>
+          <p className="mt-6 text-sm text-[var(--muted)]">요청 내역을 불러오는 중입니다...</p>
         ) : null}
 
         {requests.errorMessage ? (
@@ -139,7 +139,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
           <div className="mt-6 space-y-4">
             {requests.items.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-[var(--border)] px-4 py-8 text-center text-sm text-[var(--muted)]">
-                아직 제출한 신청이 없습니다.
+                아직 제출한 요청이 없습니다.
               </div>
             ) : (
               requests.items.map((request) => (
@@ -160,7 +160,7 @@ export function EmployeeScheduleView({ form, requests }: EmployeeScheduleViewPro
                       <dd className="mt-1">{request.roleLabel}</dd>
                     </div>
                     <div>
-                      <dt className="font-medium text-[var(--foreground)]">신청 시각</dt>
+                      <dt className="font-medium text-[var(--foreground)]">요청 시각</dt>
                       <dd className="mt-1">{request.submittedAtLabel}</dd>
                     </div>
                     <div className="sm:col-span-2">

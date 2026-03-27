@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 
+import type { ScheduleRequestRecord } from "#queries/schedule-request/dal/scheduleRequest";
 import type {
-  EmployeeScheduleRequestDto,
   ScheduleRequestRole,
   ScheduleRequestTimeSlot,
-} from "#queries/schedule-request/models/dto/scheduleRequest";
+} from "#queries/schedule-request/types/scheduleRequest";
 
 const EMPLOYEE_ID = "employee-01";
 const TIME_SLOTS: ScheduleRequestTimeSlot[] = ["morning", "afternoon", "evening"];
 const ROLES: ScheduleRequestRole[] = ["consulting", "service", "ceremony"];
 
-const INITIAL_REQUESTS: EmployeeScheduleRequestDto[] = [
+const INITIAL_REQUESTS: ScheduleRequestRecord[] = [
   {
     id: "request-001",
     employeeId: EMPLOYEE_ID,
@@ -28,7 +28,7 @@ const INITIAL_REQUESTS: EmployeeScheduleRequestDto[] = [
     workDate: "2026-04-19",
     timeSlot: "afternoon",
     role: "ceremony",
-    note: "행사 진행 경험 있음",
+    note: "예식 진행 경험 있음",
     status: "approved",
     submittedAt: "2026-03-26T06:30:00.000Z",
     adminComment: "메인 홀 우선 검토",
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   }
 
   if (!isValidDateString(body.workDate)) {
-    return NextResponse.json({ message: "올바른 날짜를 선택하세요." }, { status: 400 });
+    return NextResponse.json({ message: "올바른 날짜를 선택해 주세요" }, { status: 400 });
   }
 
   if (!TIME_SLOTS.includes(body.timeSlot as ScheduleRequestTimeSlot)) {
@@ -77,10 +77,10 @@ export async function POST(request: Request) {
   );
 
   if (alreadyRequested) {
-    return NextResponse.json({ message: "같은 날짜와 시간대는 한 번만 신청할 수 있습니다." }, { status: 409 });
+    return NextResponse.json({ message: "같은 날짜와 시간대에는 한 번만 요청할 수 있습니다." }, { status: 409 });
   }
 
-  const created: EmployeeScheduleRequestDto = {
+  const created: ScheduleRequestRecord = {
     id: `request-${String(scheduleRequests.length + 1).padStart(3, "0")}`,
     employeeId: EMPLOYEE_ID,
     workDate: body.workDate,

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AppProviders } from "./AppProviders.client";
+import { QueryClientProvider } from "#app/_providers/QueryClientProvider.client";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ko">
       <body>
-        <AppProviders>{children}</AppProviders>
+        <QueryClientProvider>{children}</QueryClientProvider>
       </body>
     </html>
   );
