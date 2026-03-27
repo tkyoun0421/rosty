@@ -1,2 +1,0 @@
--- Intentionally empty for now.
--- Add deterministic local seed data here when the repo needs it.
