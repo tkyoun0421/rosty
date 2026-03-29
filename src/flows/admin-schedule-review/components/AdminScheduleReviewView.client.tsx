@@ -1,6 +1,7 @@
 "use client";
 
 import { SCHEDULE_ASSIGNMENT_POSITION_OPTIONS } from "#queries/schedule-request/constants/scheduleRequest";
+import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
 import type { AdminScheduleReviewViewProps } from "#flows/admin-schedule-review/types/adminScheduleReviewView";
 
 export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewViewProps) {
@@ -139,6 +140,11 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                   </div>
                 ) : null}
               </dl>
+
+              <ScheduleRequestHistoryList
+                listName={`request-history-${detail.selectedRequest.id}`}
+                items={detail.selectedRequest.history}
+              />
             </div>
 
             <label className="flex flex-col gap-2 text-sm font-medium">

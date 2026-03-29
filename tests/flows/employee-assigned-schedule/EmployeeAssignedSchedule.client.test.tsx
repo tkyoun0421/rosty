@@ -39,6 +39,16 @@ describe("EmployeeAssignedSchedule", () => {
                 assignedLocation: null,
                 assignedAt: null,
                 assignedBy: null,
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-27T09:00:00.000Z",
+                    actorId: "employee-01",
+                    comment: "service-ready",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                ],
               },
               {
                 id: "request-002",
@@ -55,6 +65,24 @@ describe("EmployeeAssignedSchedule", () => {
                 assignedLocation: "메인 홀",
                 assignedAt: "2026-03-27T01:30:00.000Z",
                 assignedBy: "manager-01",
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-26T06:30:00.000Z",
+                    actorId: "employee-01",
+                    comment: "ceremony-experience",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                  {
+                    type: "approved",
+                    createdAt: "2026-03-27T01:30:00.000Z",
+                    actorId: "manager-01",
+                    comment: "?덉떇 由ы뿀??20遺????꾩갑",
+                    assignmentPosition: "main",
+                    assignedLocation: "硫붿씤 ?",
+                  },
+                ],
               },
             ],
           }),
@@ -110,6 +138,16 @@ describe("EmployeeAssignedSchedule", () => {
                 assignedLocation: null,
                 assignedAt: null,
                 assignedBy: null,
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-27T09:00:00.000Z",
+                    actorId: "employee-01",
+                    comment: "service-ready",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                ],
               },
             ],
           }),

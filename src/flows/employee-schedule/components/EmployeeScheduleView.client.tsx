@@ -1,5 +1,6 @@
 "use client";
 
+import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
 import type { EmployeeScheduleViewProps } from "#flows/employee-schedule/types/employeeScheduleView";
 
 export function EmployeeScheduleView({ currentWork, form, requests }: EmployeeScheduleViewProps) {
@@ -215,6 +216,10 @@ export function EmployeeScheduleView({ currentWork, form, requests }: EmployeeSc
                       </div>
                     ) : null}
                   </dl>
+                  <ScheduleRequestHistoryList
+                    listName={`request-history-${request.id}`}
+                    items={request.history}
+                  />
                 </article>
               ))
             )}

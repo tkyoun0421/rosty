@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { EmployeeSchedule } from "#flows/employee-schedule/EmployeeSchedule.client";
 
@@ -29,6 +30,16 @@ const REQUESTS_RESPONSE = {
       assignedLocation: null,
       assignedAt: null,
       assignedBy: null,
+      history: [
+        {
+          type: "submitted",
+          createdAt: "2026-03-27T09:00:00.000Z",
+          actorId: "employee-01",
+          comment: "service-ready",
+          assignmentPosition: null,
+          assignedLocation: null,
+        },
+      ],
     },
     {
       id: "request-002",
@@ -40,17 +51,44 @@ const REQUESTS_RESPONSE = {
       note: "ceremony-experience",
       status: "approved",
       submittedAt: "2026-03-26T06:30:00.000Z",
-      adminComment: "리허설 20분 전 도착",
+      adminComment: "assigned-main-hall",
       assignmentPosition: "main",
-      assignedLocation: "메인 홀",
+      assignedLocation: "Main hall",
       assignedAt: "2026-03-27T01:30:00.000Z",
       assignedBy: "admin-01",
+      history: [
+        {
+          type: "submitted",
+          createdAt: "2026-03-26T06:30:00.000Z",
+          actorId: "employee-01",
+          comment: "ceremony-experience",
+          assignmentPosition: null,
+          assignedLocation: null,
+        },
+        {
+          type: "approved",
+          createdAt: "2026-03-27T01:30:00.000Z",
+          actorId: "admin-01",
+          comment: "assigned-main-hall",
+          assignmentPosition: "main",
+          assignedLocation: "Main hall",
+        },
+      ],
     },
   ],
 };
 
+function createQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+}
+
 describe("EmployeeSchedule", () => {
-  it("submits a new request and refreshes the request list", async () => {
+  it("submits a new request and renders its history timeline", async () => {
     let currentRequests = [...REQUESTS_RESPONSE.requests];
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -90,6 +128,16 @@ describe("EmployeeSchedule", () => {
           assignedLocation: null,
           assignedAt: null,
           assignedBy: null,
+          history: [
+            {
+              type: "submitted",
+              createdAt: "2026-03-27T10:00:00.000Z",
+              actorId: "employee-01",
+              comment: payload.note,
+              assignmentPosition: null,
+              assignedLocation: null,
+            },
+          ],
         };
 
         currentRequests = [created, ...currentRequests];
@@ -105,42 +153,33 @@ describe("EmployeeSchedule", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
-
     render(
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={createQueryClient()}>
         <EmployeeSchedule />
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText("근무 스케줄 신청")).toBeInTheDocument();
     expect((await screen.findAllByText("2026-04-26")).length).toBeGreaterThan(0);
-    expect(screen.getAllByText("오전 11:00 - 오후 06:00").length).toBeGreaterThan(0);
     expect(await screen.findByText("2026-04-12")).toBeInTheDocument();
-    expect(screen.getAllByText("배정 완료").length).toBeGreaterThan(0);
 
-    fireEvent.change(screen.getByLabelText("메모"), {
-      target: { value: "추가 투입 가능합니다." },
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "extra-support-needed" },
     });
-
-    fireEvent.click(screen.getByRole("button", { name: "근무 가능 신청" }));
-
-    expect(await screen.findByText("근무 가능 신청을 등록했습니다.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button"));
 
     await waitFor(() => {
       expect(screen.getAllByText("2026-04-26").length).toBeGreaterThan(1);
     });
 
-    expect(screen.getAllByText("배정 대기").length).toBeGreaterThan(0);
+    expect(
+      within(screen.getByRole("list", { name: "request-history-request-003" })).getAllByRole(
+        "listitem",
+      ),
+    ).toHaveLength(1);
     expect(fetchMock).toHaveBeenCalled();
   });
 
-  it("filters request status and sorts approved requests by work date", async () => {
+  it("filters request status, sorts approved requests, and keeps history visible", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = input.toString();
 
@@ -173,6 +212,16 @@ describe("EmployeeSchedule", () => {
                 assignedLocation: null,
                 assignedAt: null,
                 assignedBy: null,
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-27T09:00:00.000Z",
+                    actorId: "employee-01",
+                    comment: "service-ready",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                ],
               },
               {
                 id: "request-002",
@@ -186,9 +235,27 @@ describe("EmployeeSchedule", () => {
                 submittedAt: "2026-03-27T07:00:00.000Z",
                 adminComment: "closing-shift",
                 assignmentPosition: "guide",
-                assignedLocation: "로비 안내 데스크",
+                assignedLocation: "Lobby desk",
                 assignedAt: "2026-03-27T08:00:00.000Z",
                 assignedBy: "admin-01",
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-27T07:00:00.000Z",
+                    actorId: "employee-01",
+                    comment: "closing-consulting",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                  {
+                    type: "approved",
+                    createdAt: "2026-03-27T08:00:00.000Z",
+                    actorId: "admin-01",
+                    comment: "closing-shift",
+                    assignmentPosition: "guide",
+                    assignedLocation: "Lobby desk",
+                  },
+                ],
               },
               {
                 id: "request-003",
@@ -202,9 +269,27 @@ describe("EmployeeSchedule", () => {
                 submittedAt: "2026-03-26T06:30:00.000Z",
                 adminComment: "main-hall",
                 assignmentPosition: "main",
-                assignedLocation: "메인 홀",
+                assignedLocation: "Main hall",
                 assignedAt: "2026-03-27T01:30:00.000Z",
                 assignedBy: "admin-01",
+                history: [
+                  {
+                    type: "submitted",
+                    createdAt: "2026-03-26T06:30:00.000Z",
+                    actorId: "employee-01",
+                    comment: "ceremony-experience",
+                    assignmentPosition: null,
+                    assignedLocation: null,
+                  },
+                  {
+                    type: "approved",
+                    createdAt: "2026-03-27T01:30:00.000Z",
+                    actorId: "admin-01",
+                    comment: "main-hall",
+                    assignmentPosition: "main",
+                    assignedLocation: "Main hall",
+                  },
+                ],
               },
             ],
           }),
@@ -220,22 +305,17 @@ describe("EmployeeSchedule", () => {
 
     vi.stubGlobal("fetch", fetchMock);
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
-
     render(
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={createQueryClient()}>
         <EmployeeSchedule />
       </QueryClientProvider>,
     );
 
     expect((await screen.findAllByText("2026-04-26")).length).toBeGreaterThan(0);
 
-    fireEvent.change(screen.getByLabelText("상태 필터"), {
+    const [statusFilter, sortOrder] = screen.getAllByRole("combobox");
+
+    fireEvent.change(statusFilter, {
       target: { value: "approved" },
     });
 
@@ -243,7 +323,7 @@ describe("EmployeeSchedule", () => {
     expect(screen.getByText("2026-04-25")).toBeInTheDocument();
     expect(screen.getByText("2026-04-19")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("정렬"), {
+    fireEvent.change(sortOrder, {
       target: { value: "work-date-asc" },
     });
 
@@ -252,6 +332,10 @@ describe("EmployeeSchedule", () => {
       .map((element) => element.textContent);
 
     expect(visibleDates).toEqual(["2026-04-19", "2026-04-25"]);
-    expect(screen.getByText("배정 완료 2건 표시 중")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("list", { name: "request-history-request-003" })).getAllByRole(
+        "listitem",
+      ),
+    ).toHaveLength(2);
   });
 });

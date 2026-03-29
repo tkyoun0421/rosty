@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+﻿import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { submitScheduleRequest } from "#mutations/schedule-request/dal/submitScheduleRequest";
 import { isAppError } from "#shared/lib/appError";
@@ -23,6 +23,16 @@ const CREATED_RECORD = {
   assignedLocation: null,
   assignedAt: null,
   assignedBy: null,
+  history: [
+    {
+      type: "submitted" as const,
+      createdAt: "2026-03-28T10:00:00.000Z",
+      actorId: "employee-01",
+      comment: "Front desk support",
+      assignmentPosition: null,
+      assignedLocation: null,
+    },
+  ],
 };
 
 function createJsonResponse(body: unknown, status = 200) {
@@ -50,6 +60,12 @@ describe("submitScheduleRequest", () => {
       workEndAt: new Date(CREATED_RECORD.workEndAt),
       assignedAt: null,
       submittedAt: new Date(CREATED_RECORD.submittedAt),
+      history: [
+        {
+          ...CREATED_RECORD.history[0],
+          createdAt: new Date(CREATED_RECORD.history[0].createdAt),
+        },
+      ],
     });
   });
 
@@ -57,7 +73,7 @@ describe("submitScheduleRequest", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       createJsonResponse(
         {
-          message: "같은 근무에는 한 번만 신청할 수 있습니다.",
+          message: "A pending request for this work already exists.",
         },
         409,
       ),
@@ -69,7 +85,7 @@ describe("submitScheduleRequest", () => {
         kind: "app-error",
         code: "CONFLICT",
         status: 409,
-        message: "같은 근무에는 한 번만 신청할 수 있습니다.",
+        message: "A pending request for this work already exists.",
       });
 
       return true;

@@ -1,5 +1,6 @@
 import type React from "react";
 
+import type { ScheduleRequestHistoryItemViewModel } from "#queries/schedule-request/types/scheduleRequestHistoryView";
 import type { ScheduleRequestStatus } from "#queries/schedule-request/types/scheduleRequest";
 
 export type EmployeeScheduleRequestItemViewModel = {
@@ -11,6 +12,7 @@ export type EmployeeScheduleRequestItemViewModel = {
   note: string;
   adminComment: string | null;
   assignmentPositionLabel: string | null;
+  history: ScheduleRequestHistoryItemViewModel[];
 };
 
 export type EmployeeScheduleViewProps = {

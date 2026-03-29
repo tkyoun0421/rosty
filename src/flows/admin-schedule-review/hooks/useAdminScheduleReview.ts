@@ -10,6 +10,7 @@ import {
 } from "#queries/schedule-request/constants/scheduleRequest";
 import { useAdminScheduleRequests } from "#queries/schedule-request/hooks/useAdminScheduleRequests";
 import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
+import { buildScheduleRequestHistoryView } from "#queries/schedule-request/utils/buildScheduleRequestHistoryView";
 import type {
   AdminScheduleReviewItemViewModel,
   AdminScheduleReviewViewProps,
@@ -34,6 +35,7 @@ function toViewModel(request: EmployeeScheduleRequest): AdminScheduleReviewItemV
     assignedAtLabel: request.assignedAt ? formatKoreanDateTime(request.assignedAt) : null,
     assignedBy: request.assignedBy ?? null,
     isProcessed: request.status !== "pending",
+    history: buildScheduleRequestHistoryView(request.history),
   };
 }
 

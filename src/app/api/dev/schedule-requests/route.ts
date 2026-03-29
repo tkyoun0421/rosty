@@ -63,7 +63,9 @@ export async function POST(request: Request) {
 
   const alreadyRequested = scheduleRequests.some(
     (scheduleRequest) =>
-      scheduleRequest.employeeId === EMPLOYEE_ID && scheduleRequest.workId === body.workId,
+      scheduleRequest.employeeId === EMPLOYEE_ID &&
+      scheduleRequest.workId === body.workId &&
+      scheduleRequest.status === "pending",
   );
 
   if (alreadyRequested) {
@@ -73,6 +75,9 @@ export async function POST(request: Request) {
     );
   }
 
+  const note = typeof body.note === "string" ? body.note.trim() : "";
+  const submittedAt = new Date().toISOString();
+
   const created: ScheduleRequestRecord = {
     id: `request-${String(scheduleRequests.length + 1).padStart(3, "0")}`,
     employeeId: EMPLOYEE_ID,
@@ -80,14 +85,24 @@ export async function POST(request: Request) {
     workDate: currentWork.workDate,
     workStartAt: currentWork.startAt,
     workEndAt: currentWork.endAt,
-    note: typeof body.note === "string" ? body.note.trim() : "",
+    note,
     status: "pending",
-    submittedAt: new Date().toISOString(),
+    submittedAt,
     adminComment: null,
     assignmentPosition: null,
     assignedLocation: null,
     assignedAt: null,
     assignedBy: null,
+    history: [
+      {
+        type: "submitted",
+        createdAt: submittedAt,
+        actorId: EMPLOYEE_ID,
+        comment: note.length > 0 ? note : null,
+        assignmentPosition: null,
+        assignedLocation: null,
+      },
+    ],
   };
 
   prependScheduleRequestRecord(created);
@@ -133,18 +148,30 @@ export async function PATCH(request: Request) {
   }
 
   const adminComment = typeof body.adminComment === "string" ? body.adminComment.trim() : "";
-  const assignedAt = new Date().toISOString();
+  const processedAt = new Date().toISOString();
   const assignmentPosition =
     body.status === "approved" ? (body.assignmentPosition as ScheduleAssignmentPosition) : null;
+  const assignedLocation = assignmentPosition ? resolveAssignedLocationLabel(assignmentPosition) : null;
 
   const updated: ScheduleRequestRecord = {
     ...target,
     status: body.status,
     adminComment: adminComment.length > 0 ? adminComment : null,
     assignmentPosition,
-    assignedLocation: assignmentPosition ? resolveAssignedLocationLabel(assignmentPosition) : null,
-    assignedAt: body.status === "approved" ? assignedAt : null,
+    assignedLocation,
+    assignedAt: body.status === "approved" ? processedAt : null,
     assignedBy: body.status === "approved" ? ADMIN_ID : null,
+    history: [
+      ...target.history,
+      {
+        type: body.status,
+        createdAt: processedAt,
+        actorId: ADMIN_ID,
+        comment: adminComment.length > 0 ? adminComment : null,
+        assignmentPosition,
+        assignedLocation,
+      },
+    ],
   };
 
   replaceScheduleRequestRecord(updated);

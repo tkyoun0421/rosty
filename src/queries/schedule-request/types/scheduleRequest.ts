@@ -9,6 +9,16 @@ export type ScheduleAssignmentPosition =
   | "guide"
   | "dressRoom";
 export type ScheduleRequestStatus = "pending" | "approved" | "rejected";
+export type ScheduleRequestHistoryEventType = "submitted" | "approved" | "rejected";
+
+export type ScheduleRequestHistoryEvent = {
+  type: ScheduleRequestHistoryEventType;
+  createdAt: Date;
+  actorId: string;
+  comment: string | null;
+  assignmentPosition: ScheduleAssignmentPosition | null;
+  assignedLocation: string | null;
+};
 
 export type EmployeeScheduleRequest = {
   id: string;
@@ -25,4 +35,5 @@ export type EmployeeScheduleRequest = {
   assignedLocation: string | null;
   assignedAt: Date | null;
   assignedBy: string | null;
+  history: ScheduleRequestHistoryEvent[];
 };
