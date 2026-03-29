@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+﻿import { afterEach, describe, expect, it, vi } from "vitest";
 
 const BASE_REQUEST = {
   id: "request-001",
@@ -15,6 +15,10 @@ const BASE_REQUEST = {
   assignedLocation: null,
   assignedAt: null,
   assignedBy: null,
+  employeeResponseStatus: null,
+  employeeResponseComment: null,
+  employeeRespondedAt: null,
+  employeeRespondedBy: null,
   history: [
     {
       type: "submitted" as const,
@@ -144,6 +148,10 @@ describe("schedule-requests route", () => {
         status: "approved",
         adminComment: "Assigned to guide",
         assignedBy: "admin-01",
+        employeeResponseStatus: "pending",
+        employeeResponseComment: null,
+        employeeRespondedAt: null,
+        employeeRespondedBy: null,
         history: [
           expect.objectContaining({
             type: "submitted",
@@ -157,5 +165,157 @@ describe("schedule-requests route", () => {
         ],
       }),
     );
+  });
+
+  it("records an employee acceptance for an approved assignment", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-27T13:00:00.000Z"));
+
+    const replaceScheduleRequestRecord = vi.fn();
+
+    vi.doMock("#app/api/dev/lib/scheduleData", () => ({
+      ADMIN_ID: "admin-01",
+      EMPLOYEE_ID: "employee-01",
+      getCurrentWorkRecord: vi.fn(),
+      listScheduleRequestRecords: () => [
+        {
+          ...BASE_REQUEST,
+          id: "request-003",
+          status: "approved" as const,
+          adminComment: "Assigned to guide",
+          assignmentPosition: "guide" as const,
+          assignedLocation: "Lobby desk",
+          assignedAt: "2026-03-27T12:30:00.000Z",
+          assignedBy: "admin-01",
+          employeeResponseStatus: "pending" as const,
+          history: [
+            {
+              type: "submitted" as const,
+              createdAt: "2026-03-27T09:00:00.000Z",
+              actorId: "employee-01",
+              comment: "Need support",
+              assignmentPosition: null,
+              assignedLocation: null,
+            },
+            {
+              type: "approved" as const,
+              createdAt: "2026-03-27T12:30:00.000Z",
+              actorId: "admin-01",
+              comment: "Assigned to guide",
+              assignmentPosition: "guide" as const,
+              assignedLocation: "Lobby desk",
+            },
+          ],
+        },
+      ],
+      prependScheduleRequestRecord: vi.fn(),
+      replaceScheduleRequestRecord,
+    }));
+
+    const { PUT } = await import("#app/api/dev/schedule-requests/route");
+
+    const response = await PUT(
+      new Request("http://localhost/api/dev/schedule-requests", {
+        method: "PUT",
+        body: JSON.stringify({
+          requestId: "request-003",
+          status: "accepted",
+          employeeComment: "I can cover this shift.",
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(replaceScheduleRequestRecord).toHaveBeenCalledWith(
+      expect.objectContaining({
+        employeeResponseStatus: "accepted",
+        employeeResponseComment: "I can cover this shift.",
+        employeeRespondedBy: "employee-01",
+        history: [
+          expect.objectContaining({ type: "submitted" }),
+          expect.objectContaining({ type: "approved" }),
+          expect.objectContaining({
+            type: "accepted",
+            actorId: "employee-01",
+            comment: "I can cover this shift.",
+            assignmentPosition: "guide",
+            assignedLocation: "Lobby desk",
+          }),
+        ],
+      }),
+    );
+  });
+
+  it("rejects a second employee response for the same assignment", async () => {
+    vi.doMock("#app/api/dev/lib/scheduleData", () => ({
+      ADMIN_ID: "admin-01",
+      EMPLOYEE_ID: "employee-01",
+      getCurrentWorkRecord: vi.fn(),
+      listScheduleRequestRecords: () => [
+        {
+          ...BASE_REQUEST,
+          id: "request-004",
+          status: "approved" as const,
+          adminComment: "Assigned to guide",
+          assignmentPosition: "guide" as const,
+          assignedLocation: "Lobby desk",
+          assignedAt: "2026-03-27T12:30:00.000Z",
+          assignedBy: "admin-01",
+          employeeResponseStatus: "accepted" as const,
+          employeeResponseComment: "Already accepted",
+          employeeRespondedAt: "2026-03-27T13:00:00.000Z",
+          employeeRespondedBy: "employee-01",
+          history: [
+            {
+              type: "submitted" as const,
+              createdAt: "2026-03-27T09:00:00.000Z",
+              actorId: "employee-01",
+              comment: "Need support",
+              assignmentPosition: null,
+              assignedLocation: null,
+            },
+            {
+              type: "approved" as const,
+              createdAt: "2026-03-27T12:30:00.000Z",
+              actorId: "admin-01",
+              comment: "Assigned to guide",
+              assignmentPosition: "guide" as const,
+              assignedLocation: "Lobby desk",
+            },
+            {
+              type: "accepted" as const,
+              createdAt: "2026-03-27T13:00:00.000Z",
+              actorId: "employee-01",
+              comment: "Already accepted",
+              assignmentPosition: "guide" as const,
+              assignedLocation: "Lobby desk",
+            },
+          ],
+        },
+      ],
+      prependScheduleRequestRecord: vi.fn(),
+      replaceScheduleRequestRecord: vi.fn(),
+    }));
+
+    const { PUT } = await import("#app/api/dev/schedule-requests/route");
+
+    const response = await PUT(
+      new Request("http://localhost/api/dev/schedule-requests", {
+        method: "PUT",
+        body: JSON.stringify({
+          requestId: "request-004",
+          status: "declined",
+          employeeComment: "Too late",
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    );
+
+    expect(response.status).toBe(409);
   });
 });

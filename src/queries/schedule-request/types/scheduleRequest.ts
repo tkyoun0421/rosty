@@ -9,7 +9,13 @@ export type ScheduleAssignmentPosition =
   | "guide"
   | "dressRoom";
 export type ScheduleRequestStatus = "pending" | "approved" | "rejected";
-export type ScheduleRequestHistoryEventType = "submitted" | "approved" | "rejected";
+export type ScheduleEmployeeResponseStatus = "pending" | "accepted" | "declined";
+export type ScheduleRequestHistoryEventType =
+  | "submitted"
+  | "approved"
+  | "rejected"
+  | "accepted"
+  | "declined";
 
 export type ScheduleRequestHistoryEvent = {
   type: ScheduleRequestHistoryEventType;
@@ -35,5 +41,9 @@ export type EmployeeScheduleRequest = {
   assignedLocation: string | null;
   assignedAt: Date | null;
   assignedBy: string | null;
+  employeeResponseStatus: ScheduleEmployeeResponseStatus | null;
+  employeeResponseComment: string | null;
+  employeeRespondedAt: Date | null;
+  employeeRespondedBy: string | null;
   history: ScheduleRequestHistoryEvent[];
 };

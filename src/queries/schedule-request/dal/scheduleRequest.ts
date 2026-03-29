@@ -9,12 +9,13 @@ export type ScheduleRequestHistoryEventRecord = Omit<ScheduleRequestHistoryEvent
 
 export type ScheduleRequestRecord = Omit<
   EmployeeScheduleRequest,
-  "workStartAt" | "workEndAt" | "submittedAt" | "assignedAt" | "history"
+  "workStartAt" | "workEndAt" | "submittedAt" | "assignedAt" | "employeeRespondedAt" | "history"
 > & {
   workStartAt: string;
   workEndAt: string;
   submittedAt: string;
   assignedAt: string | null;
+  employeeRespondedAt: string | null;
   history: ScheduleRequestHistoryEventRecord[];
 };
 

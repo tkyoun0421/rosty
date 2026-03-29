@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+﻿import { afterEach, describe, expect, it, vi } from "vitest";
 
 const { useQueryMock } = vi.hoisted(() => ({
   useQueryMock: vi.fn(),
@@ -25,6 +25,8 @@ describe("useCurrentWork", () => {
     expect(useQueryMock).toHaveBeenCalledWith({
       queryKey: queryKeys.work.current(),
       queryFn: fetchCurrentWork,
+      refetchInterval: 30_000,
+      refetchIntervalInBackground: true,
     });
   });
 });

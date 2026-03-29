@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
-import { SCHEDULE_ASSIGNMENT_POSITION_OPTIONS } from "#queries/schedule-request/constants/scheduleRequest";
 import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
+import { SCHEDULE_ASSIGNMENT_POSITION_OPTIONS } from "#queries/schedule-request/constants/scheduleRequest";
 import type { AdminScheduleReviewViewProps } from "#flows/admin-schedule-review/types/adminScheduleReviewView";
 
 export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewViewProps) {
@@ -13,6 +13,59 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
             직원 신청을 검토하고 실제 배정 포지션을 확정하거나 반려를 처리합니다.
           </p>
+        </div>
+
+        <div className="mt-6 grid gap-3 md:grid-cols-3">
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            검토 상태
+            <select
+              aria-label="admin-review-status-filter"
+              className="rounded-2xl border border-[var(--border)] px-4 py-3"
+              value={list.reviewStatusFilter}
+              onChange={(event) =>
+                list.onReviewStatusFilterChange(
+                  event.target.value as typeof list.reviewStatusFilter,
+                )
+              }
+            >
+              <option value="all">전체</option>
+              <option value="pending">배정 대기</option>
+              <option value="approved">배정 완료</option>
+              <option value="rejected">반려</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            직원 응답
+            <select
+              aria-label="admin-employee-response-filter"
+              className="rounded-2xl border border-[var(--border)] px-4 py-3"
+              value={list.employeeResponseFilter}
+              onChange={(event) =>
+                list.onEmployeeResponseFilterChange(
+                  event.target.value as typeof list.employeeResponseFilter,
+                )
+              }
+            >
+              <option value="all">전체</option>
+              <option value="pending">응답 대기</option>
+              <option value="accepted">수락 완료</option>
+              <option value="declined">거절 완료</option>
+            </select>
+          </label>
+          <label className="flex flex-col gap-2 text-sm font-medium">
+            정렬
+            <select
+              aria-label="admin-sort-order"
+              className="rounded-2xl border border-[var(--border)] px-4 py-3"
+              value={list.sortOrder}
+              onChange={(event) =>
+                list.onSortOrderChange(event.target.value as typeof list.sortOrder)
+              }
+            >
+              <option value="submitted-desc">제출 최신순</option>
+              <option value="work-date-asc">근무일 오름차순</option>
+            </select>
+          </label>
         </div>
 
         {list.isLoading ? (
@@ -40,6 +93,7 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                     key={item.id}
                     type="button"
                     aria-label={`${item.employeeId} ${item.workDate} 요청 선택`}
+                    data-request-id={item.id}
                     onClick={() => list.onSelectRequest(item.id)}
                     className={[
                       "w-full rounded-3xl border px-5 py-4 text-left transition",
@@ -66,6 +120,12 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                         <dt className="font-medium text-[var(--foreground)]">제출 메모</dt>
                         <dd className="mt-1">{item.note}</dd>
                       </div>
+                      {item.employeeResponseStatusLabel ? (
+                        <div>
+                          <dt className="font-medium text-[var(--foreground)]">직원 응답</dt>
+                          <dd className="mt-1">{item.employeeResponseStatusLabel}</dd>
+                        </div>
+                      ) : null}
                     </dl>
                   </button>
                 );
@@ -95,9 +155,16 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                     {detail.selectedRequest.workDate} · {detail.selectedRequest.workTimeLabel}
                   </p>
                 </div>
-                <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
-                  {detail.selectedRequest.statusLabel}
-                </span>
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
+                    {detail.selectedRequest.statusLabel}
+                  </span>
+                  {detail.selectedRequest.employeeResponseStatusLabel ? (
+                    <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
+                      {detail.selectedRequest.employeeResponseStatusLabel}
+                    </span>
+                  ) : null}
+                </div>
               </div>
 
               <dl className="mt-4 grid gap-3 text-sm text-[var(--muted)] sm:grid-cols-2">
@@ -137,6 +204,24 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                   <div className="sm:col-span-2">
                     <dt className="font-medium text-[var(--foreground)]">배정 담당자</dt>
                     <dd className="mt-1">{detail.selectedRequest.assignedBy}</dd>
+                  </div>
+                ) : null}
+                {detail.selectedRequest.employeeRespondedAtLabel ? (
+                  <div>
+                    <dt className="font-medium text-[var(--foreground)]">직원 응답 시각</dt>
+                    <dd className="mt-1">{detail.selectedRequest.employeeRespondedAtLabel}</dd>
+                  </div>
+                ) : null}
+                {detail.selectedRequest.employeeRespondedBy ? (
+                  <div>
+                    <dt className="font-medium text-[var(--foreground)]">직원 응답자</dt>
+                    <dd className="mt-1">{detail.selectedRequest.employeeRespondedBy}</dd>
+                  </div>
+                ) : null}
+                {detail.selectedRequest.employeeResponseComment ? (
+                  <div className="sm:col-span-2">
+                    <dt className="font-medium text-[var(--foreground)]">직원 응답 메모</dt>
+                    <dd className="mt-1">{detail.selectedRequest.employeeResponseComment}</dd>
                   </div>
                 ) : null}
               </dl>

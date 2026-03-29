@@ -3,6 +3,7 @@ import { z } from "zod";
 import type {
   EmployeeScheduleRequest,
   ScheduleAssignmentPosition,
+  ScheduleEmployeeResponseStatus,
   ScheduleRequestHistoryEventType,
   ScheduleRequestStatus,
 } from "#queries/schedule-request/types/scheduleRequest";
@@ -31,7 +32,14 @@ const scheduleRequestHistoryEventTypeValues = [
   "submitted",
   "approved",
   "rejected",
+  "accepted",
+  "declined",
 ] as const satisfies readonly ScheduleRequestHistoryEventType[];
+const scheduleEmployeeResponseStatusValues = [
+  "pending",
+  "accepted",
+  "declined",
+] as const satisfies readonly ScheduleEmployeeResponseStatus[];
 
 export const scheduleRequestHistoryEventRecordSchema = z.object({
   type: z.enum(scheduleRequestHistoryEventTypeValues),
@@ -57,6 +65,10 @@ export const scheduleRequestRecordSchema = z.object({
   assignedLocation: z.string().nullable(),
   assignedAt: z.string().datetime().nullable(),
   assignedBy: z.string().nullable(),
+  employeeResponseStatus: z.enum(scheduleEmployeeResponseStatusValues).nullable().optional(),
+  employeeResponseComment: z.string().nullable().optional(),
+  employeeRespondedAt: z.string().datetime().nullable().optional(),
+  employeeRespondedBy: z.string().nullable().optional(),
   history: z.array(scheduleRequestHistoryEventRecordSchema),
 });
 
@@ -90,6 +102,10 @@ export function toEmployeeScheduleRequest(record: ScheduleRequestRecord): Employ
     assignedLocation: record.assignedLocation ?? null,
     assignedAt: record.assignedAt ? new Date(record.assignedAt) : null,
     assignedBy: record.assignedBy ?? null,
+    employeeResponseStatus: record.employeeResponseStatus ?? null,
+    employeeResponseComment: record.employeeResponseComment ?? null,
+    employeeRespondedAt: record.employeeRespondedAt ? new Date(record.employeeRespondedAt) : null,
+    employeeRespondedBy: record.employeeRespondedBy ?? null,
     history: record.history.map((item) => ({
       ...item,
       createdAt: new Date(item.createdAt),

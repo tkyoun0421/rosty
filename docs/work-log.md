@@ -13,6 +13,25 @@ Track what was completed, what was in progress at the end of a session, and what
 
 ## Current Handoff
 
+### 2026-03-29
+
+- Completed
+  - `schedule request` 도메인에 직원 응답 상태(`pending/accepted/declined`)와 이력 이벤트(`accepted/declined`)가 추가되어 승인 이후 수락/거절 흐름을 별도 상태로 기록할 수 있게 되었습니다.
+  - `PUT /api/dev/schedule-requests` 응답 처리와 관련 mutation/hook이 추가되어 직원이 배정 스케줄 화면에서 수락/거절과 메모를 남길 수 있게 되었습니다.
+  - 직원 배정 스케줄 화면이 응답 상태, 응답 메모, 전체 이력 타임라인을 표시하도록 확장되었고 승인된 요청은 응답 후 읽기 전용 상태로 전환됩니다.
+  - 관리자 신청 검토 화면에 30초 주기 갱신과 상태/직원 응답/정렬 필터가 추가되어 승인 결과와 직원 응답 결과를 한 화면에서 계속 추적할 수 있게 되었습니다.
+  - dev API, 타입, DAL, 훅 테스트가 새 응답 플로우 기준으로 갱신되어 전체 `pnpm test`가 green입니다.
+- Last In Progress
+  - 승인/거절 및 직원 응답은 인앱 상태와 이력으로는 추적되지만, 별도 알림 센터나 푸시/이메일 발송은 아직 없습니다.
+- Next Up
+  - 직원 거절과 배정 변경에 대한 알림 범위를 `인앱 이벤트`, `푸시/이메일`, `관리자 액션 큐` 중 어디까지 Release 1에 포함할지 정합니다.
+  - `schedule request` 검토 화면을 넘어서는 관리자용 일정 조회 모델이 필요한지, 아니면 `WorkAssignment` 중심 읽기 모델로 분리할지 결정합니다.
+- Blockers / Notes
+  - 현재 dev 데이터 소스는 in-memory라 새 응답 상태와 이력도 영속되지 않으며, 실시간성은 polling에 의존합니다.
+- Related Commit
+  - `uncommitted`
+
+
 ### 2026-03-28
 
 - Completed

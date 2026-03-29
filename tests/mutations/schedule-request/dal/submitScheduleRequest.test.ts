@@ -23,6 +23,10 @@ const CREATED_RECORD = {
   assignedLocation: null,
   assignedAt: null,
   assignedBy: null,
+  employeeResponseStatus: null,
+  employeeResponseComment: null,
+  employeeRespondedAt: null,
+  employeeRespondedBy: null,
   history: [
     {
       type: "submitted" as const,
@@ -92,3 +96,4 @@ describe("submitScheduleRequest", () => {
     });
   });
 });
+

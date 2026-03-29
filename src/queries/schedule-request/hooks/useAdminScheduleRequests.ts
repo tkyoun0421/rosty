@@ -9,5 +9,7 @@ export function useAdminScheduleRequests() {
   return useQuery({
     queryKey: queryKeys.scheduleRequests.adminList(),
     queryFn: fetchAdminScheduleRequests,
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: true,
   });
 }

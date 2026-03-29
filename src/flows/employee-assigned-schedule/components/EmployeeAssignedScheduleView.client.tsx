@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
 import type { EmployeeAssignedScheduleViewProps } from "#flows/employee-assigned-schedule/types/employeeAssignedScheduleView";
 
 export function EmployeeAssignedScheduleView({
@@ -51,14 +52,19 @@ export function EmployeeAssignedScheduleView({
                 >
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <p className="text-lg font-semibold text-[var(--foreground)]">
-                        {item.workDate}
-                      </p>
+                      <p className="text-lg font-semibold text-[var(--foreground)]">{item.workDate}</p>
                       <p className="mt-1 text-sm text-[var(--muted)]">{item.workTimeLabel}</p>
                     </div>
-                    <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
-                      {item.assignedLocation}
-                    </span>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
+                        {item.assignedLocation}
+                      </span>
+                      {item.employeeResponseStatusLabel ? (
+                        <span className="inline-flex rounded-full border border-[var(--border)] px-3 py-1 text-xs font-medium">
+                          {item.employeeResponseStatusLabel}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
 
                   <dl className="mt-4 grid gap-3 text-sm text-[var(--muted)] sm:grid-cols-2">
@@ -82,6 +88,18 @@ export function EmployeeAssignedScheduleView({
                         <dd className="mt-1">{item.assignedBy}</dd>
                       </div>
                     ) : null}
+                    {item.employeeRespondedAtLabel ? (
+                      <div>
+                        <dt className="font-medium text-[var(--foreground)]">응답 시각</dt>
+                        <dd className="mt-1">{item.employeeRespondedAtLabel}</dd>
+                      </div>
+                    ) : null}
+                    {item.employeeRespondedBy ? (
+                      <div>
+                        <dt className="font-medium text-[var(--foreground)]">응답자</dt>
+                        <dd className="mt-1">{item.employeeRespondedBy}</dd>
+                      </div>
+                    ) : null}
                     <div className="sm:col-span-2">
                       <dt className="font-medium text-[var(--foreground)]">신청 메모</dt>
                       <dd className="mt-1">{item.note}</dd>
@@ -92,7 +110,66 @@ export function EmployeeAssignedScheduleView({
                         <dd className="mt-1">{item.adminComment}</dd>
                       </div>
                     ) : null}
+                    {item.employeeResponseComment ? (
+                      <div className="sm:col-span-2">
+                        <dt className="font-medium text-[var(--foreground)]">응답 메모</dt>
+                        <dd className="mt-1">{item.employeeResponseComment}</dd>
+                      </div>
+                    ) : null}
                   </dl>
+
+                  {item.canRespond ? (
+                    <div className="mt-4 rounded-2xl border border-[var(--border)] bg-white px-4 py-4">
+                      <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+                        배정 응답 메모
+                        <textarea
+                          aria-label={`assignment-response-comment-${item.id}`}
+                          rows={3}
+                          className="rounded-2xl border border-[var(--border)] px-4 py-3"
+                          value={item.responseDraftComment}
+                          onChange={(event) =>
+                            schedule.onResponseCommentChange(item.id, event.target.value)
+                          }
+                        />
+                      </label>
+
+                      {item.responseHelperMessage ? (
+                        <p className="mt-3 text-sm text-[var(--muted)]">{item.responseHelperMessage}</p>
+                      ) : null}
+
+                      {item.responseErrorMessage ? (
+                        <p className="mt-3 rounded-2xl border border-[var(--danger)]/20 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
+                          {item.responseErrorMessage}
+                        </p>
+                      ) : null}
+
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          aria-label={`accept-assignment-${item.id}`}
+                          onClick={() => void schedule.onAccept(item.id)}
+                          disabled={item.isResponding}
+                          className="inline-flex rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          수락
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`decline-assignment-${item.id}`}
+                          onClick={() => void schedule.onDecline(item.id)}
+                          disabled={item.isResponding}
+                          className="inline-flex rounded-full border border-[var(--border)] px-5 py-3 text-sm font-medium text-[var(--foreground)] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          거절
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <ScheduleRequestHistoryList
+                    listName={`assigned-request-history-${item.id}`}
+                    items={item.history}
+                  />
                 </article>
               ))
             )}

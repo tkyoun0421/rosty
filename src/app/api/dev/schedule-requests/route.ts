@@ -11,6 +11,7 @@ import {
 import type { ScheduleRequestRecord } from "#queries/schedule-request/dal/scheduleRequest";
 import type {
   ScheduleAssignmentPosition,
+  ScheduleEmployeeResponseStatus,
   ScheduleRequestStatus,
 } from "#queries/schedule-request/types/scheduleRequest";
 import {
@@ -19,6 +20,7 @@ import {
 } from "#queries/schedule-request/constants/scheduleRequest";
 
 const REVIEWABLE_STATUSES: ScheduleRequestStatus[] = ["approved", "rejected"];
+const EMPLOYEE_RESPONSE_STATUSES: ScheduleEmployeeResponseStatus[] = ["accepted", "declined"];
 const ASSIGNMENT_POSITIONS = SCHEDULE_ASSIGNMENT_POSITION_OPTIONS.map((option) => option.value);
 
 function isReviewStatus(
@@ -29,6 +31,10 @@ function isReviewStatus(
 
 function isAssignmentPosition(value: string): value is ScheduleAssignmentPosition {
   return ASSIGNMENT_POSITIONS.includes(value as ScheduleAssignmentPosition);
+}
+
+function isEmployeeResponseStatus(value: string): value is Exclude<ScheduleEmployeeResponseStatus, "pending"> {
+  return EMPLOYEE_RESPONSE_STATUSES.includes(value as ScheduleEmployeeResponseStatus);
 }
 
 export async function GET(request: Request) {
@@ -161,6 +167,10 @@ export async function PATCH(request: Request) {
     assignedLocation,
     assignedAt: body.status === "approved" ? processedAt : null,
     assignedBy: body.status === "approved" ? ADMIN_ID : null,
+    employeeResponseStatus: body.status === "approved" ? "pending" : null,
+    employeeResponseComment: null,
+    employeeRespondedAt: null,
+    employeeRespondedBy: null,
     history: [
       ...target.history,
       {
@@ -170,6 +180,62 @@ export async function PATCH(request: Request) {
         comment: adminComment.length > 0 ? adminComment : null,
         assignmentPosition,
         assignedLocation,
+      },
+    ],
+  };
+
+  replaceScheduleRequestRecord(updated);
+
+  return NextResponse.json({ request: updated });
+}
+
+export async function PUT(request: Request) {
+  const body = (await request.json().catch(() => null)) as {
+    requestId?: unknown;
+    status?: unknown;
+    employeeComment?: unknown;
+  } | null;
+  const scheduleRequests = listScheduleRequestRecords();
+
+  if (!body || typeof body.requestId !== "string" || typeof body.status !== "string") {
+    return NextResponse.json({ message: "직원 응답 정보가 올바르지 않습니다." }, { status: 400 });
+  }
+
+  if (!isEmployeeResponseStatus(body.status)) {
+    return NextResponse.json({ message: "지원하지 않는 직원 응답 상태입니다." }, { status: 400 });
+  }
+
+  const target = scheduleRequests.find((scheduleRequest) => scheduleRequest.id === body.requestId);
+
+  if (!target) {
+    return NextResponse.json({ message: "요청을 찾을 수 없습니다." }, { status: 404 });
+  }
+
+  if (target.status !== "approved" || target.employeeResponseStatus !== "pending") {
+    return NextResponse.json(
+      { message: "응답 가능한 배정 요청이 아니거나 이미 응답이 완료되었습니다." },
+      { status: 409 },
+    );
+  }
+
+  const employeeComment = typeof body.employeeComment === "string" ? body.employeeComment.trim() : "";
+  const respondedAt = new Date().toISOString();
+
+  const updated: ScheduleRequestRecord = {
+    ...target,
+    employeeResponseStatus: body.status,
+    employeeResponseComment: employeeComment.length > 0 ? employeeComment : null,
+    employeeRespondedAt: respondedAt,
+    employeeRespondedBy: EMPLOYEE_ID,
+    history: [
+      ...target.history,
+      {
+        type: body.status,
+        createdAt: respondedAt,
+        actorId: EMPLOYEE_ID,
+        comment: employeeComment.length > 0 ? employeeComment : null,
+        assignmentPosition: target.assignmentPosition,
+        assignedLocation: target.assignedLocation,
       },
     ],
   };

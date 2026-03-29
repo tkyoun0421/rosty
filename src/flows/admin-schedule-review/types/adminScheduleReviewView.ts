@@ -14,6 +14,10 @@ export type AdminScheduleReviewItemViewModel = {
   assignedLocation: string | null;
   assignedAtLabel: string | null;
   assignedBy: string | null;
+  employeeResponseStatusLabel: string | null;
+  employeeResponseComment: string | null;
+  employeeRespondedAtLabel: string | null;
+  employeeRespondedBy: string | null;
   isProcessed: boolean;
   history: ScheduleRequestHistoryItemViewModel[];
 };
@@ -23,7 +27,13 @@ export type AdminScheduleReviewViewProps = {
     isLoading: boolean;
     errorMessage: string | null;
     items: AdminScheduleReviewItemViewModel[];
+    reviewStatusFilter: "all" | "pending" | "approved" | "rejected";
+    employeeResponseFilter: "all" | "pending" | "accepted" | "declined";
+    sortOrder: "submitted-desc" | "work-date-asc";
     selectedRequestId: string | null;
+    onReviewStatusFilterChange: (value: "all" | "pending" | "approved" | "rejected") => void;
+    onEmployeeResponseFilterChange: (value: "all" | "pending" | "accepted" | "declined") => void;
+    onSortOrderChange: (value: "submitted-desc" | "work-date-asc") => void;
     onSelectRequest: (requestId: string) => void;
   };
   detail: {

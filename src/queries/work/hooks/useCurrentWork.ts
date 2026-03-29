@@ -9,5 +9,7 @@ export function useCurrentWork() {
   return useQuery({
     queryKey: queryKeys.work.current(),
     queryFn: fetchCurrentWork,
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: true,
   });
 }

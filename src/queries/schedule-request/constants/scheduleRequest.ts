@@ -1,5 +1,6 @@
-import type {
+﻿import type {
   ScheduleAssignmentPosition,
+  ScheduleEmployeeResponseStatus,
   ScheduleRequestHistoryEventType,
   ScheduleRequestStatus,
 } from "#queries/schedule-request/types/scheduleRequest";
@@ -17,6 +18,17 @@ export const SCHEDULE_REQUEST_HISTORY_EVENT_LABELS: Record<
   submitted: "신청 제출",
   approved: "배정 확정",
   rejected: "신청 반려",
+  accepted: "배정 수락",
+  declined: "배정 거절",
+};
+
+export const SCHEDULE_EMPLOYEE_RESPONSE_STATUS_LABELS: Record<
+  ScheduleEmployeeResponseStatus,
+  string
+> = {
+  pending: "응답 대기",
+  accepted: "수락 완료",
+  declined: "거절 완료",
 };
 
 export const SCHEDULE_ASSIGNMENT_POSITION_LABELS: Record<ScheduleAssignmentPosition, string> = {
