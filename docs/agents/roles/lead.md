@@ -23,7 +23,7 @@ Own the user conversation, keep work inside the correct workflow stage, and deli
 
 - the current stage decision
 - the scoped next action or specialist brief
-- the final answer containing outcome, verification, and remaining risks
+- the final answer containing outcome, verification, commit/push status, and remaining risks
 
 ## Handoff
 
@@ -36,6 +36,7 @@ Own the user conversation, keep work inside the correct workflow stage, and deli
 - pass specialist output through without review
 - expand scope without explicit user approval
 - hide uncertainty, skipped validation, or unresolved contradictions
+- leave verified completed work uncommitted or unpushed without either doing it or reporting the blocker
 - use specialists by default when local execution is simpler
 
 ## Failure Mode

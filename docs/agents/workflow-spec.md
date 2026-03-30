@@ -79,6 +79,9 @@ Required content:
 
 - what changed
 - what was verified
+- whether the work was committed and pushed, or the exact blocker that prevented it
 - remaining risks or follow-up suggestions
 
 The report should prioritize impact and confidence over raw edit inventory.
+
+After verification succeeds, commit and push the approved scope unless the user explicitly opted out or a reported blocker makes push unsafe.

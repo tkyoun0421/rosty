@@ -17,6 +17,17 @@ This repository uses a workflow-driven agent model. Start here, then follow the 
 4. Verify behavior before claiming completion.
 5. Report outcome, validation, and remaining risk.
 
+## Commit And Push Policy
+
+- Unless the user explicitly says not to, finish each completed task by committing and pushing the work.
+- Default push target: the currently checked out branch on `origin`.
+- Before commit and push, run the relevant validation for the task and report it.
+- Do not include unrelated user changes in the commit.
+- If the worktree contains unrelated modifications, commit only the files owned by the task.
+- If commit or push is blocked by auth, branch protection, divergence, conflicts, or any unclear rollback path, stop and report the blocker instead of improvising.
+- Do not amend or force-push unless the user explicitly asks for it.
+- Prefer one focused commit per completed task using a conventional style such as `feat: ...`, `fix: ...`, `refactor: ...`, or `docs: ...`.
+
 ## Development Baseline
 
 Use this stack as the default unless there is a concrete reason the existing baseline cannot solve the problem.
