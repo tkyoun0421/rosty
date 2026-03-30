@@ -1,4 +1,10 @@
 # 웨딩홀 직원 근무 관리 웹 애플리케이션
+## Release 1 Snapshot
+
+- `Admin schedule overview` is now available at `/admin/schedule-overview`.
+- The admin dashboard card `전체 일정 조회` now opens a dedicated read-only overview instead of the review screen.
+- The overview reuses `schedule request` data to summarize approved assignments, pending employee responses, and accepted assignments.
+- Pending review requests still route back to `/admin/schedule-requests` for action handling.
 
 | | |
 |---|---|

@@ -1,4 +1,4 @@
-export const APP_ROUTES = {
+﻿export const APP_ROUTES = {
   signIn: "/sign-in",
   employeeHome: "/",
   employeeSchedule: "/schedule",
@@ -6,6 +6,7 @@ export const APP_ROUTES = {
   adminHome: "/admin",
   adminWork: "/admin/work",
   adminScheduleRequests: "/admin/schedule-requests",
+  adminScheduleOverview: "/admin/schedule-overview",
   devSession: "/api/dev/session",
   devLogout: "/api/dev/logout",
   devWork: "/api/dev/work",

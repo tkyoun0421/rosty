@@ -13,6 +13,23 @@ Track what was completed, what was in progress at the end of a session, and what
 
 ## Current Handoff
 
+### 2026-03-30
+
+- Completed
+  - Added a dedicated admin schedule overview route at `/admin/schedule-overview`.
+  - Connected the admin home card `전체 일정 조회` to the new overview route.
+  - Added a read-only admin overview flow that summarizes approved assignments and employee response state from existing `schedule request` data.
+  - Added regression coverage for the new dashboard link and overview rendering.
+- Last In Progress
+  - The admin overview now exists, but it is still derived from `schedule request` records rather than a separate `WorkAssignment`-centered read model.
+- Next Up
+  - Decide whether Release 1 should keep the overview derived from `schedule request` data or promote a separate `WorkAssignment` read model before Supabase migration.
+  - Define the remaining notification scope beyond in-app state reflection, including whether instant/push/email delivery stays out of Release 1.
+- Blockers / Notes
+  - The dev API is still in-memory, so overview freshness depends on polling and the current mock lifecycle.
+- Related Commit
+  - `uncommitted`
+
 ### 2026-03-29
 
 - Completed
@@ -30,7 +47,6 @@ Track what was completed, what was in progress at the end of a session, and what
   - 현재 dev 데이터 소스는 in-memory라 새 응답 상태와 이력도 영속되지 않으며, 실시간성은 polling에 의존합니다.
 - Related Commit
   - `uncommitted`
-
 
 ### 2026-03-28
 

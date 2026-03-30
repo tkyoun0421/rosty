@@ -1,4 +1,4 @@
-import "server-only";
+﻿import "server-only";
 
 import Link from "next/link";
 
@@ -13,10 +13,9 @@ const ADMIN_SECTIONS = [
   },
   {
     title: "전체 일정 조회",
-    description:
-      "현재 릴리즈에서 배정 완료된 신청과 처리 상태를 같은 검토 흐름에서 다시 확인합니다.",
-    href: APP_ROUTES.adminScheduleRequests,
-    cta: "승인 현황 보기",
+    description: "배정된 일정과 직원 응답 상태를 읽기 전용으로 정리해서 확인하는 화면입니다.",
+    href: APP_ROUTES.adminScheduleOverview,
+    cta: "전체 일정 보기",
   },
   {
     title: "근무 생성",
