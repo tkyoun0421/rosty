@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 
@@ -16,6 +16,7 @@ import {
 import { useAdminScheduleRequests } from "#queries/schedule-request/hooks/useAdminScheduleRequests";
 import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
 import { buildScheduleRequestHistoryView } from "#queries/schedule-request/utils/buildScheduleRequestHistoryView";
+import { buildScheduleRequestNotifications } from "#queries/schedule-request/utils/buildScheduleRequestNotifications";
 import { formatKoreanDateTime } from "#shared/utils/formatKoreanDateTime";
 import { formatKoreanTimeRange } from "#shared/utils/formatKoreanTimeRange";
 
@@ -44,6 +45,7 @@ function toViewModel(request: EmployeeScheduleRequest): AdminScheduleReviewItemV
       : null,
     employeeRespondedBy: request.employeeRespondedBy ?? null,
     isProcessed: request.status !== "pending",
+    notifications: buildScheduleRequestNotifications(request, "admin-review"),
     history: buildScheduleRequestHistoryView(request.history),
   };
 }
@@ -52,7 +54,9 @@ export function useAdminScheduleReview(): AdminScheduleReviewViewProps {
   const requestsQuery = useAdminScheduleRequests();
   const reviewRequest = useReviewScheduleRequest();
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-  const [reviewStatusFilter, setReviewStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [reviewStatusFilter, setReviewStatusFilter] = useState<
+    "all" | "pending" | "approved" | "rejected"
+  >("all");
   const [employeeResponseFilter, setEmployeeResponseFilter] = useState<
     "all" | "pending" | "accepted" | "declined"
   >("all");

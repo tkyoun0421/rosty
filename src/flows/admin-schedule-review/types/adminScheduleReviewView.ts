@@ -1,5 +1,6 @@
 import type { ScheduleAssignmentPosition } from "#queries/schedule-request/types/scheduleRequest";
 import type { ScheduleRequestHistoryItemViewModel } from "#queries/schedule-request/types/scheduleRequestHistoryView";
+import type { ScheduleRequestNotificationView } from "#queries/schedule-request/types/scheduleRequestNotificationView";
 
 export type AdminScheduleReviewItemViewModel = {
   id: string;
@@ -19,6 +20,7 @@ export type AdminScheduleReviewItemViewModel = {
   employeeRespondedAtLabel: string | null;
   employeeRespondedBy: string | null;
   isProcessed: boolean;
+  notifications: ScheduleRequestNotificationView[];
   history: ScheduleRequestHistoryItemViewModel[];
 };
 

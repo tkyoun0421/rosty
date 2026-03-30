@@ -21,6 +21,10 @@ const INITIAL_REQUESTS = [
     assignedLocation: null,
     assignedAt: null,
     assignedBy: null,
+    employeeResponseStatus: null,
+    employeeResponseComment: null,
+    employeeRespondedAt: null,
+    employeeRespondedBy: null,
     history: [
       {
         type: "submitted",
@@ -47,6 +51,10 @@ const INITIAL_REQUESTS = [
     assignedLocation: null,
     assignedAt: null,
     assignedBy: null,
+    employeeResponseStatus: null,
+    employeeResponseComment: null,
+    employeeRespondedAt: null,
+    employeeRespondedBy: null,
     history: [
       {
         type: "submitted",
@@ -73,6 +81,10 @@ const INITIAL_REQUESTS = [
     assignedLocation: "Main hall",
     assignedAt: "2026-03-27T01:30:00.000Z",
     assignedBy: "admin-01",
+    employeeResponseStatus: "pending",
+    employeeResponseComment: null,
+    employeeRespondedAt: null,
+    employeeRespondedBy: null,
     history: [
       {
         type: "submitted",

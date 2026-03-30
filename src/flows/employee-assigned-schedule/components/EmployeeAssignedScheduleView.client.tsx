@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
+import { ScheduleRequestNotificationList } from "#queries/schedule-request/components/ScheduleRequestNotificationList.client";
 import type { EmployeeAssignedScheduleViewProps } from "#flows/employee-assigned-schedule/types/employeeAssignedScheduleView";
 
 export function EmployeeAssignedScheduleView({
@@ -52,7 +53,9 @@ export function EmployeeAssignedScheduleView({
                 >
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div>
-                      <p className="text-lg font-semibold text-[var(--foreground)]">{item.workDate}</p>
+                      <p className="text-lg font-semibold text-[var(--foreground)]">
+                        {item.workDate}
+                      </p>
                       <p className="mt-1 text-sm text-[var(--muted)]">{item.workTimeLabel}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -118,6 +121,11 @@ export function EmployeeAssignedScheduleView({
                     ) : null}
                   </dl>
 
+                  <ScheduleRequestNotificationList
+                    listName={`assigned-request-notifications-${item.id}`}
+                    items={item.notifications}
+                  />
+
                   {item.canRespond ? (
                     <div className="mt-4 rounded-2xl border border-[var(--border)] bg-white px-4 py-4">
                       <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
@@ -134,7 +142,9 @@ export function EmployeeAssignedScheduleView({
                       </label>
 
                       {item.responseHelperMessage ? (
-                        <p className="mt-3 text-sm text-[var(--muted)]">{item.responseHelperMessage}</p>
+                        <p className="mt-3 text-sm text-[var(--muted)]">
+                          {item.responseHelperMessage}
+                        </p>
                       ) : null}
 
                       {item.responseErrorMessage ? (

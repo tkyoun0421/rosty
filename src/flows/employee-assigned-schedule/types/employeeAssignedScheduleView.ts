@@ -1,4 +1,5 @@
 import type { ScheduleRequestHistoryItemViewModel } from "#queries/schedule-request/types/scheduleRequestHistoryView";
+import type { ScheduleRequestNotificationView } from "#queries/schedule-request/types/scheduleRequestNotificationView";
 
 export type EmployeeAssignedScheduleItemViewModel = {
   id: string;
@@ -20,6 +21,7 @@ export type EmployeeAssignedScheduleItemViewModel = {
   responseErrorMessage: string | null;
   isResponding: boolean;
   canRespond: boolean;
+  notifications: ScheduleRequestNotificationView[];
   history: ScheduleRequestHistoryItemViewModel[];
 };
 

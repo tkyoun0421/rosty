@@ -116,6 +116,7 @@ describe("EmployeeAssignedSchedule", () => {
     expect(screen.getByText("Main hall")).toBeInTheDocument();
     expect(screen.getByText("manager-01")).toBeInTheDocument();
     expect(screen.getAllByText("Pre-brief before ceremony").length).toBeGreaterThan(0);
+    expect(screen.getByText("배정이 확정되었습니다. 응답을 남겨 주세요.")).toBeInTheDocument();
   });
 
   it("renders an empty state when there are no approved assignments", async () => {
@@ -283,9 +284,12 @@ describe("EmployeeAssignedSchedule", () => {
 
     expect(await screen.findByText("2026-05-03")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole("textbox", { name: "assignment-response-comment-request-201" }), {
-      target: { value: "I can cover this shift." },
-    });
+    fireEvent.change(
+      screen.getByRole("textbox", { name: "assignment-response-comment-request-201" }),
+      {
+        target: { value: "I can cover this shift." },
+      },
+    );
     fireEvent.click(screen.getByRole("button", { name: "accept-assignment-request-201" }));
 
     await waitFor(() => {
@@ -300,11 +304,15 @@ describe("EmployeeAssignedSchedule", () => {
       expect(screen.getAllByText("I can cover this shift.").length).toBeGreaterThan(0);
     });
 
-    expect(screen.queryByRole("button", { name: "accept-assignment-request-201" })).not.toBeInTheDocument();
+    expect(screen.getByText("배정 수락이 관리자 검토 화면에 반영되었습니다.")).toBeInTheDocument();
+
     expect(
-      within(screen.getByRole("list", { name: "assigned-request-history-request-201" })).getAllByRole(
-        "listitem",
-      ),
+      screen.queryByRole("button", { name: "accept-assignment-request-201" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(
+        screen.getByRole("list", { name: "assigned-request-history-request-201" }),
+      ).getAllByRole("listitem"),
     ).toHaveLength(3);
   });
 });

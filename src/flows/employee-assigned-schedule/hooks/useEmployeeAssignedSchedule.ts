@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 
@@ -12,6 +12,7 @@ import {
 import { useEmployeeScheduleRequests } from "#queries/schedule-request/hooks/useEmployeeScheduleRequests";
 import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
 import { buildScheduleRequestHistoryView } from "#queries/schedule-request/utils/buildScheduleRequestHistoryView";
+import { buildScheduleRequestNotifications } from "#queries/schedule-request/utils/buildScheduleRequestNotifications";
 import { formatKoreanDateTime } from "#shared/utils/formatKoreanDateTime";
 import { formatKoreanTimeRange } from "#shared/utils/formatKoreanTimeRange";
 
@@ -82,12 +83,19 @@ export function useEmployeeAssignedSchedule(): EmployeeAssignedScheduleViewProps
             ? "응답을 제출하면 관리자 검토 화면에 즉시 반영됩니다."
             : null,
         responseErrorMessage:
-          activeRequestId === request.id ? respondAssignment.error?.message ?? null : null,
+          activeRequestId === request.id ? (respondAssignment.error?.message ?? null) : null,
         isResponding: respondAssignment.isPending && activeRequestId === request.id,
         canRespond: request.employeeResponseStatus === "pending",
+        notifications: buildScheduleRequestNotifications(request, "employee-assigned"),
         history: buildScheduleRequestHistoryView(request.history),
       })),
-    [activeRequestId, approvedRequests, draftComments, respondAssignment.error?.message, respondAssignment.isPending],
+    [
+      activeRequestId,
+      approvedRequests,
+      draftComments,
+      respondAssignment.error?.message,
+      respondAssignment.isPending,
+    ],
   );
 
   return {

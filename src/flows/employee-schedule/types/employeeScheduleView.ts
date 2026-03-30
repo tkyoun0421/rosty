@@ -1,7 +1,8 @@
 import type React from "react";
 
-import type { ScheduleRequestHistoryItemViewModel } from "#queries/schedule-request/types/scheduleRequestHistoryView";
 import type { ScheduleRequestStatus } from "#queries/schedule-request/types/scheduleRequest";
+import type { ScheduleRequestHistoryItemViewModel } from "#queries/schedule-request/types/scheduleRequestHistoryView";
+import type { ScheduleRequestNotificationView } from "#queries/schedule-request/types/scheduleRequestNotificationView";
 
 export type EmployeeScheduleRequestItemViewModel = {
   id: string;
@@ -12,6 +13,7 @@ export type EmployeeScheduleRequestItemViewModel = {
   note: string;
   adminComment: string | null;
   assignmentPositionLabel: string | null;
+  notifications: ScheduleRequestNotificationView[];
   history: ScheduleRequestHistoryItemViewModel[];
 };
 

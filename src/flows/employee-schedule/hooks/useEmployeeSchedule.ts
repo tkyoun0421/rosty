@@ -18,6 +18,7 @@ import {
 import { useEmployeeScheduleRequests } from "#queries/schedule-request/hooks/useEmployeeScheduleRequests";
 import type { EmployeeScheduleRequest } from "#queries/schedule-request/types/scheduleRequest";
 import { buildScheduleRequestHistoryView } from "#queries/schedule-request/utils/buildScheduleRequestHistoryView";
+import { buildScheduleRequestNotifications } from "#queries/schedule-request/utils/buildScheduleRequestNotifications";
 import { useCurrentWork } from "#queries/work/hooks/useCurrentWork";
 import { formatKoreanDateTime } from "#shared/utils/formatKoreanDateTime";
 import { formatKoreanTimeRange } from "#shared/utils/formatKoreanTimeRange";
@@ -82,6 +83,7 @@ export function useEmployeeSchedule(): EmployeeScheduleViewProps {
         assignmentPositionLabel: request.assignmentPosition
           ? SCHEDULE_ASSIGNMENT_POSITION_LABELS[request.assignmentPosition]
           : null,
+        notifications: buildScheduleRequestNotifications(request, "employee-request"),
         history: buildScheduleRequestHistoryView(request.history),
       })),
     [filteredRequests],

@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { ScheduleRequestHistoryList } from "#queries/schedule-request/components/ScheduleRequestHistoryList.client";
+import { ScheduleRequestNotificationList } from "#queries/schedule-request/components/ScheduleRequestNotificationList.client";
 import { SCHEDULE_ASSIGNMENT_POSITION_OPTIONS } from "#queries/schedule-request/constants/scheduleRequest";
 import type { AdminScheduleReviewViewProps } from "#flows/admin-schedule-review/types/adminScheduleReviewView";
 
@@ -225,6 +226,11 @@ export function AdminScheduleReviewView({ list, detail }: AdminScheduleReviewVie
                   </div>
                 ) : null}
               </dl>
+
+              <ScheduleRequestNotificationList
+                listName={`admin-request-notifications-${detail.selectedRequest.id}`}
+                items={detail.selectedRequest.notifications}
+              />
 
               <ScheduleRequestHistoryList
                 listName={`request-history-${detail.selectedRequest.id}`}

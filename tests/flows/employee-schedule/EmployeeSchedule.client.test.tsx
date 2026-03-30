@@ -315,6 +315,12 @@ describe("EmployeeSchedule", () => {
 
     const [statusFilter, sortOrder] = screen.getAllByRole("combobox");
 
+    expect(screen.getByText("관리자 검토를 기다리고 있습니다.")).toBeInTheDocument();
+    expect(
+      screen.getAllByText("배정이 확정되었습니다. 배정 응답 화면에서 수락 또는 거절을 남겨 주세요.")
+        .length,
+    ).toBeGreaterThan(0);
+
     fireEvent.change(statusFilter, {
       target: { value: "approved" },
     });
