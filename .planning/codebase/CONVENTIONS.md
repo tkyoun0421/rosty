@@ -1,4 +1,4 @@
-# Coding Conventions
+﻿# Coding Conventions
 
 **Analysis Date:** 2026-03-31
 
@@ -183,7 +183,7 @@
 
 ## Git Workflow
 
-- When a meaningful unit of work is complete, finish by committing and pushing the branch unless the user explicitly says not to.
+- Commit and push only when the user explicitly asks for it.
 - Commit messages should be detailed enough to explain the actual scope of the change, not just a vague one-line label.
 - Prefer commit messages that make the changed area, the intent, and the major technical outcome obvious.
 

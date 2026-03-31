@@ -1,9 +1,9 @@
-import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
+﻿import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 
 export const scheduleStatusLabels: Record<AdminScheduleListItem["status"], string> = {
-  recruiting: "모집 중",
-  assigning: "배정 중",
-  confirmed: "확정 완료",
+  recruiting: "Recruiting",
+  assigning: "Assigning",
+  confirmed: "Confirmed",
 };
 
 export function formatScheduleDateTime(value: string) {
@@ -15,5 +15,5 @@ export function formatScheduleDateTime(value: string) {
 }
 
 export function formatRoleSlotSummary(schedule: AdminScheduleListItem) {
-  return schedule.roleSlotSummary.map((slot) => `${slot.roleCode} ${slot.headcount}명`).join(", ");
+  return schedule.roleSlotSummary.map((slot) => `${slot.roleCode} x${slot.headcount}`).join(", ");
 }

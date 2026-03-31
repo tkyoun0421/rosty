@@ -1,12 +1,11 @@
-import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
+﻿import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
+import { inlineScheduleStatuses } from "#mutations/schedule/schemas/updateScheduleStatus";
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 
-const scheduleStatuses: AdminScheduleListItem["status"][] = ["recruiting", "assigning", "confirmed"];
-
 const scheduleStatusLabels: Record<AdminScheduleListItem["status"], string> = {
-  recruiting: "모집 중",
-  assigning: "배정 중",
-  confirmed: "확정 완료",
+  recruiting: "Recruiting",
+  assigning: "Assigning",
+  confirmed: "Confirmed",
 };
 
 interface ScheduleStatusFormProps {
@@ -15,13 +14,17 @@ interface ScheduleStatusFormProps {
 }
 
 export function ScheduleStatusForm({ scheduleId, currentStatus }: ScheduleStatusFormProps) {
-  const nextStatuses = scheduleStatuses.filter((status) => status !== currentStatus);
+  if (currentStatus === "confirmed") {
+    return null;
+  }
+
+  const nextStatuses = inlineScheduleStatuses.filter((status) => status !== currentStatus);
 
   return (
     <form action={submitScheduleStatus}>
       <input type="hidden" name="scheduleId" value={scheduleId} />
       <label>
-        <span className="sr-only">다음 상태</span>
+        <span className="sr-only">Next status</span>
         <select name="status" defaultValue={nextStatuses[0] ?? currentStatus}>
           {nextStatuses.map((status) => (
             <option key={status} value={status}>
@@ -30,7 +33,7 @@ export function ScheduleStatusForm({ scheduleId, currentStatus }: ScheduleStatus
           ))}
         </select>
       </label>
-      <button type="submit">상태 변경</button>
+      <button type="submit">Change status</button>
     </form>
   );
 }

@@ -1,17 +1,17 @@
----
+﻿---
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-03-31T06:42:00.075Z"
+status: ready_for_next_phase
+stopped_at: Phase 3 complete
+last_updated: "2026-03-31T10:30:00.000Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 40
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 11
+  percent: 60
 ---
 
 # Project State
@@ -20,72 +20,63 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-31)
 
-**Core value:** 관리자가 ?�딩?� 근무�?빠르�??�정?�고 근무?�는 ?�신???�정 근무, ??��, ?�상 급여�??�뢰?????�게 ?�인?????�어???�다.
-**Current focus:** Phase 02 ??schedule-publishing
+**Core value:** 관리자가 웨딩홀 근무를 빠르게 확정하고 근무자는 자신의 확정 근무, 역할, 예상 급여를 신뢰할 수 있게 확인할 수 있어야 한다.
+**Current focus:** Prepare Phase 4 attendance check-in planning
 
 ## Current Position
 
-Phase: 02 (schedule-publishing) ??EXECUTING
-Plan: 3 of 3
-Status: Phase complete ??ready for verification
+Phase: 03 (assignment-and-pay-preview) COMPLETE
+Plan: 4 of 4
+Status: Waiting for Phase 4 discuss/plan
 Last activity: 2026-03-31
 
-Progress: [####------] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
-**Velocity:**
-
-- Total plans completed: 4
-- Average duration: not tracked yet
-- Total execution time: not tracked yet
-
 **By Phase:**
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 1. Access Foundation | 4 | complete | - |
-| Phase 02 P01 | 5 min | 3 tasks | 14 files |
-| Phase 02 P02 | 6min | 3 tasks | 8 files |
-| Phase 02 P03 | 12min | 3 tasks | 12 files |
+| Phase | Plans | Result |
+|-------|-------|--------|
+| 1. Access Foundation | 4 | complete |
+| 2. Schedule Publishing | 3 | complete |
+| 3. Assignment And Pay Preview | 4 | complete |
 
 ## Accumulated Context
 
 ### Decisions
 
-- Start as a single-venue internal tool for ?�비?�벨 ?�딩?�.
+- Start as a single-venue internal tool for 라비에벨 웨딩홀 운영.
 - Use one account system with role-based permissions.
 - Phase 1: invite acceptance uses token possession without email-match enforcement.
-- Phase 1: first admin is manually bootstrapped.
 - Phase 1: login returns to `/` first, then role-based routing happens there.
 - Phase 1: worker rates use current-value storage with audit columns only.
 - Phase 2: one schedule contains multiple role slots.
 - Phase 2: workers apply to the schedule as a whole, not a specific role slot.
 - Phase 2: schedule creation defaults to `recruiting`, then admins manage later transitions.
 - Phase 2: worker recruitment listing stays lightweight.
-- [Phase 02]: Normalize admin date and time input into +09:00 schedule timestamps before persistence. ??The admin UI collects separate venue-local date and time fields, so the mutation layer now combines them into explicit timestamps before writing the schedule record.
-- [Phase 02]: Use a DB-backed requireAdminUser guard for privileged schedule writes instead of metadata fallbacks. ??Schedule creation now checks auth.getUser() and confirms admin role from user_roles before any privileged write proceeds.
-- [Phase 02]: Treat the admin list contract as a dedicated publishing DTO with only schedule window, status, and role-slot summary.
-- [Phase 02]: Keep status enforcement intentionally light by rejecting invalid enum inputs and no-op transitions only.
-- [Phase 02]: Bind per-row status changes directly to the server action instead of adding a separate workflow layer.
-- [Phase 02]: Keep the worker recruiting DTO local to the worker query slice instead of reusing admin list types.
-- [Phase 02]: Use getServerSupabaseClient() for worker reads and writes so RLS remains the safety boundary.
-- [Phase 02]: Translate unique insert conflicts into a stable already_applied mutation result instead of surfacing raw database errors.
+- Phase 2: privileged schedule writes require a strict DB-backed `requireAdminUser` guard.
+- Phase 3: applicant review happens on the schedule detail screen.
+- Phase 3: assignments are made per role slot and final confirmation is explicit.
+- Phase 3: workers see total expected pay plus calculation basis.
+- Codebase rules: use `#` absolute imports only and forbid relative imports.
+- Codebase rules: action files orchestrate only; schema and normalization logic stay in `schemas/`.
+- Codebase rules: prefer tag-based invalidation over `revalidatePath`.
+- Codebase rules: pure helpers belong in domain `utils/` or `shared`, not inside component files.
 
 ### Pending Todos
 
-- Prepare Phase 2 verification and Phase 3 planning.
+- Discuss and plan Phase 4 attendance check-in.
+- Run manual UAT for the latest profile onboarding and first-admin bootstrap flow.
 
 ### Blockers/Concerns
 
-- Some older planning artifacts were previously saved with broken encoding and may still need spot cleanup if referenced later.
+- Earlier generated planning artifacts had broken Korean encoding. Repaired docs should be used as the new source documents.
 
 ## Session Continuity
 
-Last session: 2026-03-31T06:42:00.070Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-03-31
+Stopped at: Phase 3 complete
 Resume file: None
 
 ---
 *State refreshed: 2026-03-31*
-
-

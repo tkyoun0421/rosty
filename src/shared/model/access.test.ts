@@ -1,4 +1,10 @@
-import { type AppRole, type InviteStatus, type WorkerRateRecord } from "#shared/model/access";
+﻿import {
+  type AppRole,
+  type InviteStatus,
+  type ProfileGender,
+  type UserProfileRecord,
+  type WorkerRateRecord,
+} from "#shared/model/access";
 
 describe("access model contracts", () => {
   it("supports only admin and worker roles", () => {
@@ -11,6 +17,27 @@ describe("access model contracts", () => {
     const statuses: InviteStatus[] = ["pending", "accepted", "revoked", "expired"];
 
     expect(statuses).toEqual(["pending", "accepted", "revoked", "expired"]);
+  });
+
+  it("limits profile gender values to the supported set", () => {
+    const genders: ProfileGender[] = ["male", "female", "other"];
+
+    expect(genders).toEqual(["male", "female", "other"]);
+  });
+
+  it("tracks onboarding profile fields", () => {
+    const profile: UserProfileRecord = {
+      fullName: "Kim Admin",
+      gender: "female",
+      birthDate: "1995-05-01",
+      avatarUrl: "https://example.com/avatar.png",
+    };
+
+    expect(profile).toMatchObject({
+      fullName: "Kim Admin",
+      gender: "female",
+    });
+    expect(profile.birthDate).toContain("1995");
   });
 
   it("keeps worker rates as current-value records with audit fields", () => {

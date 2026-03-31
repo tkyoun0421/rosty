@@ -1,4 +1,5 @@
-export const ROOT_PATH = "/";
+﻿export const ROOT_PATH = "/";
+export const ONBOARDING_PATH = "/onboarding";
 export const SIGN_IN_PATH = "/sign-in";
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 export const UNAUTHORIZED_PATH = "/unauthorized";

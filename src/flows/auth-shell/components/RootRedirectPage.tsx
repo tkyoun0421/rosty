@@ -1,13 +1,17 @@
 ﻿import { redirect } from "next/navigation";
 
-import { SIGN_IN_PATH, UNAUTHORIZED_PATH } from "#shared/config/authConfig";
-import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
+import { ONBOARDING_PATH, SIGN_IN_PATH, UNAUTHORIZED_PATH } from "#shared/config/authConfig";
+import { getCurrentUserProfile } from "#queries/access/dal/getCurrentUserProfile";
 
 export async function RootRedirectPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUserProfile();
 
   if (!user) {
     return redirect(SIGN_IN_PATH);
+  }
+
+  if (!user.isProfileComplete) {
+    return redirect(ONBOARDING_PATH);
   }
 
   if (user.role === "admin") {

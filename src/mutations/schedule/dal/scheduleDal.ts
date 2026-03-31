@@ -81,7 +81,7 @@ export async function createScheduleRecord(
 
 export async function updateScheduleRecordStatus(input: {
   scheduleId: string;
-  status: ScheduleStatus;
+  status: Extract<ScheduleStatus, "recruiting" | "assigning">;
 }): Promise<ScheduleWithRoleSlots> {
   const supabase = getAdminSupabaseClient();
   const { data: currentSchedule, error: currentScheduleError } = await supabase
@@ -96,6 +96,10 @@ export async function updateScheduleRecordStatus(input: {
 
   if (!currentSchedule) {
     throw new Error("SCHEDULE_NOT_FOUND");
+  }
+
+  if (currentSchedule.status === "confirmed") {
+    throw new Error("CONFIRMED_SCHEDULE_STATUS_LOCKED");
   }
 
   if (currentSchedule.status === input.status) {

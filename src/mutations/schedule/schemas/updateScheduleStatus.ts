@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const scheduleStatusSchema = z.enum(["recruiting", "assigning", "confirmed"]);
+export const inlineScheduleStatuses = ["recruiting", "assigning"] as const;
+
+export const scheduleStatusSchema = z.enum(inlineScheduleStatuses);
 
 export const updateScheduleStatusSchema = z.object({
   scheduleId: z.string().trim().min(1),

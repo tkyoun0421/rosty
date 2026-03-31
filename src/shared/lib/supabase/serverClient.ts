@@ -26,7 +26,12 @@ export async function getServerSupabaseClient() {
         },
         setAll(entries) {
           for (const entry of entries) {
-            cookieStore.set(entry.name, entry.value, entry.options);
+            try {
+              cookieStore.set(entry.name, entry.value, entry.options);
+            } catch {
+              // Server Components can read cookies but cannot always write them.
+              // Route Handlers and Server Actions still persist refreshed auth cookies.
+            }
           }
         },
       },

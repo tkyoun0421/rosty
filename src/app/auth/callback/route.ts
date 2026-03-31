@@ -1,7 +1,7 @@
 ﻿import { NextResponse } from "next/server";
 
-import { acceptInvite } from "#mutations/invite/actions/acceptInvite";
-import { ROOT_PATH, SIGN_IN_PATH } from "#shared/config/authConfig";
+import { finalizeAuthSession } from "#mutations/auth/actions/finalizeAuthSession";
+import { SIGN_IN_PATH } from "#shared/config/authConfig";
 import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 export async function GET(request: Request) {
@@ -20,10 +20,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`${SIGN_IN_PATH}?error=oauth`, url.origin));
   }
 
-  if (inviteToken) {
-    await acceptInvite(inviteToken);
-  }
+  const nextPath = await finalizeAuthSession(inviteToken ?? undefined);
 
-  return NextResponse.redirect(new URL(ROOT_PATH, url.origin));
+  return NextResponse.redirect(new URL(nextPath, url.origin));
 }
-
