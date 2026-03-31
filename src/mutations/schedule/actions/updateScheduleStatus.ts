@@ -15,10 +15,23 @@ const updateScheduleStatusSchema = z.object({
 
 export type UpdateScheduleStatusInput = z.input<typeof updateScheduleStatusSchema>;
 
-export async function updateScheduleStatus(input: UpdateScheduleStatusInput) {
+function normalizeUpdateScheduleStatusInput(
+  input: UpdateScheduleStatusInput | FormData,
+): UpdateScheduleStatusInput {
+  if (input instanceof FormData) {
+    return {
+      scheduleId: String(input.get("scheduleId") ?? ""),
+      status: String(input.get("status") ?? "") as UpdateScheduleStatusInput["status"],
+    };
+  }
+
+  return input;
+}
+
+export async function updateScheduleStatus(input: UpdateScheduleStatusInput | FormData) {
   await requireAdminUser();
 
-  const parsed = updateScheduleStatusSchema.parse(input);
+  const parsed = updateScheduleStatusSchema.parse(normalizeUpdateScheduleStatusInput(input));
   const updatedSchedule = await updateScheduleRecordStatus(parsed);
 
   revalidatePath("/admin/schedules");

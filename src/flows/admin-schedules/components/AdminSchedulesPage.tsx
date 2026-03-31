@@ -1,24 +1,29 @@
-import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
+ï»¿import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
+import { listAdminSchedules } from "#queries/schedule/dal/listAdminSchedules";
 
 import { CreateScheduleForm } from "./CreateScheduleForm";
+import { ScheduleTable } from "./ScheduleTable";
 
 export async function AdminSchedulesPage() {
   try {
     await requireAdminUser();
   } catch {
-    return <main>°ü¸®ÀÚ ±ÇÇÑÀÌ ÇÊ¿äÇÕ´Ï´Ù.</main>;
+    return <main>ê´€ë¦¬ì ê¶Œí•œì´ í•„ìš”í•©ë‹ˆë‹¤.</main>;
   }
+
+  const schedules = await listAdminSchedules();
 
   return (
     <main>
-      <h1>½ºÄÉÁÙ °ü¸®</h1>
-      <p>±Ù¹«ÀÏ, ½Ã°£, ¿ªÇÒº° ¸ğÁı ÀÎ¿øÀ» ÇÑ ¹ø¿¡ µî·ÏÇÕ´Ï´Ù.</p>
+      <h1>ìŠ¤ì¼€ì¤„ ê´€ë¦¬</h1>
+      <p>ê·¼ë¬´ì¼, ì‹œê°„, ì—­í• ë³„ ëª¨ì§‘ ì¸ì›ì„ í•œ ë²ˆì— ë“±ë¡í•©ë‹ˆë‹¤.</p>
       <CreateScheduleForm />
       <section aria-labelledby="schedule-status-overview">
-        <h2 id="schedule-status-overview">¿î¿µ »óÅÂ ¾È³»</h2>
-        <p>»õ ½ºÄÉÁÙÀº ÀúÀå Á÷ÈÄ ¸ğÁı »óÅÂ·Î ½ÃÀÛÇÕ´Ï´Ù.</p>
-        <p>ÀúÀåµÈ ½ºÄÉÁÙ°ú ÀÌÈÄ »óÅÂ º¯°æ ±â·ÏÀº ÀÌ È­¸é¿¡¼­ ÀÌ¾î¼­ °ü¸®ÇÕ´Ï´Ù.</p>
+        <h2 id="schedule-status-overview">ìš´ì˜ ìƒíƒœ ì•ˆë‚´</h2>
+        <p>ìƒˆ ìŠ¤ì¼€ì¤„ì€ ì €ì¥ ì§í›„ ëª¨ì§‘ ìƒíƒœë¡œ ì‹œì‘í•©ë‹ˆë‹¤.</p>
+        <p>ì €ì¥ëœ ìŠ¤ì¼€ì¤„ê³¼ í˜„ì¬ ìš´ì˜ ìƒíƒœëŠ” ì•„ë˜ í‘œì—ì„œ ë°”ë¡œ ê´€ë¦¬í•©ë‹ˆë‹¤.</p>
       </section>
+      <ScheduleTable schedules={schedules} />
     </main>
   );
 }
