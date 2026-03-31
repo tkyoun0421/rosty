@@ -1,4 +1,4 @@
-﻿---
+---
 status: partial
 phase: 03-assignment-and-pay-preview
 source: [03-VERIFICATION.md]

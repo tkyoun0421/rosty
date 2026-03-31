@@ -1,4 +1,4 @@
-﻿# Phase 3: Assignment And Pay Preview - Context
+# Phase 3: Assignment And Pay Preview - Context
 
 **Gathered:** 2026-03-31
 **Status:** Ready for planning

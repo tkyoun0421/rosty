@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import type { WorkerRateRecord } from "#shared/model/access";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";

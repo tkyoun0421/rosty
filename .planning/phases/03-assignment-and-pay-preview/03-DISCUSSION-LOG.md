@@ -1,4 +1,4 @@
-﻿# Phase 3: Assignment And Pay Preview - Discussion Log
+# Phase 3: Assignment And Pay Preview - Discussion Log
 
 > Audit trail only. Do not use as input to planning, research, or execution agents.
 > Decisions are captured in CONTEXT.md.

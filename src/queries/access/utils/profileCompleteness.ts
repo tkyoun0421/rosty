@@ -1,4 +1,4 @@
-﻿import type { UserProfileRecord } from "#shared/model/access";
+import type { UserProfileRecord } from "#shared/model/access";
 
 export function isProfileComplete(profile: UserProfileRecord) {
   return Boolean(

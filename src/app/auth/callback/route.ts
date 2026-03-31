@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { finalizeAuthSession } from "#mutations/auth/actions/finalizeAuthSession";
 import { SIGN_IN_PATH } from "#shared/config/authConfig";

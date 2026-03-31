@@ -1,4 +1,4 @@
-﻿import { createWorkerInvite } from "#mutations/invite/actions/createWorkerInvite";
+import { createWorkerInvite } from "#mutations/invite/actions/createWorkerInvite";
 
 export function AdminInvitesPage() {
   return (

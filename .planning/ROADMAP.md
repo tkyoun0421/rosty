@@ -1,4 +1,4 @@
-﻿# Roadmap: 라비에벨 웨딩홀 근무자 관리 웹 앱
+# Roadmap: 라비에벨 웨딩홀 근무자 관리 웹 앱
 
 ## Overview
 

@@ -1,4 +1,4 @@
-﻿# Phase 02: Schedule Publishing - Research
+# Phase 02: Schedule Publishing - Research
 
 **Researched:** 2026-03-31
 **Domain:** Next.js App Router + Supabase/Postgres schedule publishing and worker applications

@@ -1,4 +1,4 @@
-﻿import { submitWorkerRate } from "#mutations/worker-rate/actions/submitWorkerRate";
+import { submitWorkerRate } from "#mutations/worker-rate/actions/submitWorkerRate";
 
 export function WorkerRateForm({ userId }: { userId: string }) {
   return (

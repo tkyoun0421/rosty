@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { ONBOARDING_PATH, SIGN_IN_PATH, UNAUTHORIZED_PATH } from "#shared/config/authConfig";
 import { getCurrentUserProfile } from "#queries/access/dal/getCurrentUserProfile";

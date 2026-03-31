@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const getUser = vi.fn();
 const maybeSingle = vi.fn();

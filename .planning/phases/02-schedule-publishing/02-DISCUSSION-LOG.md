@@ -1,4 +1,4 @@
-﻿# Phase 2 Discussion Log
+# Phase 2 Discussion Log
 
 **Date:** 2026-03-31
 **Phase:** 02 - Schedule Publishing

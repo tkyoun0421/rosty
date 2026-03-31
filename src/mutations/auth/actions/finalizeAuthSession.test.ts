@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const getServerSupabaseClient = vi.fn();
 const acceptInvite = vi.fn();

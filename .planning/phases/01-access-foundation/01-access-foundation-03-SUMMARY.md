@@ -1,4 +1,4 @@
-﻿---
+---
 plan: 01-03
 phase: 01-access-foundation
 status: completed

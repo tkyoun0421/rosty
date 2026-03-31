@@ -1,4 +1,4 @@
-﻿import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 import { ProfileOnboardingForm } from "#mutations/auth/components/ProfileOnboardingForm";
 import { ROOT_PATH, SIGN_IN_PATH } from "#shared/config/authConfig";

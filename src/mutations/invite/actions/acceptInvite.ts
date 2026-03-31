@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
 import {

@@ -1,4 +1,4 @@
-﻿import type { WorkerRateRecord } from "#shared/model/access";
+import type { WorkerRateRecord } from "#shared/model/access";
 
 export function WorkerRateTable({ records }: { records: WorkerRateRecord[] }) {
   return (

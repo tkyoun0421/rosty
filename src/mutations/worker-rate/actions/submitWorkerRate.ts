@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { upsertWorkerRate } from "#mutations/worker-rate/actions/upsertWorkerRate";
 

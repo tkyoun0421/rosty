@@ -1,4 +1,4 @@
-﻿# Phase 1: Access Foundation - Context
+# Phase 1: Access Foundation - Context
 
 **Gathered:** 2026-03-31
 **Status:** Ready for planning

@@ -1,4 +1,4 @@
-﻿import "server-only";
+import "server-only";
 
 import type { AppRole } from "#shared/model/access";
 import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";

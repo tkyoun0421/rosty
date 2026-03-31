@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 export const profileOnboardingSchema = z.object({
   fullName: z.string().trim().min(1, "Full name is required.").max(80, "Full name is too long."),

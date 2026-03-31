@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const exchangeCodeForSession = vi.fn();
 const getServerSupabaseClient = vi.fn();

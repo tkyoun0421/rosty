@@ -1,4 +1,4 @@
-﻿import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
+import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
 import { inlineScheduleStatuses } from "#mutations/schedule/schemas/updateScheduleStatus";
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 

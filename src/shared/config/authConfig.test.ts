@@ -1,4 +1,4 @@
-﻿import {
+import {
   AUTH_CALLBACK_PATH,
   AUTH_ENV_KEYS,
   ROOT_PATH,

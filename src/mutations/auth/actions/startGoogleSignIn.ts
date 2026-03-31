@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { AUTH_CALLBACK_PATH, ROOT_PATH } from "#shared/config/authConfig";
 import { getBrowserSupabaseClient } from "#shared/lib/supabase/browserClient";

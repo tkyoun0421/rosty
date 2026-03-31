@@ -1,4 +1,4 @@
-﻿import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
+import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 
 export const scheduleStatusLabels: Record<AdminScheduleListItem["status"], string> = {
   recruiting: "Recruiting",

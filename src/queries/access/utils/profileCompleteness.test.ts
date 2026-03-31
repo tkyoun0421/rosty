@@ -1,4 +1,4 @@
-﻿import { isProfileComplete } from "#queries/access/utils/profileCompleteness";
+import { isProfileComplete } from "#queries/access/utils/profileCompleteness";
 
 describe("isProfileComplete", () => {
   it("returns true when all required onboarding fields exist", () => {

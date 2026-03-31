@@ -1,4 +1,4 @@
-﻿export type AppRole = "admin" | "worker";
+export type AppRole = "admin" | "worker";
 
 export type InviteStatus = "pending" | "accepted" | "revoked" | "expired";
 

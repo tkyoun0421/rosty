@@ -1,4 +1,4 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const redirect = vi.fn((value: string) => value);
 const getCurrentUserProfile = vi.fn();

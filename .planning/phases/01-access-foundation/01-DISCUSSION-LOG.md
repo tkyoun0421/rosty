@@ -1,4 +1,4 @@
-﻿# Phase 1: Access Foundation - Discussion Log
+# Phase 1: Access Foundation - Discussion Log
 
 > **Audit trail only.** Do not use as input to planning, research, or execution agents.
 > Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.

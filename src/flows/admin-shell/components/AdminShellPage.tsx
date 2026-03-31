@@ -1,4 +1,4 @@
-﻿import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
+import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
 
 export async function AdminShellPage() {
   const user = await getCurrentUser();

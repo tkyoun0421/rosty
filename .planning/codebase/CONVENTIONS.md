@@ -1,4 +1,4 @@
-﻿# Coding Conventions
+# Coding Conventions
 
 **Analysis Date:** 2026-03-31
 
@@ -180,6 +180,10 @@
 - Formatting is handled by Prettier and repository editor settings.
 - Add lint rules that enforce the layer dependency contract before significant implementation begins.
 - Treat `tsconfig.json` aliases as part of the architectural contract, not just convenience.
+- Repository text files must use UTF-8 without BOM and LF line endings.
+- `*.ps1` is the only exception and may use UTF-8 with BOM for Windows shell compatibility.
+- Do not write repo-tracked files with raw PowerShell `Set-Content` or `Out-File`; use edit paths that preserve UTF-8 without BOM.
+- `pnpm encoding:check` must pass before commit, and the repository pre-commit hook enforces it.
 
 ## Git Workflow
 

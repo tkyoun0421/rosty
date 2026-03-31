@@ -1,4 +1,4 @@
-﻿---
+---
 phase: 02
 slug: schedule-publishing
 status: draft

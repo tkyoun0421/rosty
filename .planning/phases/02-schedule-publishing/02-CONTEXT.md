@@ -1,4 +1,4 @@
-﻿# Phase 2: Schedule Publishing - Context
+# Phase 2: Schedule Publishing - Context
 
 **Gathered:** 2026-03-31
 **Status:** Ready for planning

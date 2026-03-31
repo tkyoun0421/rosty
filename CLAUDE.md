@@ -1,4 +1,4 @@
-﻿<!-- GSD:project-start source:PROJECT.md -->
+<!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
 **라비에벨 웨딩홀 근무자 관리 웹 앱**
@@ -49,6 +49,8 @@ Use these entry points:
 Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
 Commit and push only when the user explicitly asks for it.
 When committing, use a detailed commit message that explains the scope and outcome of the change.
+Repository text files must use UTF-8 without BOM and LF line endings, except `*.ps1` which may use UTF-8 BOM.
+Do not write repo-tracked files with raw PowerShell `Set-Content` or `Out-File`; use edit paths that preserve UTF-8 without BOM.
 <!-- GSD:workflow-end -->
 
 <!-- GSD:profile-start -->

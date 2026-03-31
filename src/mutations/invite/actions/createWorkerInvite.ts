@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { createInvite } from "#mutations/invite/actions/createInvite";
 
