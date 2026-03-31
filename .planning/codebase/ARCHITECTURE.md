@@ -25,6 +25,7 @@
 - Scope: composed UI and orchestration for a single route flow.
 - Contains: `components`, `hooks`, `types`.
 - Pattern: one route maps to one flow.
+- Rule: UI components render state and user interaction, but domain logic stays in the owning domain files under the same slice or lower layers.
 
 **`mutations`:**
 - Purpose: own write commands.
@@ -42,6 +43,7 @@
 - Purpose: hold cross-cutting primitives and third-party wrappers.
 - Scope: `ui`, `lib`, `model`, `config`.
 - Rule: no domain DAL or higher-layer logic.
+- Rule: shared reusable logic belongs here only when it is not owned by a single domain.
 
 ## Dependency Graph
 

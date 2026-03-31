@@ -47,6 +47,7 @@ Use these entry points:
 - `/gsd:execute-phase` for planned phase work
 
 Do not make direct repo edits outside a GSD workflow unless the user explicitly asks to bypass it.
+When a coherent unit of work is finished, commit and push it unless the user explicitly says not to. Use a detailed commit message that explains the scope and outcome of the change.
 <!-- GSD:workflow-end -->
 
 

@@ -49,6 +49,13 @@
 - Design-system level primitives only.
 - Examples: button, input, modal, table shell, badge, form field shell.
 - Domain-aware UI does not belong here.
+- UI components must stay presentation-focused and must not know business logic.
+- Shared UI components may depend on shared generic helpers only.
+
+**UI logic placement:**
+- Domain-specific logic must live under the owning domain slice in `flows`, `mutations`, or `queries`.
+- Cross-domain reusable logic must live under `shared`.
+- Do not embed domain behavior directly inside UI component files just because the component renders that behavior.
 
 **`shared/lib`:**
 - Third-party wrappers and adapters only.
@@ -120,9 +127,9 @@
 ## Naming
 
 - Directories use `kebab-case`.
-- Non-component files use `kebab-case`.
+- Non-component files use `camelCase`.
 - React component files use `PascalCase`.
-- Prefer explicit filenames such as `create-invite.ts`, `list-work.ts`, and `AdminWorkPage.tsx`.
+- Prefer explicit filenames such as `createInvite.ts`, `listWork.ts`, and `AdminWorkPage.tsx`.
 
 ## Imports
 
@@ -154,6 +161,12 @@
 - Formatting is handled by Prettier and repository editor settings.
 - Add lint rules that enforce the layer dependency contract before significant implementation begins.
 - Treat `tsconfig.json` aliases as part of the architectural contract, not just convenience.
+
+## Git Workflow
+
+- When a meaningful unit of work is complete, finish by committing and pushing the branch unless the user explicitly says not to.
+- Commit messages should be detailed enough to explain the actual scope of the change, not just a vague one-line label.
+- Prefer commit messages that make the changed area, the intent, and the major technical outcome obvious.
 
 ---
 

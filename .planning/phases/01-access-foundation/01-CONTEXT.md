@@ -32,6 +32,17 @@
 - **D-10:** `worker_rates`는 1인 1현재값 구조로 두고 `updated_by`, `updated_at` audit column만 포함한다.
 - **D-11:** 시급 변경 이력 전용 테이블이나 append-only ledger는 Phase 1 범위에 넣지 않고, 필요하면 이후 phase에서 확장한다.
 
+### Codebase Contract
+- **D-12:** 런타임 코드는 `src/app`, `src/flows`, `src/mutations`, `src/queries`, `src/shared` 구조를 따른다.
+- **D-13:** 의존 방향은 `app -> flows -> mutations -> queries -> shared`로 고정한다.
+- **D-14:** `app`는 thin route layer이며, 한 route는 하나의 flow에 대응한다.
+- **D-15:** server action은 `mutations/*/actions`에만 둔다.
+- **D-16:** read DAL은 `queries/*/dal`, write DAL은 `mutations/*/dal`에 둔다.
+- **D-17:** 테스트는 root `tests/`가 아니라 구현 파일 옆에 colocated로 둔다.
+- **D-18:** 내부 alias는 `#app/*`, `#flows/*`, `#mutations/*`, `#queries/*`, `#shared/*`만 사용한다.
+- **D-19:** UI 컴포넌트는 도메인 로직을 직접 소유하지 않는다. 도메인 로직은 해당 도메인 폴더 아래에 두고, 공통 로직은 `shared` 아래에 둔다.
+- **D-20:** 일반 파일명은 `kebab-case`가 아니라 `camelCase`를 사용한다.
+
 ### the agent's Discretion
 - invite token의 길이, 해시 방식, 만료 기본값
 - 공통 홈(`/`)에서의 역할 분기 구현 방식
@@ -44,14 +55,14 @@
 
 **Downstream agents MUST read these before planning or implementing.**
 
-No external specs — requirements are fully captured in decisions above, plus the core planning artifacts below.
-
 ### Phase planning artifacts
 - `.planning/PROJECT.md` — product constraints and non-negotiable project-level decisions
 - `.planning/REQUIREMENTS.md` — Phase 1 requirement definitions for `AUTH-01`, `AUTH-02`, `AUTH-03`, `PAY-01`
 - `.planning/ROADMAP.md` — Phase 1 boundary, goal, and success criteria
 - `.planning/phases/01-access-foundation/01-RESEARCH.md` — researched auth, invite, RBAC, and worker-rate implementation guidance
 - `.planning/phases/01-access-foundation/01-VALIDATION.md` — validation contract and Wave 0 verification map
+- `.planning/codebase/ARCHITECTURE.md` — current application layer model
+- `.planning/codebase/CONVENTIONS.md` — enforced naming, alias, test, and dependency rules
 - `CLAUDE.md` — project workflow and implementation guardrails
 
 </canonical_refs>
@@ -61,18 +72,22 @@ No external specs — requirements are fully captured in decisions above, plus t
 
 ### Reusable Assets
 - No trusted app-layer reusable assets exist yet. The repository is effectively being restarted from scratch for this phase.
-- Existing planning artifacts under `.planning/phases/01-access-foundation/` already define the intended auth, invite, RBAC, and worker-rate file boundaries.
+- The reliable source of truth is the planning set plus the refreshed codebase documents, not legacy runtime code.
 
 ### Established Patterns
-- Phase plans assume Next.js App Router with `proxy.ts` for coarse routing, not secure authorization.
-- Research and plans already converge on Supabase SSR clients, DAL-first guards, DB-canonical roles, and integer-cent worker-rate storage.
-- Because there is no stable legacy app code to preserve, consistency should come from the research/plan artifacts rather than prior implementation patterns.
+- The application structure is now fixed to `src/app`, `src/flows`, `src/mutations`, `src/queries`, and `src/shared`.
+- `app` stays thin, route structure follows real page structure, and one route maps to one flow.
+- `queries` own read-side DAL and dual server/client read APIs.
+- `mutations` own write-side DAL and all server actions.
+- Shared code is limited to `shared/ui`, `shared/lib`, `shared/model`, and `shared/config`.
 
 ### Integration Points
-- `src/lib/auth/*` will own auth contracts, invite logic, session helpers, and guards.
-- `src/lib/dal/*` will own DB-backed current-user and admin-only access paths.
-- `src/app/(public)/*`, `src/app/(admin)/*`, and `src/app/(worker)/*` will be the primary routing surfaces for Phase 1.
-- `supabase/migrations/*` and `supabase/seed.sql` will anchor the schema, role claims, and initial admin bootstrap.
+- `src/shared/lib/supabase/*` will own low-level Supabase client setup.
+- `src/queries/access/*` will own session-backed current-user reads and secure role lookups.
+- `src/mutations/invite/*` will own invite creation, revocation, and acceptance actions plus DAL.
+- `src/mutations/worker-rate/*` will own worker-rate mutations and validation.
+- `src/flows/*` will own route-level composed UI for sign-in, root routing, admin invite management, and admin worker-rate management.
+- `supabase/migrations/*` and `supabase/seed.sql` will anchor schema, role claims, and initial admin bootstrap.
 
 </code_context>
 
@@ -83,6 +98,7 @@ No external specs — requirements are fully captured in decisions above, plus t
 - The first successful login should not decide admin privileges; admin bootstrap remains an explicit setup action.
 - Role-based landing should happen from a common root entrypoint instead of sending users directly to role-specific pages from the callback.
 - Worker hourly rate storage should stay simple in Phase 1: current value plus audit metadata only.
+- Planning and implementation must follow the refreshed codebase contract, not the stale `src/lib/*` and root `tests/*` references from older drafts.
 
 </specifics>
 
