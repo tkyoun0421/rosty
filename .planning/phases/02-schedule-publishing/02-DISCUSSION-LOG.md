@@ -1,4 +1,4 @@
-# Phase 2 Discussion Log
+﻿# Phase 2 Discussion Log
 
 **Date:** 2026-03-31
 **Phase:** 02 - Schedule Publishing
@@ -21,6 +21,6 @@
 - Decision: `간단 목록`
 - Outcome: 근무자 모집 목록은 날짜, 시간, 모집 가능 여부 정도의 최소 정보 위주로 노출한다.
 
-## Replan Note
+## Next Step
 
-This context was gathered before Phase 2 planning. The next required step is `$gsd-plan-phase 2`.
+- Create Phase 2 plans with `$gsd-plan-phase 2`.
