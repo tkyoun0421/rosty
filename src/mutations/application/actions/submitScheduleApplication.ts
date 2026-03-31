@@ -1,20 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
+import { revalidateTag } from "next/cache";
 
 import { createScheduleApplication } from "#mutations/application/actions/createScheduleApplication";
-
-const submitScheduleApplicationSchema = z.object({
-  scheduleId: z.string().trim().min(1),
-});
+import { parseSubmitScheduleApplicationFormData } from "#mutations/application/schemas/submitScheduleApplication";
+import { cacheTags } from "#shared/config/cacheTags";
 
 export async function submitScheduleApplication(formData: FormData) {
-  await createScheduleApplication(
-    submitScheduleApplicationSchema.parse({
-      scheduleId: String(formData.get("scheduleId") ?? ""),
-    }),
-  );
-
-  revalidatePath("/worker/schedules");
+  await createScheduleApplication(parseSubmitScheduleApplicationFormData(formData));
+  revalidateTag(cacheTags.applications.all, "max");
+  revalidateTag(cacheTags.applications.workerScheduleIds, "max");
+  revalidateTag(cacheTags.schedules.recruitingList, "max");
 }

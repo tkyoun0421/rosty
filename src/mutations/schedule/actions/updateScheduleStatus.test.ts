@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const requireAdminUser = vi.fn();
 const updateScheduleRecordStatus = vi.fn();
-const revalidatePath = vi.fn();
 
 vi.mock("#queries/access/dal/requireAdminUser", () => ({
   requireAdminUser,
@@ -10,10 +9,6 @@ vi.mock("#queries/access/dal/requireAdminUser", () => ({
 
 vi.mock("#mutations/schedule/dal/scheduleDal", () => ({
   updateScheduleRecordStatus,
-}));
-
-vi.mock("next/cache", () => ({
-  revalidatePath,
 }));
 
 describe("updateScheduleStatus", () => {
@@ -44,7 +39,6 @@ describe("updateScheduleStatus", () => {
       scheduleId: "schedule-1",
       status: "assigning",
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/admin/schedules");
     expect(result.status).toBe("assigning");
   });
 

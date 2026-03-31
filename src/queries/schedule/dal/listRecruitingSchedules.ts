@@ -1,5 +1,8 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
+
+import { cacheTags } from "#shared/config/cacheTags";
 import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 export interface RecruitingScheduleListItem {
@@ -16,7 +19,7 @@ interface RecruitingScheduleRow {
   status: RecruitingScheduleListItem["status"];
 }
 
-export async function listRecruitingSchedules(): Promise<RecruitingScheduleListItem[]> {
+async function runListRecruitingSchedules(): Promise<RecruitingScheduleListItem[]> {
   const supabase = await getServerSupabaseClient();
   const { data, error } = await supabase
     .from("schedules")
@@ -34,4 +37,20 @@ export async function listRecruitingSchedules(): Promise<RecruitingScheduleListI
     endsAt: row.ends_at,
     status: row.status,
   })) ?? [];
+}
+
+const listRecruitingSchedulesCached = unstable_cache(
+  runListRecruitingSchedules,
+  ["queries:schedule:listRecruitingSchedules"],
+  {
+    tags: [cacheTags.schedules.all, cacheTags.schedules.recruitingList],
+  },
+);
+
+export async function listRecruitingSchedules(): Promise<RecruitingScheduleListItem[]> {
+  if (process.env.VITEST) {
+    return await runListRecruitingSchedules();
+  }
+
+  return await listRecruitingSchedulesCached();
 }

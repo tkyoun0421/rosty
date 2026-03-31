@@ -80,6 +80,7 @@
 - `components/`
 - `hooks/`
 - `types/`
+- `utils/`
 
 **`mutations/{domain}` commonly contains:**
 - `components/`
@@ -87,6 +88,7 @@
 - `dal/`
 - `hooks/`
 - `schemas/`
+- `utils/`
 
 **Mutation-scoped UI:**
 - UI that exists mainly to trigger or wrap a single domain mutation may live under `mutations/{domain}/components`.
@@ -104,10 +106,14 @@
 
 - Server actions live only in `mutations/*/actions`.
 - `app` and `flows` may call actions but do not define them.
+- Action files orchestrate writes and invalidation only.
+- Keep `zod` schema declarations, parsing helpers, and normalization logic in `schemas/`, not inline inside action files.
 - `queries` expose a dual API:
   - server-safe read functions from the query slice
   - client hooks from `queries/*/hooks`
 - The project is server-first for reads. Use React Query when client cache, refetching, or sync behavior is needed.
+- When query hooks are introduced, query keys must come from a query-key factory owned by the query slice. Do not scatter inline query key arrays across components.
+- Prefer tag-based invalidation over `revalidatePath`. Use path invalidation only when a concrete tag strategy is not viable.
 
 ## DAL Rules
 
@@ -129,6 +135,12 @@
 - Client state standard: `zustand`.
 - Form standard: `react-hook-form` with `zod`.
 - Keep form schemas in the owner layer unless they are truly app-wide primitives.
+
+## Pure Logic Placement
+
+- Do not leave pure helper functions such as formatters, mappers, or summary builders inside component files.
+- Domain-specific pure logic belongs under the owning domain slice, typically in `utils/` or another explicit non-UI folder.
+- Cross-domain reusable pure logic belongs under `shared`.
 
 ## Naming
 
@@ -157,8 +169,8 @@
 
 - Tests are co-located with the code they validate.
 - Preferred examples:
-  - `queries/work/dal/list-work.test.ts`
-  - `mutations/invite/actions/create-invite.test.ts`
+  - `queries/work/dal/listWork.test.ts`
+  - `mutations/invite/actions/createInvite.test.ts`
   - `flows/admin-work/components/AdminWorkPage.test.tsx`
 - Root-level test folders are exceptions, not the default.
 

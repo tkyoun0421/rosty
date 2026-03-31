@@ -1,7 +1,10 @@
 import "server-only";
 
-import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { unstable_cache } from "next/cache";
+
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
+import { cacheTags } from "#shared/config/cacheTags";
+import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
 
 interface ScheduleRoleSlotRow {
   role_code: string;
@@ -16,7 +19,7 @@ interface ScheduleRow {
   schedule_role_slots: ScheduleRoleSlotRow[] | null;
 }
 
-export async function listAdminSchedules(): Promise<AdminScheduleListItem[]> {
+async function runListAdminSchedules(): Promise<AdminScheduleListItem[]> {
   const supabase = getAdminSupabaseClient();
   const { data, error } = await supabase
     .from("schedules")
@@ -41,4 +44,16 @@ export async function listAdminSchedules(): Promise<AdminScheduleListItem[]> {
       })),
     };
   });
+}
+
+const listAdminSchedulesCached = unstable_cache(runListAdminSchedules, ["queries:schedule:listAdminSchedules"], {
+  tags: [cacheTags.schedules.all, cacheTags.schedules.adminList],
+});
+
+export async function listAdminSchedules(): Promise<AdminScheduleListItem[]> {
+  if (process.env.VITEST) {
+    return await runListAdminSchedules();
+  }
+
+  return await listAdminSchedulesCached();
 }

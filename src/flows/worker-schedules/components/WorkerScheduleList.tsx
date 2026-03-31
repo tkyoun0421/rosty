@@ -1,20 +1,14 @@
 import { ApplyToScheduleButton } from "#mutations/application/components/ApplyToScheduleButton";
 import type { RecruitingScheduleListItem } from "#queries/schedule/dal/listRecruitingSchedules";
 
+import { formatScheduleDate, formatScheduleTime } from "../utils/formatSchedule";
+
 export interface WorkerScheduleListItem extends RecruitingScheduleListItem {
   applied: boolean;
 }
 
 interface WorkerScheduleListProps {
   schedules: WorkerScheduleListItem[];
-}
-
-function formatScheduleDate(value: string) {
-  return value.slice(0, 10);
-}
-
-function formatScheduleTime(value: string) {
-  return value.slice(11, 16);
 }
 
 export function WorkerScheduleList({ schedules }: WorkerScheduleListProps) {

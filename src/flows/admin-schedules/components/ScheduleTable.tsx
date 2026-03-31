@@ -1,24 +1,11 @@
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 
+import {
+  formatRoleSlotSummary,
+  formatScheduleDateTime,
+  scheduleStatusLabels,
+} from "../utils/formatSchedule";
 import { ScheduleStatusForm } from "./ScheduleStatusForm";
-
-const scheduleStatusLabels: Record<AdminScheduleListItem["status"], string> = {
-  recruiting: "모집 중",
-  assigning: "배정 중",
-  confirmed: "확정 완료",
-};
-
-function formatScheduleDateTime(value: string) {
-  return new Intl.DateTimeFormat("ko-KR", {
-    dateStyle: "short",
-    timeStyle: "short",
-    timeZone: "Asia/Seoul",
-  }).format(new Date(value));
-}
-
-function formatRoleSlotSummary(schedule: AdminScheduleListItem) {
-  return schedule.roleSlotSummary.map((slot) => `${slot.roleCode} ${slot.headcount}명`).join(", ");
-}
 
 interface ScheduleTableProps {
   schedules: AdminScheduleListItem[];
@@ -27,9 +14,9 @@ interface ScheduleTableProps {
 export function ScheduleTable({ schedules }: ScheduleTableProps) {
   return (
     <section aria-labelledby="saved-schedules">
-      <h2 id="saved-schedules">저장된 스케줄</h2>
+      <h2 id="saved-schedules">등록한 스케줄</h2>
       {schedules.length === 0 ? (
-        <p>아직 저장된 스케줄이 없습니다.</p>
+        <p>아직 등록한 스케줄이 없습니다.</p>
       ) : (
         <table>
           <thead>
@@ -49,10 +36,7 @@ export function ScheduleTable({ schedules }: ScheduleTableProps) {
                 <td>{scheduleStatusLabels[schedule.status]}</td>
                 <td>{formatRoleSlotSummary(schedule)}</td>
                 <td>
-                  <ScheduleStatusForm
-                    scheduleId={schedule.id}
-                    currentStatus={schedule.status}
-                  />
+                  <ScheduleStatusForm scheduleId={schedule.id} currentStatus={schedule.status} />
                 </td>
               </tr>
             ))}

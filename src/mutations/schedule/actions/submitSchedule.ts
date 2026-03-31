@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 import { createSchedule } from "#mutations/schedule/actions/createSchedule";
 import type { ScheduleFormInput } from "#mutations/schedule/schemas/schedule";
+import { cacheTags } from "#shared/config/cacheTags";
 
 function getRoleSlots(formData: FormData): ScheduleFormInput["roleSlots"] {
   const roleCodes = formData.getAll("roleCode").map((value) => String(value ?? ""));
@@ -23,5 +24,7 @@ export async function submitSchedule(formData: FormData) {
     roleSlots: getRoleSlots(formData),
   });
 
-  revalidatePath("/admin/schedules");
+  revalidateTag(cacheTags.schedules.all, "max");
+  revalidateTag(cacheTags.schedules.adminList, "max");
+  revalidateTag(cacheTags.schedules.recruitingList, "max");
 }

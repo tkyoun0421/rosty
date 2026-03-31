@@ -1,10 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 
 import { updateScheduleStatus } from "#mutations/schedule/actions/updateScheduleStatus";
+import { cacheTags } from "#shared/config/cacheTags";
 
 export async function submitScheduleStatus(formData: FormData) {
   await updateScheduleStatus(formData);
-  revalidatePath("/admin/schedules");
+  revalidateTag(cacheTags.schedules.all, "max");
+  revalidateTag(cacheTags.schedules.adminList, "max");
+  revalidateTag(cacheTags.schedules.recruitingList, "max");
 }
