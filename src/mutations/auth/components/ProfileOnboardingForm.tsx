@@ -17,7 +17,7 @@ interface ProfileOnboardingFormProps {
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
     if (error.message === "UNAUTHORIZED") {
-      return "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+      return "로그인이 만료됐습니다. 다시 로그인해 주세요.";
     }
 
     if (error.message === "PROFILE_IMAGE_REQUIRED") {
@@ -91,7 +91,7 @@ export function ProfileOnboardingForm({
         성별
         <select name="gender" defaultValue={gender ?? ""} required>
           <option value="" disabled>
-            선택해 주세요.
+            선택해 주세요
           </option>
           <option value="male">남성</option>
           <option value="female">여성</option>

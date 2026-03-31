@@ -38,9 +38,9 @@
 
 ### Attendance
 
-- [ ] **ATTD-01**: 근무자는 자신의 확정 근무에 대해 위치 기반 출근 체크를 제출할 수 있다.
-- [ ] **ATTD-02**: 시스템은 출근 체크 시점의 위치 정보를 저장해 현장 출근 검증에 활용할 수 있다.
-- [ ] **ATTD-03**: 관리자는 근무자별 출근 상태와 지각 여부를 확인할 수 있다.
+- [x] **ATTD-01**: 근무자는 자신의 확정 근무에 대해 위치 기반 출근 체크를 제출할 수 있다.
+- [x] **ATTD-02**: 시스템은 출근 체크 시점의 위치 정보를 저장해 현장 출근 검증에 활용할 수 있다.
+- [x] **ATTD-03**: 관리자는 근무자별 출근 상태와 지각 여부를 확인할 수 있다.
 
 ### Operations Dashboard
 
@@ -86,9 +86,9 @@
 | PAY-02 | Phase 3 | Complete |
 | PAY-03 | Phase 3 | Complete |
 | PAY-04 | Phase 3 | Complete |
-| ATTD-01 | Phase 4 | Pending |
-| ATTD-02 | Phase 4 | Pending |
-| ATTD-03 | Phase 4 | Pending |
+| ATTD-01 | Phase 4 | Complete |
+| ATTD-02 | Phase 4 | Complete |
+| ATTD-03 | Phase 4 | Complete |
 | DASH-01 | Phase 5 | Pending |
 | DASH-02 | Phase 5 | Pending |
 | DASH-03 | Phase 5 | Pending |
@@ -100,4 +100,4 @@
 
 ---
 *Requirements defined: 2026-03-31*
-*Last updated: 2026-03-31 after Phase 3 completion*
+*Last updated: 2026-03-31 after Phase 4 Plan 03 execution*

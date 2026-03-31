@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const notFound = vi.fn();
 const requireAdminUser = vi.fn();
 const getAdminScheduleAssignmentDetail = vi.fn();
+const getAdminScheduleAttendanceDetail = vi.fn();
 const submitScheduleAssignmentDraft = vi.fn();
 const submitScheduleAssignmentConfirm = vi.fn();
 
@@ -24,6 +25,10 @@ vi.mock("#queries/access/dal/requireAdminUser", () => ({
 
 vi.mock("#queries/assignment/dal/getAdminScheduleAssignmentDetail", () => ({
   getAdminScheduleAssignmentDetail,
+}));
+
+vi.mock("#queries/attendance/dal/getAdminScheduleAttendanceDetail", () => ({
+  getAdminScheduleAttendanceDetail,
 }));
 
 vi.mock("#mutations/assignment/actions/submitScheduleAssignmentDraft", () => ({
@@ -79,6 +84,64 @@ const assignmentDetail = {
   ],
 };
 
+const attendanceDetail = {
+  schedule: {
+    id: "schedule-1",
+    startsAt: "2026-04-10T09:00:00+09:00",
+    endsAt: "2026-04-10T18:00:00+09:00",
+    opensAt: "2026-04-10T07:10:00+09:00",
+  },
+  summary: {
+    confirmedWorkerCount: 4,
+    checkedInCount: 1,
+    lateCount: 1,
+    notCheckedInCount: 1,
+    notOpenYetCount: 1,
+  },
+  workers: [
+    {
+      scheduleAssignmentId: "assignment-1",
+      workerUserId: "worker-1",
+      workerName: "Kim Hana",
+      roleSlotId: "slot-1",
+      roleCode: "captain",
+      status: "checked_in" as const,
+      checkedInAt: "2026-04-10T08:20:00+09:00",
+      isLate: false,
+    },
+    {
+      scheduleAssignmentId: "assignment-2",
+      workerUserId: "worker-2",
+      workerName: "Lee Min",
+      roleSlotId: "slot-2",
+      roleCode: "service",
+      status: "late" as const,
+      checkedInAt: "2026-04-10T09:05:00+09:00",
+      isLate: true,
+    },
+    {
+      scheduleAssignmentId: "assignment-3",
+      workerUserId: "worker-3",
+      workerName: "Park Jun",
+      roleSlotId: "slot-3",
+      roleCode: "setup",
+      status: "not_checked_in" as const,
+      checkedInAt: null,
+      isLate: false,
+    },
+    {
+      scheduleAssignmentId: "assignment-4",
+      workerUserId: "worker-4",
+      workerName: "Choi Ara",
+      roleSlotId: "slot-4",
+      roleCode: "guide",
+      status: "not_open_yet" as const,
+      checkedInAt: null,
+      isLate: false,
+    },
+  ],
+};
+
 describe("AdminScheduleAssignmentPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -88,23 +151,41 @@ describe("AdminScheduleAssignmentPage", () => {
       role: "admin",
     });
     getAdminScheduleAssignmentDetail.mockResolvedValue(assignmentDetail);
+    getAdminScheduleAttendanceDetail.mockResolvedValue(attendanceDetail);
     submitScheduleAssignmentDraft.mockResolvedValue(undefined);
     submitScheduleAssignmentConfirm.mockResolvedValue(undefined);
   });
 
-  it("renders the summary, applicant controls, and sticky actions in the required order", async () => {
+  it("renders attendance review before applicant controls inside the existing schedule detail flow", async () => {
     const { AdminScheduleAssignmentPage } =
       await import("#flows/admin-schedule-assignment/components/AdminScheduleAssignmentPage");
 
     render(await AdminScheduleAssignmentPage({ scheduleId: "schedule-1" }));
 
-    const summary = screen.getByRole("heading", { name: "Assignment summary" });
+    const attendance = screen.getByRole("heading", { name: "Attendance review" });
     const applicants = screen.getByRole("heading", { name: "Applicant assignment controls" });
     const actions = screen.getByRole("heading", { name: "Assignment actions" });
 
-    expect(summary.compareDocumentPosition(applicants)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(attendance.compareDocumentPosition(applicants)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(applicants.compareDocumentPosition(actions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(getAdminScheduleAssignmentDetail).toHaveBeenCalledWith("schedule-1");
+    expect(getAdminScheduleAttendanceDetail).toHaveBeenCalledWith("schedule-1");
+    expect(screen.getByText("1 checked in")).toBeInTheDocument();
+    expect(screen.getByText("1 late")).toBeInTheDocument();
+  });
+
+  it("shows the approved admin attendance status labels", async () => {
+    const { AdminScheduleAssignmentPage } =
+      await import("#flows/admin-schedule-assignment/components/AdminScheduleAssignmentPage");
+
+    render(await AdminScheduleAssignmentPage({ scheduleId: "schedule-1" }));
+
+    expect(screen.getByText("Checked in")).toBeInTheDocument();
+    expect(screen.getByText("Late")).toBeInTheDocument();
+    expect(screen.getByText("Not checked in")).toBeInTheDocument();
+    expect(screen.getByText("Not open yet")).toBeInTheDocument();
+    expect(screen.getAllByText("Kim Hana").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("captain").length).toBeGreaterThan(0);
   });
 
   it("saves a draft in place and shows inline feedback without leaving the page", async () => {

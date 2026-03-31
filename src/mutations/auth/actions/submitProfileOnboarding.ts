@@ -1,16 +1,13 @@
 "use server";
 
-import {
-  bootstrapFirstAdmin,
-  getIdentityAvatarUrl,
-  getProfileByUserId,
-  uploadProfileImage,
-  upsertProfile,
-} from "#mutations/auth/dal/authDal";
+import { revalidateTag } from "next/cache";
+
+import { getIdentityAvatarUrl } from "#mutations/auth/dal/authDal";
 import {
   parseProfileImageFile,
   parseProfileOnboardingForm,
 } from "#mutations/auth/schemas/profileOnboarding";
+import { cacheTags } from "#shared/config/cacheTags";
 import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 export async function submitProfileOnboarding(formData: FormData) {
@@ -24,24 +21,56 @@ export async function submitProfileOnboarding(formData: FormData) {
   }
 
   const parsed = parseProfileOnboardingForm(formData);
-  const existingProfile = await getProfileByUserId(user.id);
-  const fallbackAvatarUrl = existingProfile?.avatarUrl ?? getIdentityAvatarUrl(user);
+  const { data: existingProfile, error: existingProfileError } = await supabase
+    .from("profiles")
+    .select("avatar_url")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (existingProfileError) {
+    throw existingProfileError;
+  }
+
+  const fallbackAvatarUrl = existingProfile?.avatar_url ?? getIdentityAvatarUrl(user);
   const imageFile = parseProfileImageFile(formData);
-  const avatarUrl = imageFile ? await uploadProfileImage({ userId: user.id, file: imageFile }) : fallbackAvatarUrl;
+  let avatarUrl = fallbackAvatarUrl;
+
+  if (imageFile) {
+    const fileExtension = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+    const filePath = `${user.id}/${Date.now()}.${fileExtension}`;
+    const arrayBuffer = await imageFile.arrayBuffer();
+    const { error: uploadError } = await supabase.storage
+      .from("profile-images")
+      .upload(filePath, Buffer.from(arrayBuffer), {
+        contentType: imageFile.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    avatarUrl = supabase.storage.from("profile-images").getPublicUrl(filePath).data.publicUrl;
+  }
 
   if (!avatarUrl) {
     throw new Error("PROFILE_IMAGE_REQUIRED");
   }
 
-  await upsertProfile({
-    userId: user.id,
+  const { error: upsertError } = await supabase.from("profiles").upsert({
+    id: user.id,
     email: user.email,
-    fullName: parsed.fullName,
+    full_name: parsed.fullName,
     gender: parsed.gender,
-    birthDate: parsed.birthDate,
-    avatarUrl,
+    birth_date: parsed.birthDate,
+    avatar_url: avatarUrl,
   });
-  await bootstrapFirstAdmin(user.id);
+
+  if (upsertError) {
+    throw upsertError;
+  }
+
+  revalidateTag(cacheTags.profile.onboarding(user.id), "max");
 
   return { success: true as const };
 }

@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 
 import { ApplicantAssignmentPanel } from "#flows/admin-schedule-assignment/components/ApplicantAssignmentPanel";
+import { AttendanceReviewPanel } from "#flows/admin-schedule-assignment/components/AttendanceReviewPanel";
 import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
 import { getAdminScheduleAssignmentDetail } from "#queries/assignment/dal/getAdminScheduleAssignmentDetail";
+import { getAdminScheduleAttendanceDetail } from "#queries/attendance/dal/getAdminScheduleAttendanceDetail";
 
 interface AdminScheduleAssignmentPageProps {
   scheduleId: string;
@@ -17,9 +19,12 @@ export async function AdminScheduleAssignmentPage({
     return <main>Admin access required.</main>;
   }
 
-  const detail = await getAdminScheduleAssignmentDetail(scheduleId);
+  const [assignmentDetail, attendanceDetail] = await Promise.all([
+    getAdminScheduleAssignmentDetail(scheduleId),
+    getAdminScheduleAttendanceDetail(scheduleId),
+  ]);
 
-  if (!detail) {
+  if (!assignmentDetail || !attendanceDetail) {
     notFound();
   }
 
@@ -31,7 +36,10 @@ export async function AdminScheduleAssignmentPage({
         padding: "32px",
       }}
     >
-      <ApplicantAssignmentPanel detail={detail} />
+      <div style={{ display: "grid", gap: "32px" }}>
+        <AttendanceReviewPanel detail={attendanceDetail} />
+        <ApplicantAssignmentPanel detail={assignmentDetail} />
+      </div>
     </main>
   );
 }

@@ -1,7 +1,8 @@
+import { AttendanceCheckInCard } from "#mutations/attendance/components/AttendanceCheckInCard";
 import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
 import { listConfirmedWorkerAssignments } from "#queries/assignment/dal/listConfirmedWorkerAssignments";
+import { listWorkerAttendanceStatuses } from "#queries/attendance/dal/listWorkerAttendanceStatuses";
 
-import { ConfirmedAssignmentList } from "#flows/worker-assignment-preview/components/ConfirmedAssignmentList";
 import { PayPreviewTotalCard } from "#flows/worker-assignment-preview/components/PayPreviewTotalCard";
 
 export async function WorkerAssignmentPreviewPage() {
@@ -11,7 +12,13 @@ export async function WorkerAssignmentPreviewPage() {
     return <main>Worker access required.</main>;
   }
 
-  const assignments = await listConfirmedWorkerAssignments(currentUser.id);
+  const [assignments, attendanceStatuses] = await Promise.all([
+    listConfirmedWorkerAssignments(currentUser.id),
+    listWorkerAttendanceStatuses(currentUser.id),
+  ]);
+  const attendanceStatusByAssignmentId = new Map(
+    attendanceStatuses.map((attendanceStatus) => [attendanceStatus.assignmentId, attendanceStatus]),
+  );
   const totalPayCents = assignments.reduce((sum, assignment) => sum + assignment.totalPayCents, 0);
   const totalRegularHours = assignments.reduce((sum, assignment) => sum + assignment.regularHours, 0);
   const totalOvertimeHours = assignments.reduce((sum, assignment) => sum + assignment.overtimeHours, 0);
@@ -39,7 +46,38 @@ export async function WorkerAssignmentPreviewPage() {
           </p>
         </section>
       ) : (
-        <ConfirmedAssignmentList assignments={assignments} />
+        <section aria-label="Confirmed assignments">
+          <h2>Confirmed assignments</h2>
+          <ul>
+            {assignments.map((assignment) => {
+              const attendanceStatus = attendanceStatusByAssignmentId.get(assignment.assignmentId);
+
+              if (!attendanceStatus) {
+                return null;
+              }
+
+              return (
+                <li key={assignment.assignmentId}>
+                  <article>
+                    <h3>{assignment.roleCode}</h3>
+                    <p>
+                      Date/time: {assignment.startsAt.slice(0, 10)} {assignment.startsAt.slice(11, 16)} -{" "}
+                      {assignment.endsAt.slice(11, 16)}
+                    </p>
+                    <p>Role: {assignment.roleCode}</p>
+                    <p>Hourly rate: {assignment.hourlyRateCents.toLocaleString()} KRW</p>
+                    <p>Overtime applied: {assignment.overtimeApplied ? "Yes" : "No"}</p>
+                    <AttendanceCheckInCard
+                      assignmentId={assignment.assignmentId}
+                      roleCode={assignment.roleCode}
+                      attendanceStatus={attendanceStatus}
+                    />
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       )}
     </main>
   );

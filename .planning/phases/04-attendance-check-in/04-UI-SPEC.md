@@ -1,10 +1,11 @@
 ---
 phase: 04
 slug: attendance-check-in
-status: draft
+status: approved
 shadcn_initialized: true
 preset: b5J5C8tpo
 created: 2026-03-31
+reviewed_at: 2026-03-31
 ---
 
 # Phase 04 - UI Design Contract
@@ -27,6 +28,10 @@ Attendance check-in must preserve the existing split between worker and admin fl
 - Worker check-in extends the confirmed assignment experience, not a separate discovery page.
 - Admin attendance review extends the schedule detail experience, not a dashboard.
 - Use official shadcn primitives only for this phase. No third-party registries are allowed.
+
+Visual priority contract:
+- Worker screen: check-in status or availability headline first, primary `Check in now` CTA second, location/helper detail third.
+- Admin screen: attendance headline metric or summary first, worker attendance list/table second, secondary metadata after that.
 
 ---
 
@@ -117,4 +122,4 @@ Additional copy rules:
 - [ ] Dimension 5 Spacing: PASS
 - [ ] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved
