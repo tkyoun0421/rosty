@@ -4,10 +4,12 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | undefined;
-const browserEnvKeys = ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY"] as const;
 
 function getRequiredEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE_ANON_KEY") {
-  const value = process.env[name];
+  const value =
+    name === "NEXT_PUBLIC_SUPABASE_URL"
+      ? process.env.NEXT_PUBLIC_SUPABASE_URL
+      : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!value) {
     throw new Error(`Missing required Supabase env: ${name}`);
@@ -32,5 +34,5 @@ export function getBrowserSupabaseClient() {
 }
 
 export function hasBrowserSupabaseEnv() {
-  return browserEnvKeys.every((name) => Boolean(process.env[name]));
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
