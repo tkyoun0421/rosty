@@ -19,8 +19,8 @@
 
 ### Applications
 
-- [ ] **APPL-01**: 근무자는 모집 중인 근무 스케줄 목록을 확인할 수 있다.
-- [ ] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
+- [x] **APPL-01**: 근무자는 모집 중인 근무 스케줄 목록을 확인할 수 있다.
+- [x] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
 - [ ] **APPL-03**: 관리자는 각 근무 스케줄에 대한 신청자 목록과 신청 상태를 확인할 수 있다.
 
 ### Assignment
@@ -76,8 +76,8 @@
 | SCHD-01 | Phase 2 | Complete |
 | SCHD-02 | Phase 2 | Complete |
 | SCHD-03 | Phase 2 | Complete |
-| APPL-01 | Phase 2 | Pending |
-| APPL-02 | Phase 2 | Pending |
+| APPL-01 | Phase 2 | Complete |
+| APPL-02 | Phase 2 | Complete |
 | APPL-03 | Phase 3 | Pending |
 | ASGN-01 | Phase 3 | Pending |
 | ASGN-02 | Phase 3 | Pending |

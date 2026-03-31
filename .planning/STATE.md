@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-31T06:28:49.690Z"
+status: verifying
+stopped_at: Completed 02-03-PLAN.md
+last_updated: "2026-03-31T06:42:00.075Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
-  percent: 20
+  completed_plans: 7
+  percent: 40
 ---
 
 # Project State
@@ -20,17 +20,17 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-03-31)
 
-**Core value:** 관리자가 웨딩홀 근무를 빠르게 확정하고 근무자는 자신의 확정 근무, 역할, 예상 급여를 신뢰할 수 있게 확인할 수 있어야 한다.
-**Current focus:** Phase 02 — schedule-publishing
+**Core value:** 관리자가 ?�딩?� 근무�?빠르�??�정?�고 근무?�는 ?�신???�정 근무, ??��, ?�상 급여�??�뢰?????�게 ?�인?????�어???�다.
+**Current focus:** Phase 02 ??schedule-publishing
 
 ## Current Position
 
-Phase: 02 (schedule-publishing) — EXECUTING
+Phase: 02 (schedule-publishing) ??EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete ??ready for verification
 Last activity: 2026-03-31
 
-Progress: [####-] 20%
+Progress: [####------] 40%
 
 ## Performance Metrics
 
@@ -46,12 +46,13 @@ Progress: [####-] 20%
 | 1. Access Foundation | 4 | complete | - |
 | Phase 02 P01 | 5 min | 3 tasks | 14 files |
 | Phase 02 P02 | 6min | 3 tasks | 8 files |
+| Phase 02 P03 | 12min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
 ### Decisions
 
-- Start as a single-venue internal tool for 라비에벨 웨딩홀.
+- Start as a single-venue internal tool for ?�비?�벨 ?�딩?�.
 - Use one account system with role-based permissions.
 - Phase 1: invite acceptance uses token possession without email-match enforcement.
 - Phase 1: first admin is manually bootstrapped.
@@ -61,27 +62,30 @@ Progress: [####-] 20%
 - Phase 2: workers apply to the schedule as a whole, not a specific role slot.
 - Phase 2: schedule creation defaults to `recruiting`, then admins manage later transitions.
 - Phase 2: worker recruitment listing stays lightweight.
-- [Phase 02]: Normalize admin date and time input into +09:00 schedule timestamps before persistence. — The admin UI collects separate venue-local date and time fields, so the mutation layer now combines them into explicit timestamps before writing the schedule record.
-- [Phase 02]: Use a DB-backed requireAdminUser guard for privileged schedule writes instead of metadata fallbacks. — Schedule creation now checks auth.getUser() and confirms admin role from user_roles before any privileged write proceeds.
+- [Phase 02]: Normalize admin date and time input into +09:00 schedule timestamps before persistence. ??The admin UI collects separate venue-local date and time fields, so the mutation layer now combines them into explicit timestamps before writing the schedule record.
+- [Phase 02]: Use a DB-backed requireAdminUser guard for privileged schedule writes instead of metadata fallbacks. ??Schedule creation now checks auth.getUser() and confirms admin role from user_roles before any privileged write proceeds.
 - [Phase 02]: Treat the admin list contract as a dedicated publishing DTO with only schedule window, status, and role-slot summary.
 - [Phase 02]: Keep status enforcement intentionally light by rejecting invalid enum inputs and no-op transitions only.
 - [Phase 02]: Bind per-row status changes directly to the server action instead of adding a separate workflow layer.
+- [Phase 02]: Keep the worker recruiting DTO local to the worker query slice instead of reusing admin list types.
+- [Phase 02]: Use getServerSupabaseClient() for worker reads and writes so RLS remains the safety boundary.
+- [Phase 02]: Translate unique insert conflicts into a stable already_applied mutation result instead of surfacing raw database errors.
 
 ### Pending Todos
 
-- Create Phase 2 plans.
-- Reconcile any stale phase-plan references that still use old examples.
+- Prepare Phase 2 verification and Phase 3 planning.
 
 ### Blockers/Concerns
 
 - Some older planning artifacts were previously saved with broken encoding and may still need spot cleanup if referenced later.
-- Phase 2 cannot execute until plan files are created.
 
 ## Session Continuity
 
-Last session: 2026-03-31T06:28:49.685Z
-Stopped at: Completed 02-02-PLAN.md
+Last session: 2026-03-31T06:42:00.070Z
+Stopped at: Completed 02-03-PLAN.md
 Resume file: None
 
 ---
 *State refreshed: 2026-03-31*
+
+
