@@ -15,7 +15,7 @@
 
 - [x] **SCHD-01**: 관리자는 근무일의 날짜, 시작 시각, 종료 시각을 포함한 근무 스케줄을 생성할 수 있다.
 - [x] **SCHD-02**: 관리자는 근무 스케줄별로 필요한 역할과 모집 인원을 설정할 수 있다.
-- [ ] **SCHD-03**: 관리자는 모집 중, 배정 중, 확정 완료 등 근무 스케줄 상태를 관리할 수 있다.
+- [x] **SCHD-03**: 관리자는 모집 중, 배정 중, 확정 완료 등 근무 스케줄 상태를 관리할 수 있다.
 
 ### Applications
 
@@ -75,7 +75,7 @@
 | AUTH-03 | Phase 1 | Complete |
 | SCHD-01 | Phase 2 | Complete |
 | SCHD-02 | Phase 2 | Complete |
-| SCHD-03 | Phase 2 | Pending |
+| SCHD-03 | Phase 2 | Complete |
 | APPL-01 | Phase 2 | Pending |
 | APPL-02 | Phase 2 | Pending |
 | APPL-03 | Phase 3 | Pending |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-31T06:18:21.052Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-31T06:28:49.690Z"
 last_activity: 2026-03-31
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 6
   percent: 20
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-31)
 ## Current Position
 
 Phase: 02 (schedule-publishing) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-31
 
@@ -45,6 +45,7 @@ Progress: [####-] 20%
 |-------|-------|-------|----------|
 | 1. Access Foundation | 4 | complete | - |
 | Phase 02 P01 | 5 min | 3 tasks | 14 files |
+| Phase 02 P02 | 6min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,9 @@ Progress: [####-] 20%
 - Phase 2: worker recruitment listing stays lightweight.
 - [Phase 02]: Normalize admin date and time input into +09:00 schedule timestamps before persistence. — The admin UI collects separate venue-local date and time fields, so the mutation layer now combines them into explicit timestamps before writing the schedule record.
 - [Phase 02]: Use a DB-backed requireAdminUser guard for privileged schedule writes instead of metadata fallbacks. — Schedule creation now checks auth.getUser() and confirms admin role from user_roles before any privileged write proceeds.
+- [Phase 02]: Treat the admin list contract as a dedicated publishing DTO with only schedule window, status, and role-slot summary.
+- [Phase 02]: Keep status enforcement intentionally light by rejecting invalid enum inputs and no-op transitions only.
+- [Phase 02]: Bind per-row status changes directly to the server action instead of adding a separate workflow layer.
 
 ### Pending Todos
 
@@ -75,8 +79,8 @@ Progress: [####-] 20%
 
 ## Session Continuity
 
-Last session: 2026-03-31T06:18:04.075Z
-Stopped at: Completed 02-01-PLAN.md
+Last session: 2026-03-31T06:28:49.685Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
 
 ---
