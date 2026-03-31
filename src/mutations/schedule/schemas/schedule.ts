@@ -1,14 +1,41 @@
 import { z } from "zod";
 
-export const scheduleRoleSlotSchema = z.object({
-  roleCode: z.string(),
-  headcount: z.number(),
+const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+function toScheduleDateTime(date: string, time: string) {
+  return `${date}T${time}:00+09:00`;
+}
+
+const scheduleRoleSlotSchema = z.object({
+  roleCode: z.string().trim().min(1),
+  headcount: z.coerce.number().int().positive(),
 });
 
-export const scheduleSchema = z.object({
-  startsAt: z.string(),
-  endsAt: z.string(),
-  roleSlots: z.array(scheduleRoleSlotSchema),
-});
+const scheduleFormSchema = z
+  .object({
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    startTime: z.string().regex(timePattern),
+    endTime: z.string().regex(timePattern),
+    roleSlots: z.array(scheduleRoleSlotSchema).min(1),
+  })
+  .superRefine((value, ctx) => {
+    if (value.endTime <= value.startTime) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["endTime"],
+        message: "End time must be after start time.",
+      });
+    }
+  });
 
-export type ScheduleInput = z.infer<typeof scheduleSchema>;
+export const scheduleSchema = scheduleFormSchema.transform(({ date, startTime, endTime, roleSlots }) => ({
+  startsAt: toScheduleDateTime(date, startTime),
+  endsAt: toScheduleDateTime(date, endTime),
+  roleSlots: roleSlots.map((slot) => ({
+    roleCode: slot.roleCode.trim(),
+    headcount: slot.headcount,
+  })),
+}));
+
+export type ScheduleFormInput = z.input<typeof scheduleSchema>;
+export type ScheduleInput = z.output<typeof scheduleSchema>;
