@@ -29,9 +29,10 @@
 
 **`mutations`:**
 - Purpose: own write commands.
-- Scope: server actions, mutation DAL, submit logic, write hooks, and write schemas.
-- Contains: `actions`, `dal`, `hooks`, `schemas`.
+- Scope: server actions, mutation DAL, submit logic, write hooks, write schemas, and mutation-scoped trigger UI.
+- Contains: `components`, `actions`, `dal`, `hooks`, `schemas`.
 - Rule: server actions live only here.
+- Rule: small domain UI that directly wraps one mutation may live here, while route composition stays in `flows`.
 
 **`queries`:**
 - Purpose: own read models.

@@ -1,4 +1,4 @@
-import { GoogleSignInButton } from "#flows/auth-shell/components/GoogleSignInButton";
+import { GoogleSignInButton } from "#mutations/auth/components/GoogleSignInButton";
 
 export function SignInPage() {
   return (

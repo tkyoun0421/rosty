@@ -35,6 +35,7 @@ rosty/
 **`src/flows/`:**
 - Purpose: own page and user-flow composition.
 - Expected substructure per flow: `components/`, `hooks/`, `types/`.
+- Expected substructure per mutation slice may also include `components/` when the UI is tightly coupled to a single write action.
 - Rule: one route maps to one flow entry.
 
 **`src/mutations/`:**

@@ -82,10 +82,16 @@
 - `types/`
 
 **`mutations/{domain}` commonly contains:**
+- `components/`
 - `actions/`
 - `dal/`
 - `hooks/`
 - `schemas/`
+
+**Mutation-scoped UI:**
+- UI that exists mainly to trigger or wrap a single domain mutation may live under `mutations/{domain}/components`.
+- Use this for small domain-specific trigger components such as auth buttons or submit controls tied to one mutation slice.
+- Keep route composition and page-level layout in `flows`.
 
 **`queries/{domain}` commonly contains:**
 - `dal/`

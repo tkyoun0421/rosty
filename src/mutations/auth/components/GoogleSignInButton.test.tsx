@@ -9,7 +9,7 @@ vi.mock("#mutations/auth/actions/startGoogleSignIn", () => ({
 
 describe("GoogleSignInButton", () => {
   it("starts google sign-in on click", async () => {
-    const { GoogleSignInButton } = await import("#flows/auth-shell/components/GoogleSignInButton");
+    const { GoogleSignInButton } = await import("#mutations/auth/components/GoogleSignInButton");
 
     render(<GoogleSignInButton label="Google로 계속" inviteToken="invite-token" />);
     fireEvent.click(screen.getByRole("button", { name: "Google로 계속" }));
