@@ -4,8 +4,8 @@ import {
   formatRoleSlotSummary,
   formatScheduleDateTime,
   scheduleStatusLabels,
-} from "../utils/formatSchedule";
-import { ScheduleStatusForm } from "./ScheduleStatusForm";
+} from "#flows/admin-schedules/utils/formatSchedule";
+import { ScheduleStatusForm } from "#flows/admin-schedules/components/ScheduleStatusForm";
 
 interface ScheduleTableProps {
   schedules: AdminScheduleListItem[];

@@ -1,8 +1,8 @@
-﻿import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
+import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
 import { listAdminSchedules } from "#queries/schedule/dal/listAdminSchedules";
 
-import { CreateScheduleForm } from "./CreateScheduleForm";
-import { ScheduleTable } from "./ScheduleTable";
+import { CreateScheduleForm } from "#flows/admin-schedules/components/CreateScheduleForm";
+import { ScheduleTable } from "#flows/admin-schedules/components/ScheduleTable";
 
 export async function AdminSchedulesPage() {
   try {

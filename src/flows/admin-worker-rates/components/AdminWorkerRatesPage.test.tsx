@@ -1,11 +1,11 @@
-﻿import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 
-const getCurrentUser = vi.fn();
+const requireAdminUser = vi.fn();
 const listWorkerRates = vi.fn();
 
-vi.mock("#queries/access/dal/getCurrentUser", () => ({
-  getCurrentUser,
+vi.mock("#queries/access/dal/requireAdminUser", () => ({
+  requireAdminUser,
 }));
 
 vi.mock("#queries/worker-rate/dal/listWorkerRates", () => ({
@@ -14,7 +14,7 @@ vi.mock("#queries/worker-rate/dal/listWorkerRates", () => ({
 
 describe("AdminWorkerRatesPage", () => {
   it("shows current worker rates to admins", async () => {
-    getCurrentUser.mockResolvedValue({ id: "admin-1", email: "admin@example.com", role: "admin" });
+    requireAdminUser.mockResolvedValue({ id: "admin-1", email: "admin@example.com", role: "admin" });
     listWorkerRates.mockResolvedValue([
       {
         userId: "worker-1",
@@ -32,4 +32,3 @@ describe("AdminWorkerRatesPage", () => {
     expect(screen.queryByText("이력")).not.toBeInTheDocument();
   });
 });
-

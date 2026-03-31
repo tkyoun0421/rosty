@@ -2,7 +2,7 @@ import { listMyScheduleApplicationIds } from "#queries/application/dal/listMySch
 import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
 import { listRecruitingSchedules } from "#queries/schedule/dal/listRecruitingSchedules";
 
-import { WorkerScheduleList } from "./WorkerScheduleList";
+import { WorkerScheduleList } from "#flows/worker-schedules/components/WorkerScheduleList";
 
 export async function WorkerSchedulesPage() {
   const currentUser = await getCurrentUser();

@@ -157,13 +157,14 @@
   - `#mutations/*`
   - `#queries/*`
   - `#shared/*`
+- Relative import paths are forbidden.
+- Use absolute `#` alias imports even for files in the same slice.
 - Prefer direct file imports.
 - Barrel files are forbidden.
 - Import order:
   1. Node built-ins
   2. Third-party packages
   3. Internal `#` aliases
-  4. Relative imports when truly local
 
 ## Testing
 

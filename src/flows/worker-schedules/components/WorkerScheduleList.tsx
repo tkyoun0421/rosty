@@ -1,7 +1,7 @@
 import { ApplyToScheduleButton } from "#mutations/application/components/ApplyToScheduleButton";
 import type { RecruitingScheduleListItem } from "#queries/schedule/dal/listRecruitingSchedules";
 
-import { formatScheduleDate, formatScheduleTime } from "../utils/formatSchedule";
+import { formatScheduleDate, formatScheduleTime } from "#flows/worker-schedules/utils/formatSchedule";
 
 export interface WorkerScheduleListItem extends RecruitingScheduleListItem {
   applied: boolean;
