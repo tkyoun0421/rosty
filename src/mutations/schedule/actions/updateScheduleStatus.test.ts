@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const requireAdminUser = vi.fn();
 const updateScheduleRecordStatus = vi.fn();
@@ -17,6 +17,10 @@ vi.mock("next/cache", () => ({
 }));
 
 describe("updateScheduleStatus", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("lets admins set recruiting, assigning, or confirmed on an existing schedule", async () => {
     requireAdminUser.mockResolvedValue({ id: "admin-1", email: "admin@example.com", role: "admin" });
     updateScheduleRecordStatus.mockResolvedValue({
