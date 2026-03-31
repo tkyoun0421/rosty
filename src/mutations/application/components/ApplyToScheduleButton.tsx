@@ -7,13 +7,13 @@ interface ApplyToScheduleButtonProps {
 
 export function ApplyToScheduleButton({ scheduleId, applied }: ApplyToScheduleButtonProps) {
   if (applied) {
-    return <span>½ÅÃ» ¿Ï·á</span>;
+    return <span>ì‹ ì²­ ì™„ë£Œ</span>;
   }
 
   return (
     <form action={submitScheduleApplication}>
       <input type="hidden" name="scheduleId" value={scheduleId} />
-      <button type="submit">½ÅÃ»ÇÏ±â</button>
+      <button type="submit">ì‹ ì²­í•˜ê¸°</button>
     </form>
   );
 }

@@ -44,10 +44,10 @@ describe("WorkerSchedulesPage", () => {
     render(await WorkerSchedulesPage());
 
     expect(listMyScheduleApplicationIds).toHaveBeenCalledWith("worker-1");
-    expect(screen.getByRole("heading", { name: "¸ğÁı ÁßÀÎ ½ºÄÉÁÙ" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "ëª¨ì§‘ ì¤‘ì¸ ìŠ¤ì¼€ì¤„" })).toBeInTheDocument();
     expect(screen.getByText("2026-04-10")).toBeInTheDocument();
     expect(screen.getByText("09:00 - 13:00")).toBeInTheDocument();
-    expect(screen.getByText("¸ğÁı Áß")).toBeInTheDocument();
+    expect(screen.getByText("ëª¨ì§‘ ì¤‘")).toBeInTheDocument();
     expect(screen.getByText("apply:schedule-1")).toBeInTheDocument();
   });
 

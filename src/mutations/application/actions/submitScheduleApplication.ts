@@ -10,13 +10,11 @@ const submitScheduleApplicationSchema = z.object({
 });
 
 export async function submitScheduleApplication(formData: FormData) {
-  const result = await createScheduleApplication(
+  await createScheduleApplication(
     submitScheduleApplicationSchema.parse({
       scheduleId: String(formData.get("scheduleId") ?? ""),
     }),
   );
 
   revalidatePath("/worker/schedules");
-
-  return result;
 }

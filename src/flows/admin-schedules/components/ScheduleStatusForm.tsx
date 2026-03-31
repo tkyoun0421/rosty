@@ -1,4 +1,4 @@
-import { updateScheduleStatus } from "#mutations/schedule/actions/updateScheduleStatus";
+import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
 
 const scheduleStatuses: AdminScheduleListItem["status"][] = ["recruiting", "assigning", "confirmed"];
@@ -18,7 +18,7 @@ export function ScheduleStatusForm({ scheduleId, currentStatus }: ScheduleStatus
   const nextStatuses = scheduleStatuses.filter((status) => status !== currentStatus);
 
   return (
-    <form action={updateScheduleStatus}>
+    <form action={submitScheduleStatus}>
       <input type="hidden" name="scheduleId" value={scheduleId} />
       <label>
         <span className="sr-only">다음 상태</span>

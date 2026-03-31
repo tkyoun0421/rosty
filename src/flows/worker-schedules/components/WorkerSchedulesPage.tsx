@@ -8,7 +8,7 @@ export async function WorkerSchedulesPage() {
   const currentUser = await getCurrentUser();
 
   if (!currentUser || currentUser.role !== "worker") {
-    return <main>±Ù¹«ÀÚ ±ÇÇÑÀÌ ÇÊ¿äÇÕ´Ï´Ù.</main>;
+    return <main>ê·¼ë¬´ì ê¶Œí•œì´ í•„ìš”í•©ë‹ˆë‹¤.</main>;
   }
 
   const [schedules, applicationIds] = await Promise.all([
@@ -19,8 +19,8 @@ export async function WorkerSchedulesPage() {
 
   return (
     <main>
-      <h1>¸ğÁı ÁßÀÎ ½ºÄÉÁÙ</h1>
-      <p>³¯Â¥¿Í ½Ã°£À» È®ÀÎÇÏ°í ¹Ù·Î ½ÅÃ»ÇÒ ¼ö ÀÖ½À´Ï´Ù.</p>
+      <h1>ëª¨ì§‘ ì¤‘ì¸ ìŠ¤ì¼€ì¤„</h1>
+      <p>ë‚ ì§œì™€ ì‹œê°„ì„ í™•ì¸í•˜ê³  ë°”ë¡œ ì‹ ì²­í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.</p>
       <WorkerScheduleList
         schedules={schedules.map((schedule) => ({
           ...schedule,

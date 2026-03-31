@@ -19,12 +19,12 @@ function formatScheduleTime(value: string) {
 
 export function WorkerScheduleList({ schedules }: WorkerScheduleListProps) {
   if (schedules.length === 0) {
-    return <p>ÇöÀç ½ÅÃ» °¡´ÉÇÑ ½ºÄÉÁÙÀÌ ¾ø½À´Ï´Ù.</p>;
+    return <p>í˜„ì¬ ì‹ ì²­ ê°€ëŠ¥í•œ ìŠ¤ì¼€ì¤„ì´ ì—†ìŠµë‹ˆë‹¤.</p>;
   }
 
   return (
     <section aria-labelledby="worker-schedule-list">
-      <h2 id="worker-schedule-list">¸ñ·Ï</h2>
+      <h2 id="worker-schedule-list">ëª©ë¡</h2>
       <ul>
         {schedules.map((schedule) => (
           <li key={schedule.id}>
@@ -32,7 +32,7 @@ export function WorkerScheduleList({ schedules }: WorkerScheduleListProps) {
             <p>
               {formatScheduleTime(schedule.startsAt)} - {formatScheduleTime(schedule.endsAt)}
             </p>
-            <p>¸ğÁı Áß</p>
+            <p>ëª¨ì§‘ ì¤‘</p>
             <ApplyToScheduleButton scheduleId={schedule.id} applied={schedule.applied} />
           </li>
         ))}
