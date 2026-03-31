@@ -1,451 +1,376 @@
 # Phase 1: Access Foundation - Research
 
 **Researched:** 2026-03-31
-**Domain:** Next.js 16 + Supabase Auth access control foundation
-**Confidence:** MEDIUM-HIGH
+**Domain:** Next.js internal-tool authentication, invite-gated onboarding, RBAC, and worker compensation foundation
+**Confidence:** HIGH
 
 ## User Constraints
 
-No phase-specific `*-CONTEXT.md` exists yet. Treat these as binding inputs from `REQUIREMENTS.md`, `ROADMAP.md`, `STATE.md`, and the user prompt:
-
-### Locked Decisions
-- Single-venue internal tool for 라비에벨 웨딩홀.
-- One account system with role-based permissions.
-- Google login is required.
-- Access must be invite-gated for internal staff only.
-- Phase 1 must satisfy `AUTH-01`, `AUTH-02`, `AUTH-03`, and `PAY-01`.
-- Existing app code is not trustworthy and should not constrain planning.
-- Payroll scope in v1 is pay preview only, not actual payroll processing.
-
-### Claude's Discretion
-- Exact invite enforcement mechanism.
-- Exact RBAC data model and RLS pattern.
-- Exact hourly-rate schema as long as it supports admin create/update now and safe pay logic later.
-- Exact App Router structure and implementation sequence across the 3 phase plans.
-
-### Deferred Ideas (OUT OF SCOPE)
-- Multi-venue support.
-- Separate admin and worker account systems.
-- Real payroll settlement and payout.
+- Fresh implementation. Existing app code is not reliable architecture.
+- Modern Next.js web app.
+- Invite-gated onboarding.
+- Google login.
+- Single account model with role-based access control for admin vs worker.
+- Admin-managed worker hourly rates.
+- Internal tool for a single wedding hall operation.
+- From requirements and state:
+  - `AUTH-01`: admin can create worker accounts or issue invite links.
+  - `AUTH-02`: users sign up and log in with Google.
+  - `AUTH-03`: access differs for admin vs worker.
+  - `PAY-01`: admin can register and update hourly rates.
+- From `CLAUDE.md`:
+  - Work should stay inside a GSD workflow.
+  - Use `/gsd:quick` for small fixes, `/gsd:debug` for investigations, `/gsd:execute-phase` for planned implementation.
+  - Do not make direct repo edits outside a GSD workflow unless the user explicitly says to bypass it.
 
 <phase_requirements>
 ## Phase Requirements
 
 | ID | Description | Research Support |
 |----|-------------|------------------|
-| AUTH-01 | 관리자는 초대 기반으로 근무자 계정을 생성하거나 초대 링크를 발급할 수 있다. | Invitation table, admin-only invite actions, signup gate with auth hook, accept-invite transaction |
-| AUTH-02 | 사용자는 Google 로그인을 통해 가입 및 로그인할 수 있다. | Supabase Google OAuth with PKCE callback route and SSR session cookies |
-| AUTH-03 | 시스템은 사용자 역할에 따라 관리자와 근무자의 접근 권한을 구분한다. | `app_users.role` enum, DAL authorization helpers, RLS helper functions, route groups |
-| PAY-01 | 관리자는 근무자별 시급을 등록하고 수정할 수 있다. | Effective-dated hourly-rate table, admin mutation flow, current-rate query/view |
+| AUTH-01 | Admin can create worker accounts or issue invite links. | Invite table + token flow, signup gate via hook/service, admin-only invite management |
+| AUTH-02 | Users can sign up and sign in with Google. | Supabase Google OAuth with PKCE SSR callback in Next.js |
+| AUTH-03 | The system separates access for admin and worker roles. | DAL-first authorization, JWT role claim, RLS, route guards |
+| PAY-01 | Admin can register and update worker hourly rates. | Worker profile / compensation table, money-in-cents, admin-only write policies |
 </phase_requirements>
-
-## Project Constraints (from CLAUDE.md)
-
-- Follow GSD workflow expectations for repo changes.
-- Do not recommend a separate admin/worker account model; keep a single account system with role-based permissions.
-- Keep v1 payroll limited to pay preview.
-- Keep the product scoped to a single venue.
-- Phase 1 auth must support invite-based access plus Google login.
-- Later attendance work requires location-based check-in, so user and worker identity should stay stable across future phases.
 
 ## Summary
 
-Use Supabase Auth for Google sign-in and session management, but do not use Auth alone as the authorization model. The durable business identity for this app should live in Postgres: an `app_users` table keyed by `auth.users.id`, an `invitations` table that controls who may onboard, and an effective-dated `worker_hourly_rates` table that avoids rewriting pay history later.
+Use Supabase Auth + Postgres as the access foundation and Next.js App Router as the application shell. The standard implementation for this phase is: Google OAuth for authentication, an app-owned invite table for onboarding control, a canonical role record in Postgres, a custom access-token hook that adds the role claim to the JWT, and RLS policies that enforce admin-versus-worker access at the data layer.
 
-The strongest Phase 1 architecture is invite-gated at auth creation time, not only after login. Supabase's `before-user-created` hook can reject uninvited signups before the `auth.users` row is inserted. That closes the main hole in a Google-only flow, where otherwise any Google account could create an auth user and only be blocked after the fact.
+The main non-obvious trap is that Supabase's built-in email invite flow is documented as not supporting PKCE, while the current Next.js SSR pattern is PKCE-based. For this phase, do not build onboarding around `inviteUserByEmail()`. Use app-managed invites instead: admin creates an invite record, the worker signs in with Google, and the server verifies the invite email or token before activating the account and role.
 
-For authorization, follow Next.js's current guidance: optimistic checks in `proxy.ts` only if needed, but secure checks in a server-side data access layer backed by the database. Keep admin/worker role checks on the server and in RLS policies. Do not rely on client state or experimental Next.js auth interrupt APIs for the core enforcement path.
+Authorization should follow current Next.js guidance: optimistic checks in `proxy.ts` only for redirects and coarse routing, secure checks in a DAL on every sensitive read/write, and RLS as the final boundary. Do not rely on client state or hidden UI for security.
 
-**Primary recommendation:** Build Phase 1 around Supabase Google OAuth + a Postgres-backed invitation gate + server-side DAL authorization + effective-dated worker rates.
+**Primary recommendation:** Build Phase 1 on `Next.js 16 + @supabase/ssr + Supabase Auth/Postgres`, with app-managed invites, DB-backed roles, JWT role claims, and RLS from day one.
 
 ## Standard Stack
 
 ### Core
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
-| `next` | `16.2.1` | App Router application shell and server actions | Current repo stack; official auth guidance and `proxy.ts` conventions are current here |
-| `react` | `19.2.4` | UI runtime | Matches current Next 16 ecosystem |
-| `react-dom` | `19.2.4` | Server/client rendering | Required by Next 16 |
-| `@supabase/supabase-js` | `2.101.0` | Auth, PostgREST, admin API access | Official Supabase client for OAuth, auth admin, and DB access |
-| `@supabase/ssr` | `0.10.0` | SSR-safe Supabase clients with cookie-based auth | Official server-side auth integration for Next.js |
-| `zod` | `4.3.6` | Input validation for server actions and forms | Keep invite and rate mutations validated on the server |
+| `next` | `16.2.1` | App Router web framework | Current stable Next.js; official auth guidance centers App Router, DAL, and `proxy.ts` |
+| `react` | `19.2.4` | UI runtime | Current stable React paired with Next 16 |
+| `react-dom` | `19.2.4` | Rendering/runtime | Required pair for React 19 |
+| `@supabase/supabase-js` | `2.101.0` | Auth, database, storage client | Current Supabase client; official OAuth, auth admin, and DB APIs |
+| `@supabase/ssr` | `0.10.0` | SSR-safe Supabase clients for Next.js | Current Supabase-recommended SSR package instead of old auth helpers |
+| `zod` | `4.3.6` | Input validation and schema typing | Standard for server actions, route handlers, and form validation |
 
 ### Supporting
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| `react-hook-form` | `7.72.0` | Admin invite and rate-edit forms | Use for admin UI forms with validation and error state |
-| `@hookform/resolvers` | `5.2.2` | Zod integration for forms | Use with `react-hook-form` |
-| `@tanstack/react-query` | `5.95.2` | Client-side cache for interactive admin screens | Use only where client cache improves UX; do not use for core auth checks |
-| `vitest` | `4.1.2` | Unit/component tests | Use for DAL, server action, schema, and form tests |
+| `react-hook-form` | `7.72.0` | Client form state | Use for invite creation, sign-in UI affordances, rate edit forms |
+| `@hookform/resolvers` | `5.2.2` | Zod integration for forms | Use with `react-hook-form` for shared server/client schemas |
+| `@tanstack/react-query` | `5.95.2` | Client cache for authenticated admin/worker screens | Use after auth foundation for live dashboard and list screens; not required for the auth boundary itself |
 
 ### Alternatives Considered
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
-| Supabase Auth + SSR | Auth.js | Valid, but repo already depends on Supabase auth stack; duplicating auth/session layers adds avoidable complexity |
-| Table-backed role checks | JWT custom role claims | Faster reads, but token refresh and role-staleness add risk for a two-role internal tool |
-| Effective-dated hourly-rate table | Single `hourly_rate` column on `app_users` | Simpler today, but causes pay-history rewrites or silent retroactive pay changes later |
-| Server actions for admin mutations | Route handlers for everything | Route handlers are useful for OAuth callback, but server actions are better for internal admin mutations in App Router |
+| Supabase Auth + Postgres | Auth.js + separate DB stack | More moving parts for invite gating, RBAC, and row security; worse fit for a single internal tool |
+| App-managed invite table | Supabase `inviteUserByEmail()` | Official docs say PKCE is not supported for `inviteUserByEmail()`, which conflicts with current SSR auth flow |
+| JWT role claim via hook | DB lookup on every route without claim | Works, but adds repeated auth joins and makes `proxy.ts` checks weaker |
 
 **Installation:**
 ```bash
-pnpm add @supabase/supabase-js @supabase/ssr zod react-hook-form @hookform/resolvers @tanstack/react-query
-pnpm add -D vitest
+pnpm add next react react-dom @supabase/supabase-js @supabase/ssr zod react-hook-form @hookform/resolvers
 ```
 
-**Version verification:** Verified on 2026-03-31 with `npm view`.
-
-| Package | Verified version | Registry modified |
-|---------|------------------|-------------------|
-| `next` | `16.2.1` | `2026-03-30` |
-| `react` | `19.2.4` | `2026-03-30` |
-| `react-dom` | `19.2.4` | `2026-03-30` |
-| `@supabase/supabase-js` | `2.101.0` | `2026-03-30` |
-| `@supabase/ssr` | `0.10.0` | `2026-03-30` |
-| `zod` | `4.3.6` | `2026-01-25` |
-| `react-hook-form` | `7.72.0` | `2026-03-22` |
-| `@hookform/resolvers` | `5.2.2` | `2025-09-14` |
-| `@tanstack/react-query` | `5.95.2` | `2026-03-23` |
-| `vitest` | `4.1.2` | `2026-03-26` |
+**Version verification:** verified with `npm view` on 2026-03-31.
+- `next@16.2.1` published 2026-03-20
+- `react@19.2.4` published 2026-01-26
+- `react-dom@19.2.4` published 2026-01-26
+- `@supabase/supabase-js@2.101.0` published 2026-03-30
+- `@supabase/ssr@0.10.0` published 2026-03-30
+- `zod@4.3.6` published 2026-01-22
+- `react-hook-form@7.72.0` published 2026-03-22
+- `@hookform/resolvers@5.2.2` published 2025-09-14
+- `@tanstack/react-query@5.95.2` published 2026-03-23
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
 ```text
 src/
-├── app/
-│   ├── (public)/                 # login, invite landing, onboarding info
-│   ├── auth/
-│   │   └── callback/route.ts     # Google OAuth PKCE callback
-│   ├── (admin)/                  # admin-only routes
-│   ├── (worker)/                 # worker-only routes
-│   └── forbidden/page.tsx        # stable access-denied page
-├── shared/
-│   ├── auth/                     # Supabase clients, session helpers, requireRole helpers
-│   ├── db/                       # typed queries, mutation helpers, SQL wrappers
-│   ├── validation/               # zod schemas
-│   └── types/                    # DB and domain types
-├── flows/
-│   └── access-foundation/        # invite acceptance and rate admin orchestration
-└── queries/
-    └── access-foundation/        # server-side reads for current actor, invites, current rates
-supabase/
-└── migrations/                   # schema, RLS, functions, auth hook setup SQL
++-- app/
+|   +-- (public)/
+|   |   +-- sign-in/
+|   |   `-- invite/[token]/
+|   +-- (admin)/
+|   |   +-- invites/
+|   |   +-- workers/
+|   |   `-- settings/
+|   +-- (worker)/
+|   |   `-- home/
+|   +-- auth/callback/route.ts
+|   `-- unauthorized/page.tsx
++-- lib/
+|   +-- auth/
+|   |   +-- session.ts
+|   |   +-- roles.ts
+|   |   +-- invites.ts
+|   |   `-- guards.ts
+|   +-- dal/
+|   |   +-- current-user.ts
+|   |   +-- admin.ts
+|   |   `-- worker.ts
+|   +-- supabase/
+|   |   +-- browser.ts
+|   |   +-- server.ts
+|   |   `-- proxy.ts
+|   `-- validation/
+|       +-- invite.ts
+|       `-- worker-rate.ts
+`-- db/
+    +-- migrations/
+    +-- policies/
+    `-- types.ts
 ```
 
-### Pattern 1: Invite-Gated Google Onboarding
-**What:** Use a Postgres `invitations` table as the source of truth for onboarding eligibility, then enforce it twice:
-1. `before-user-created` auth hook blocks uninvited signups.
-2. The OAuth callback finalizes the invitation and provisions the app user profile in one server-side transaction.
+### Pattern 1: App-Managed Invite Gating
+**What:** Store invites in your own table, keyed by token and intended email, then activate the user only after a Google-authenticated identity matches the invite.
+**When to use:** Always, for this phase.
+**Why:** Current official Supabase docs state `inviteUserByEmail()` does not support PKCE, while current SSR guidance uses PKCE.
+**Implementation order:**
+1. Create `invites` table with `token_hash`, `email`, `role`, `expires_at`, `accepted_at`, `created_by`.
+2. Build admin-only invite issue/revoke UI and server action.
+3. Build `invite/[token]` landing page that stores the token server-side and initiates Google login.
+4. In the OAuth callback, exchange code for session, load the current user, validate invite token + email, then create or activate profile + role.
+5. Mark invite accepted atomically.
 
-**When to use:** Always for this phase. It is the cleanest way to satisfy "internal staff only" with Google login.
+### Pattern 2: DB-Canonical Role With JWT Claim
+**What:** Keep the authoritative role in Postgres and project it into the JWT via a Custom Access Token hook.
+**When to use:** Always, because both route guards and RLS need consistent role semantics.
+**Example:**
+```ts
+// Source pattern: Supabase custom access token hook + Next.js DAL guidance
+export type AppRole = "admin" | "worker";
+```
+Use `public.user_roles(user_id uuid primary key, role app_role not null)` as the canonical role table. Use the auth hook to add `user_role` to the token. Treat the DB row as source of truth.
 
-**Recommended schema shape:**
-- `app_role` enum: `admin`, `worker`
-- `invite_status` enum: `pending`, `accepted`, `revoked`, `expired`
-- `app_users`
-  - `id uuid primary key` references `auth.users(id)`
-  - `email text unique not null`
-  - `display_name text`
-  - `role app_role not null`
-  - `is_active boolean not null default true`
-  - `invited_by uuid null`
-  - `created_at`, `updated_at`
-- `invitations`
-  - `id uuid primary key`
-  - `email text not null`
-  - `role app_role not null`
-  - `token_hash text unique not null`
-  - `status invite_status not null default 'pending'`
-  - `expires_at timestamptz not null`
-  - `invited_by uuid not null`
-  - `accepted_by uuid null`
-  - `accepted_at timestamptz null`
-  - unique partial index on lower(email) where status = 'pending'
-
-**Implementation notes:**
-- Match invitation by normalized email, not by token alone.
-- Treat shareable invite links as secondary. The security control is email + invitation status.
-- If the business insists on generic links later, add a second onboarding factor. Do not start there.
-
-### Pattern 2: Table-Backed RBAC With Server-Side DAL
-**What:** Put the role in `app_users.role`, then centralize secure authorization in server-side helpers such as `requireActor()` and `requireAdmin()`.
-
+### Pattern 3: DAL-First Authorization
+**What:** Centralize secure authorization in server-only DAL functions. `proxy.ts` is only for optimistic redirects.
 **When to use:** All protected pages, server actions, and route handlers.
-
 **Example:**
 ```ts
-// Source guidance: https://nextjs.org/docs/app/guides/authentication
-// Source auth verification: https://supabase.com/docs/reference/javascript/auth-getuser
+// Source pattern: Next.js auth guide
 export async function requireAdmin() {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const actor = await getActorById(user.id);
-  if (!actor || actor.role !== "admin" || !actor.is_active) {
-    redirect("/forbidden");
-  }
-
-  return actor;
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") throw new Error("FORBIDDEN");
+  return user;
 }
 ```
 
-### Pattern 3: Effective-Dated Worker Rates
-**What:** Store hourly rates in a separate history table rather than a mutable column.
-
-**When to use:** Phase 1 already. Future pay preview depends on historical correctness.
-
-**Recommended schema shape:**
-- `worker_hourly_rates`
-  - `id uuid primary key`
-  - `user_id uuid not null` references `app_users(id)`
-  - `hourly_rate numeric(10,2) not null check (hourly_rate > 0)`
-  - `currency_code text not null default 'KRW'`
-  - `effective_from timestamptz not null`
-  - `effective_to timestamptz null`
-  - `created_by uuid not null`
-  - `created_at timestamptz not null default now()`
-- partial unique index: one open-ended rate per worker where `effective_to is null`
-
-**Operational rule:** Updating the current rate closes the prior row and inserts a new current row in one transaction.
-
-### Pattern 4: Server Actions For Admin Mutations, Route Handler For OAuth
-**What:** Keep internal mutations in server actions, but keep the OAuth callback as `app/auth/callback/route.ts`.
-
-**When to use:**
-- Server actions: create invite, revoke invite, create initial admin, update rate
-- Route handler: Google code exchange
-
-**Example:**
-```ts
-// Source pattern: https://supabase.com/docs/guides/auth/social-login/auth-google
-export async function startGoogleSignIn(next = "/") {
-  const supabase = createBrowserSupabaseClient();
-  await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}` },
-  });
-}
-```
+### Pattern 4: Separate Identity, Profile, and Compensation
+**What:** Keep auth identity, app profile, and pay settings in separate tables.
+**When to use:** Always.
+**Recommended schema:**
+- `profiles(id uuid primary key references auth.users, email text not null, full_name text, hall_name text default 'laviebel', onboarding_state text, created_at, updated_at)`
+- `user_roles(user_id uuid primary key references profiles(id), role app_role not null)`
+- `worker_rates(user_id uuid primary key references profiles(id), hourly_rate_cents integer not null check (hourly_rate_cents > 0), effective_from timestamptz default now(), updated_by uuid not null, updated_at timestamptz not null default now())`
 
 ### Anti-Patterns to Avoid
-- **Client-only role checks:** Hiding links is not authorization.
-- **Relying on Supabase session cookie alone for role:** Store roles in app tables and verify on the server.
-- **Using experimental Next.js `authInterrupts` as core auth UX:** `unauthorized()` and `forbidden()` remain experimental in current docs; use stable routes/redirects for Phase 1.
-- **Single mutable rate field without history:** This will break future pay correctness.
-- **Using `getSession()` for server authorization:** Supabase explicitly recommends `getUser()` for server auth verification.
+- **Using `inviteUserByEmail()` for the main onboarding path:** conflicts with PKCE-based SSR flow.
+- **Putting the role in client state or `user_metadata`:** not authoritative; easy to spoof or desynchronize.
+- **Using `proxy.ts` as the only auth boundary:** Next.js recommends secure DB-backed checks in a DAL for sensitive operations.
+- **Combining auth profile and payroll fields into one catch-all table without RLS separation:** makes future auditability and policies harder.
+- **Storing hourly pay as a float:** use integer cents.
 
 ## Don't Hand-Roll
 
 | Problem | Don't Build | Use Instead | Why |
 |---------|-------------|-------------|-----|
-| Google OAuth and cookie session sync | Custom OAuth client/session cookies | `@supabase/supabase-js` + `@supabase/ssr` | Official flow already handles PKCE and SSR cookies |
-| Signup gating | Client-side "invite required" page only | Supabase `before-user-created` hook | Prevents uninvited auth users from being created |
-| RBAC enforcement | Ad hoc checks scattered through pages | DAL helpers + RLS helper functions | Centralized rules are auditable and testable |
-| Form validation | Handwritten string checks | `zod` + `react-hook-form` | Prevents drift between client and server validation |
-| Current-rate lookup | Manually picking latest rows everywhere | SQL view/helper for current worker rate | Avoids duplicated time-range logic |
+| OAuth with Google | Manual OAuth exchange and cookie handling | Supabase Auth OAuth + `@supabase/ssr` | Handles PKCE, session cookies, callback exchange |
+| Session propagation in Next.js | Custom cookie sync across server/client/proxy | Official `@supabase/ssr` client split | Current supported SSR path |
+| Authorization spread across pages | Ad hoc role checks in components | DAL + RLS + JWT role claim | Consistent, auditable, harder to bypass |
+| Invite validation | Implicit email-domain trust only | Explicit invite table + token/email match | Internal access needs revocation, expiry, and audit trail |
+| Money math | JS floats for pay | integer `hourly_rate_cents` | Prevents rounding drift |
 
-**Key insight:** Keep authentication, authorization, and compensation as three separate concerns. Supabase Auth proves identity, Postgres tables decide access, and rate history decides pay.
+**Key insight:** The deceptively hard parts in this phase are auth state propagation, invite gating with social login, and authorization consistency across UI, server, and database. Use the stack's native solutions for those boundaries.
 
 ## Common Pitfalls
 
-### Pitfall 1: Google Login Creates Users Before Invite Logic Runs
-**What goes wrong:** Any Google account can create an auth user, and the app only blocks them after login.
-**Why it happens:** The invite rule lives only in UI or callback code.
-**How to avoid:** Enforce invites in a `before-user-created` hook and then re-check in the callback transaction.
-**Warning signs:** `auth.users` contains people with no `app_users` row and no accepted invite.
+### Pitfall 1: PKCE/Invite mismatch
+**What goes wrong:** Teams try to pair Supabase SSR PKCE with `inviteUserByEmail()` and hit an onboarding dead end.
+**Why it happens:** The older "invite by email" mental model does not match the current PKCE SSR flow.
+**How to avoid:** Use an app-owned invite record and validate it after Google sign-in.
+**Warning signs:** Invite acceptance depends on email magic-link semantics instead of OAuth callback semantics.
 
-### Pitfall 2: Secure Checks Happen in `proxy.ts`
-**What goes wrong:** Every request triggers DB work in proxy, causing latency and brittle behavior.
-**Why it happens:** Proxy feels like a global auth gateway.
-**How to avoid:** Follow Next guidance: proxy only for optimistic redirects if needed; keep secure checks in the server DAL.
-**Warning signs:** Route prefetches hit the database or authorization bugs only appear on direct URL access.
+### Pitfall 2: Treating `proxy.ts` as real authorization
+**What goes wrong:** Pages look protected, but server actions or direct requests still succeed.
+**Why it happens:** `proxy.ts` is only an optimistic routing layer.
+**How to avoid:** Re-check the user and role in DAL functions and enforce RLS in Postgres.
+**Warning signs:** Sensitive writes have no server-side role check.
 
-### Pitfall 3: Role Stored Only In JWT Or Client State
-**What goes wrong:** Role changes do not take effect until token refresh, or the UI lies about access.
-**Why it happens:** Role was optimized into session state too early.
-**How to avoid:** Read the authoritative role from `app_users` for secure actions. If JWT claims are added later, treat them as cache.
-**Warning signs:** Revoking admin access does not take effect immediately.
+### Pitfall 3: Storing role in mutable user metadata
+**What goes wrong:** Role changes lag, tokens drift, or policies trust the wrong claim.
+**Why it happens:** Teams confuse presentation metadata with authorization metadata.
+**How to avoid:** Keep role in Postgres, add it to JWT with a hook, and refresh session after role mutation.
+**Warning signs:** Role updates require manual dashboard edits or only update `user_metadata`.
 
-### Pitfall 4: RLS Policies Ignore Unauthenticated Nulls
-**What goes wrong:** Policies behave unexpectedly or appear permissive during testing.
-**Why it happens:** `auth.uid()` returns `null` when unauthenticated.
-**How to avoid:** Write explicit checks like `auth.uid() is not null and auth.uid() = user_id`.
-**Warning signs:** Policies behave differently in SQL editor tests vs authenticated app requests.
+### Pitfall 4: Forgetting auth hook permissions
+**What goes wrong:** Custom access token hook works locally in SQL tests but fails in Supabase Auth.
+**Why it happens:** `supabase_auth_admin` needs explicit execute/schema/table permissions, and Supabase docs recommend avoiding `security definer`.
+**How to avoid:** Grant only the required permissions to `supabase_auth_admin`, revoke from `authenticated`/`anon`, and version the hook as a migration.
+**Warning signs:** Tokens issue without the expected role claim.
 
-### Pitfall 5: Hourly Rate Updates Rewrite History
-**What goes wrong:** Past shifts or future pay preview logic use the wrong rate.
-**Why it happens:** Only the latest rate is stored.
-**How to avoid:** Use effective-dated rows from Phase 1.
-**Warning signs:** A single admin edit changes pay results for older confirmed work.
+### Pitfall 5: Embedding hourly rate directly into auth/session objects
+**What goes wrong:** Compensation changes are hard to audit and easy to leak to the wrong role.
+**Why it happens:** Convenience-driven denormalization.
+**How to avoid:** Keep pay settings in a dedicated table with admin-only writes and explicit read rules.
+**Warning signs:** Rate edits are implemented as profile metadata updates.
 
 ## Code Examples
 
 Verified patterns from official sources:
 
-### Google OAuth Callback Route
+### Google OAuth start with PKCE callback
 ```ts
 // Source: https://supabase.com/docs/guides/auth/social-login/auth-google
+await supabase.auth.signInWithOAuth({
+  provider: "google",
+  options: {
+    redirectTo: `${origin}/auth/callback?next=/`,
+  },
+});
+```
+
+### Next.js callback route for code exchange
+```ts
+// Source pattern adapted from Supabase Next.js SSR guide
 import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const next = url.searchParams.get("next") || "/";
 
-  if (!code) {
-    return NextResponse.redirect(new URL("/login?error=oauth", url.origin));
-  }
+  if (!code) return NextResponse.redirect(new URL("/sign-in?error=oauth", url.origin));
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);
+  if (error) return NextResponse.redirect(new URL("/sign-in?error=oauth", url.origin));
 
-  if (error) {
-    return NextResponse.redirect(new URL("/login?error=oauth", url.origin));
-  }
-
-  return NextResponse.redirect(new URL("/", url.origin));
+  return NextResponse.redirect(new URL(next.startsWith("/") ? next : "/", url.origin));
 }
 ```
 
-### Admin-Only Rate Update Action
+### DAL guard for secure admin access
 ```ts
-// Source guidance: https://nextjs.org/docs/app/guides/authentication
-"use server";
+// Source pattern: https://nextjs.org/docs/app/guides/authentication
+import "server-only";
 
-export async function updateWorkerRate(input: UpdateWorkerRateInput) {
-  const actor = await requireAdmin();
-  const data = updateWorkerRateSchema.parse(input);
-
-  await closeCurrentRateAndInsertNewRate({
-    workerUserId: data.workerUserId,
-    hourlyRate: data.hourlyRate,
-    createdBy: actor.id,
-    effectiveFrom: data.effectiveFrom,
-  });
+export async function requireAdminUser() {
+  const user = await getCurrentUser();
+  if (!user || user.role !== "admin") {
+    throw new Error("FORBIDDEN");
+  }
+  return user;
 }
+```
+
+### RLS policy shape
+```sql
+-- Source pattern: Supabase RLS + JWT claims docs
+create policy "admins manage worker_rates"
+on public.worker_rates
+for all
+using ((auth.jwt() ->> 'user_role') = 'admin')
+with check ((auth.jwt() ->> 'user_role') = 'admin');
 ```
 
 ## State of the Art
 
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
-| `middleware.ts` for route interception | `proxy.ts` in Next.js 16 | Next.js 16 | New projects should use `proxy.ts` naming and docs |
-| Secure auth checks spread across pages | DAL + server-side secure checks | Current Next auth guide | Better separation between optimistic and secure auth |
-| Post-login signup filtering only | Supabase `before-user-created` hook | Current Supabase auth hooks docs | Lets private apps reject unwanted signups before auth user creation |
-| Single rate field on worker profile | Effective-dated compensation rows | Current best practice for auditability | Avoids future pay-history rewrites |
+| `@supabase/auth-helpers-nextjs` style helpers | `@supabase/ssr` | Current Supabase SSR docs | Use the SSR package, not older helper patterns |
+| `middleware.ts` for routing gatekeeping | `proxy.ts` in Next 16 auth guidance | Next.js 16 cycle | New projects should follow current file convention |
+| UI-only role checks | DAL + DTO + secure DB-backed checks | Current Next.js auth guide | Required for sensitive actions |
 
 **Deprecated/outdated:**
-- `middleware.ts` naming for new Next 16 work: use `proxy.ts`.
-- Using `getSession()` for server authorization: use `getUser()` for authentic verification.
-- Using `authInterrupts` as the main authorization UX: still experimental as of Next.js docs updated February 2026.
+- Supabase email-invite onboarding as the main path for this phase: not compatible with PKCE-based SSR flow.
+- Treating new Next.js `forbidden()`/auth interrupts as production-stable: official docs currently label `forbidden()` experimental and not recommended for production.
 
 ## Open Questions
 
-1. **Can invites target only known email addresses, or must there be generic shareable links?**
-   - What we know: Requirement allows account creation or invite link issuance.
-   - What's unclear: Whether operations need a link that is not pre-bound to an email.
-   - Recommendation: Plan Phase 1 around email-bound invites. Treat generic links as a later explicit requirement.
+1. **Should rate history be modeled now or deferred?**
+   - What we know: `PAY-01` only requires admin create/update today.
+   - What's unclear: whether later payroll preview must preserve historic rate snapshots before Phase 3.
+   - Recommendation: start with `worker_rates` current-value table plus audit columns; add assignment-time rate snapshots in Phase 3.
 
-2. **Do all internal staff use a controlled Google Workspace domain?**
-   - What we know: Google login is required.
-   - What's unclear: Whether domain allowlisting can supplement invite checks.
-   - Recommendation: Keep invite gating as the primary rule. Add domain allowlist only as defense in depth if operations confirms a managed domain.
-
-3. **Does future payroll need full audit history or only current preview correctness?**
-   - What we know: Phase 3 will calculate estimated pay from confirmed work.
-   - What's unclear: Whether admins need historical audit views.
-   - Recommendation: Use effective-dated rates now; it is the lowest-cost way to protect both future correctness and auditability.
+2. **Should invite matching require exact email or also token possession?**
+   - What we know: internal-tool security is higher with both.
+   - What's unclear: whether staff may log in with alternate Google aliases.
+   - Recommendation: default to exact email + invite token match. Do not rely on domain-only gating.
 
 ## Environment Availability
 
 | Dependency | Required By | Available | Version | Fallback |
 |------------|------------|-----------|---------|----------|
-| Node.js | Next.js app, tests | ✓ | `v22.22.1` | — |
-| pnpm | Package management, scripts | ✓ | `10.32.1` | `npm` is present, but repo is pinned to pnpm |
-| Git | Planning workflow, commits | ✓ | `2.53.0.windows.2` | — |
-| Supabase project env | Auth + database integration | ✓ | Env present locally | — |
-| Supabase CLI | SQL migrations, local auth config | ✗ | — | Use Supabase SQL Editor / dashboard until CLI is installed |
-| Google OAuth provider config | Google login | Unknown | — | No reliable fallback; must verify in Supabase and Google consoles |
+| Node.js | Next.js runtime and tooling | Y | `v22.22.1` | - |
+| npm | package version lookup / installs | Y | `10.9.4` | pnpm |
+| pnpm | repo package manager | Y | `10.32.1` | npm |
+| Git | migrations and docs versioning | Y | `2.53.0.windows.2` | - |
+| Supabase CLI | local DB, auth hooks, SQL migrations, policy verification | N | - | hosted Supabase project, but local verification is weaker |
+| `psql` | direct DB inspection | N | - | Supabase dashboard SQL editor |
+| Docker | local Supabase stack if CLI uses containers | N | - | hosted Supabase project only |
 
-**Missing dependencies with no fallback:**
-- Verified Google provider setup in Supabase dashboard and Google Cloud console.
+**Missing dependencies with no clean fallback:**
+- None. A hosted Supabase dev project can unblock implementation.
 
 **Missing dependencies with fallback:**
-- Supabase CLI. Planner can use SQL migrations committed in repo plus manual dashboard application initially.
+- `supabase` CLI, `psql`, and Docker are absent. Planner should either add an explicit install/setup step or use a hosted Supabase dev project and accept weaker local migration/policy verification.
 
 ## Validation Architecture
 
 ### Test Framework
 | Property | Value |
 |----------|-------|
-| Framework | Vitest (`package.json` currently pins `^3.2.4`; registry current is `4.1.2`) |
+| Framework | Vitest (`package.json` + `vitest.config.ts`) |
 | Config file | `vitest.config.ts` |
 | Quick run command | `pnpm test` |
 | Full suite command | `pnpm test` |
 
-### Phase Requirements → Test Map
+### Phase Requirements to Test Map
 | Req ID | Behavior | Test Type | Automated Command | File Exists? |
 |--------|----------|-----------|-------------------|-------------|
-| AUTH-01 | Admin can create/revoke invite and invite acceptance consumes pending invite | unit + integration | `pnpm test -- access-foundation/invitations` | ❌ Wave 0 |
-| AUTH-02 | Google callback exchanges code and only completes onboarding for allowed invite/email combinations | unit + manual smoke | `pnpm test -- access-foundation/oauth-callback` | ❌ Wave 0 |
-| AUTH-03 | Admin-only vs worker-only authorization gates protected reads and mutations | unit | `pnpm test -- access-foundation/rbac` | ❌ Wave 0 |
-| PAY-01 | Admin can create/update worker hourly rate and current-rate lookup is correct | unit | `pnpm test -- access-foundation/hourly-rates` | ❌ Wave 0 |
+| AUTH-01 | invite create/revoke/accept gating | integration | `pnpm exec vitest run tests/access/invite-flow.test.ts` | N - Wave 0 |
+| AUTH-02 | Google OAuth start + callback exchange orchestration | integration | `pnpm exec vitest run tests/access/google-auth.test.ts` | N - Wave 0 |
+| AUTH-03 | role guard + RLS-safe access paths | integration | `pnpm exec vitest run tests/access/rbac.test.ts` | N - Wave 0 |
+| PAY-01 | hourly rate validation + admin-only mutation | unit/integration | `pnpm exec vitest run tests/access/worker-rates.test.ts` | N - Wave 0 |
 
 ### Sampling Rate
 - **Per task commit:** `pnpm test`
 - **Per wave merge:** `pnpm test`
-- **Phase gate:** Full suite green before `/gsd:verify-work`
+- **Phase gate:** Full suite green plus manual OAuth smoke test before `/gsd:verify-work`
 
 ### Wave 0 Gaps
-- [ ] `tests/access-foundation/invitations.test.ts` — invite status transitions and duplicate invite rules
-- [ ] `tests/access-foundation/oauth-callback.test.ts` — code exchange result handling and onboarding gate
-- [ ] `tests/access-foundation/rbac.test.ts` — `requireAdmin`, `requireActor`, inactive user handling
-- [ ] `tests/access-foundation/hourly-rates.test.ts` — close-old/insert-new transaction behavior
-- [ ] `tests/access-foundation/schemas.test.ts` — zod validation for invite and rate mutations
-- [ ] Shared test doubles for Supabase server client and DB adapter
-
-## Recommended Implementation Sequence
-
-1. **Plan 01-01:** Create schema and access primitives first.
-   - Ship `app_users`, `invitations`, `worker_hourly_rates`, enums, indexes, RLS, and DAL helpers.
-   - Add SSR Supabase clients and stable login/logout scaffolding.
-
-2. **Plan 01-02:** Implement invite-gated onboarding.
-   - Add admin invite creation and revocation.
-   - Configure Google OAuth and callback route.
-   - Add `before-user-created` hook and invitation acceptance transaction.
-
-3. **Plan 01-03:** Implement admin hourly-rate management.
-   - Build admin-only worker list and rate editor.
-   - Update rates with effective-dated inserts.
-   - Expose current rate query for later payroll work.
-
-## Major Risks
-
-- **Hook deployment risk:** `before-user-created` requires Supabase auth-hook configuration outside normal app code. Treat hook SQL/config as an explicit plan task.
-- **Email mismatch risk:** Google account email must equal invited email. Decide whether alias normalization rules are needed before implementation.
-- **Bootstrap risk:** The first admin must exist before invite-only onboarding can scale. Plan a one-time bootstrap path, not a permanent backdoor.
-- **Manual console drift risk:** Without Supabase CLI, auth provider and hook config can drift from repo state. Capture exact setup steps in docs or install CLI early.
+- [ ] `tests/access/invite-flow.test.ts` - covers `AUTH-01`
+- [ ] `tests/access/google-auth.test.ts` - covers `AUTH-02`
+- [ ] `tests/access/rbac.test.ts` - covers `AUTH-03`
+- [ ] `tests/access/worker-rates.test.ts` - covers `PAY-01`
+- [ ] Supabase test strategy - choose hosted dev project or install Supabase CLI for policy/hook verification
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Next.js Authentication Guide: https://nextjs.org/docs/app/guides/authentication
-- Next.js `authInterrupts` config: https://nextjs.org/docs/app/api-reference/config/next-config-js/authInterrupts
-- Next.js `forbidden.js` reference: https://nextjs.org/docs/app/api-reference/file-conventions/forbidden
-- Supabase Next.js Auth quickstart: https://supabase.com/docs/guides/auth/quickstarts/nextjs
-- Supabase Google login guide: https://supabase.com/docs/guides/auth/social-login/auth-google
-- Supabase `getUser()` reference: https://supabase.com/docs/reference/javascript/auth-getuser
-- Supabase `before-user-created` hook: https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook
-- Supabase `inviteUserByEmail()` reference: https://supabase.com/docs/reference/javascript/auth-admin-inviteuserbyemail
-- Supabase `generateLink()` reference: https://supabase.com/docs/reference/javascript/auth-admin-generatelink
-- Supabase Row Level Security guide: https://supabase.com/docs/guides/database/postgres/row-level-security
-- npm registry version verification via `npm view` on 2026-03-31
+- https://nextjs.org/docs/app/guides/authentication - DAL, DTO, optimistic vs secure authorization, `proxy.ts`
+- https://nextjs.org/docs/app/api-reference/functions/forbidden - current status of `forbidden()` as experimental
+- https://supabase.com/docs/guides/auth/social-login/auth-google - Google OAuth setup, PKCE callback flow, `signInWithOAuth`, callback exchange
+- https://supabase.com/docs/reference/javascript/auth-admin-inviteuserbyemail - official note that PKCE is not supported for `inviteUserByEmail()`
+- https://supabase.com/docs/guides/auth/auth-hooks - auth hook permissions, `supabase_auth_admin`, migration guidance, avoid `security definer`
+- https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook - signup gate hook capability
+- https://supabase.com/docs/guides/api/securing-your-api - RLS-first API security guidance
+- https://supabase.com/docs/guides/api/custom-claims-and-role-based-access-control-rbac - custom access token hook, `user_roles`, JWT claims
 
 ### Secondary (MEDIUM confidence)
-- Repo-local skill: `.agents/skills/next-best-practices/SKILL.md`
-- Repo-local skill: `.agents/skills/supabase-postgres-best-practices/SKILL.md`
+- Local project skills:
+  - `C:\code\rosty\.agents\skills\next-best-practices\SKILL.md`
+  - `C:\code\rosty\.agents\skills\supabase-postgres-best-practices\SKILL.md`
+- Local environment inspection:
+  - `package.json`
+  - `vitest.config.ts`
+  - `npm view` output on 2026-03-31
 
 ### Tertiary (LOW confidence)
 - None
@@ -453,9 +378,18 @@ export async function updateWorkerRate(input: UpdateWorkerRateInput) {
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH - repo dependencies and npm registry versions were verified directly.
-- Architecture: MEDIUM-HIGH - based on current Next.js and Supabase official docs plus one design inference: using `before-user-created` with invitation-table lookup for Google onboarding.
-- Pitfalls: HIGH - directly supported by current Next.js and Supabase documentation patterns.
+- Standard stack: HIGH - current package versions verified via `npm view`; auth stack aligned with official Next.js and Supabase docs
+- Architecture: HIGH - core recommendations are directly supported by official docs; invite-table recommendation is a strong inference from documented PKCE constraints
+- Pitfalls: HIGH - each major pitfall is anchored in official docs or direct environment evidence
+
+**Implementation order:**
+1. Create Supabase project and Google provider configuration.
+2. Add SSR client split (`browser.ts`, `server.ts`, `proxy.ts`) and OAuth callback route.
+3. Create `profiles`, `user_roles`, `worker_rates`, and `invites` schema with RLS enabled.
+4. Implement auth hook(s): invite gate and custom access token claim.
+5. Build DAL functions and role guards.
+6. Build minimal admin invite and worker onboarding screens.
+7. Add Phase 1 Vitest coverage and one manual Google OAuth smoke test.
 
 **Research date:** 2026-03-31
 **Valid until:** 2026-04-30
