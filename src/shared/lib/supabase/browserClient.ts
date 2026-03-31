@@ -19,10 +19,6 @@ function getRequiredEnv(name: "NEXT_PUBLIC_SUPABASE_URL" | "NEXT_PUBLIC_SUPABASE
 }
 
 export function getBrowserSupabaseClient() {
-  if (!hasBrowserSupabaseEnv()) {
-    throw new Error("Missing required Supabase browser env.");
-  }
-
   if (!browserClient) {
     browserClient = createBrowserClient(
       getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
@@ -31,8 +27,4 @@ export function getBrowserSupabaseClient() {
   }
 
   return browserClient;
-}
-
-export function hasBrowserSupabaseEnv() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL) && Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
