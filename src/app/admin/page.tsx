@@ -1,5 +1,5 @@
-import { AdminShellPage } from "#flows/admin-shell/components/AdminShellPage";
+import { AdminOperationsDashboardPage } from "#flows/admin-operations-dashboard/components/AdminOperationsDashboardPage";
 
 export default async function AdminPage() {
-  return await AdminShellPage();
+  return await AdminOperationsDashboardPage();
 }
