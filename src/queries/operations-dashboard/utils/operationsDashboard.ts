@@ -137,7 +137,7 @@ export function getTopOperationsDashboardAnomaly(input: {
   const opensAt = getScheduleOpenTime(input.startsAtIso);
 
   if (input.now.getTime() >= opensAt.getTime()) {
-    const missingCheckInCount = Math.max(input.confirmedAssignmentCount - input.checkedInCount, 0);
+    const missingCheckInCount = Math.max(input.confirmedAssignmentCount - input.checkedInCount - input.lateCount, 0);
 
     if (missingCheckInCount > 0) {
       return {

@@ -62,7 +62,7 @@ describe("operationsDashboard utils", () => {
       }),
     ).toMatchObject({
       kind: "missing_check_ins",
-      count: 2,
+      count: 1,
     });
 
     expect(
@@ -121,7 +121,7 @@ describe("operationsDashboard utils", () => {
       }),
     ).toMatchObject({
       kind: "missing_check_ins",
-      count: 2,
+      count: 1,
     });
   });
 

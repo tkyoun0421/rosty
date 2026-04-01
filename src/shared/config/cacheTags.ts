@@ -19,6 +19,10 @@ export const cacheTags = {
     scheduleDetail: (scheduleId: string) => `attendance:schedule:${scheduleId}`,
     worker: (workerUserId: string) => `attendance:worker:${workerUserId}`,
   },
+  dashboard: {
+    all: "dashboard",
+    adminOperations: "dashboard:admin-operations",
+  },
   profile: {
     onboarding: (userId: string) => `profile:onboarding:${userId}`,
   },
