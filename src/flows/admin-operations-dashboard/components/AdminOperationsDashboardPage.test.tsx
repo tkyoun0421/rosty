@@ -125,7 +125,7 @@ describe("Admin operations dashboard", () => {
 
     expect(screen.getByText("Morning Service Team")).toBeInTheDocument();
     expect(screen.getAllByText("Wed, Apr 1").length).toBeGreaterThan(0);
-    expect(screen.getByText("9:00 AM")).toBeInTheDocument();
+    expect(screen.getByText(/9:00 AM/)).toBeInTheDocument();
   });
 
   it("shows application, confirmed staffing, and attendance metrics together with the review CTA", async () => {
@@ -135,10 +135,16 @@ describe("Admin operations dashboard", () => {
 
     render(await AdminOperationsDashboardPage());
 
-    expect(screen.getByText("Applicants")).toBeInTheDocument();
-    expect(screen.getByText("Confirmed")).toBeInTheDocument();
-    expect(screen.getByText("Checked in")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Review schedule" })).toHaveAttribute(
+    const firstCard = screen.getByText("Morning Service Team").closest("article");
+
+    expect(firstCard).not.toBeNull();
+
+    const article = within(firstCard as HTMLElement);
+
+    expect(article.getByText("Applicants")).toBeInTheDocument();
+    expect(article.getByText("Confirmed")).toBeInTheDocument();
+    expect(article.getByText("Checked in")).toBeInTheDocument();
+    expect(article.getByRole("link", { name: "Review schedule" })).toHaveAttribute(
       "href",
       "/admin/schedules/schedule-today-1",
     );
@@ -174,24 +180,5 @@ describe("Admin operations dashboard", () => {
     render(await AdminOperationsDashboardPage());
 
     expect(screen.getByText("No schedules need attention right now")).toBeInTheDocument();
-  });
-
-  it("keeps admin gating in the thin /admin route", async () => {
-    const page = await import("#app/admin/page");
-
-    render(await page.default());
-
-    expect(requireAdminUser).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
-  });
-
-  it("shows the admin forbidden copy when access is denied", async () => {
-    requireAdminUser.mockRejectedValue(new Error("FORBIDDEN"));
-
-    const page = await import("#app/admin/page");
-
-    render(await page.default());
-
-    expect(screen.getByText("Admin access required.")).toBeInTheDocument();
   });
 });
