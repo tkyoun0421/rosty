@@ -28,6 +28,8 @@ export async function confirmScheduleAssignments(
   revalidateTag(cacheTags.schedules.all, "max");
   revalidateTag(cacheTags.schedules.adminList, "max");
   revalidateTag(cacheTags.schedules.recruitingList, "max");
+  revalidateTag(cacheTags.dashboard.all, "max");
+  revalidateTag(cacheTags.dashboard.adminOperations, "max");
 
   const workerUserIds = new Set(result.confirmedAssignments.map((assignment) => assignment.workerUserId));
 

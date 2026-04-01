@@ -21,7 +21,7 @@ describe("confirmScheduleAssignments", () => {
     vi.clearAllMocks();
   });
 
-  it("confirms assignments, returns unfilled slots, and revalidates admin and worker-facing tags", async () => {
+  it("confirms assignments, returns unfilled slots, and revalidates admin, dashboard, and worker-facing tags", async () => {
     requireAdminUser.mockResolvedValue({ id: "admin-1", email: "admin@example.com", role: "admin" });
     confirmScheduleAssignmentDraft.mockResolvedValue({
       confirmedAssignments: [
@@ -52,6 +52,8 @@ describe("confirmScheduleAssignments", () => {
     expect(result.unfilledSlotIds).toEqual(["slot-2"]);
     expect(revalidateTag).toHaveBeenCalledWith("assignments:detail:schedule-1", "max");
     expect(revalidateTag).toHaveBeenCalledWith("schedules:admin-list", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("dashboard", "max");
+    expect(revalidateTag).toHaveBeenCalledWith("dashboard:admin-operations", "max");
     expect(revalidateTag).toHaveBeenCalledWith("assignments:worker-confirmed:worker-1", "max");
     expect(revalidateTag).toHaveBeenCalledWith("assignments:worker-pay-preview:worker-1", "max");
   });

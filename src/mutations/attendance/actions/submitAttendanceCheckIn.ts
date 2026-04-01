@@ -14,6 +14,8 @@ export async function submitAttendanceCheckIn(formData: FormData) {
     revalidateTag(cacheTags.attendance.worker(result.attendance.workerUserId), "max");
     revalidateTag(cacheTags.attendance.scheduleDetail(result.attendance.scheduleId), "max");
     revalidateTag(cacheTags.assignments.workerConfirmed(result.attendance.workerUserId), "max");
+    revalidateTag(cacheTags.dashboard.all, "max");
+    revalidateTag(cacheTags.dashboard.adminOperations, "max");
   }
 
   return result;
