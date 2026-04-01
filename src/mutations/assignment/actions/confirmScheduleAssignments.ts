@@ -12,11 +12,13 @@ import {
 } from "#mutations/assignment/schemas/confirmScheduleAssignments";
 import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
 import { cacheTags } from "#shared/config/cacheTags";
+import { refreshCurrentSessionClaims } from "#shared/lib/supabase/refreshSession";
 
 export async function confirmScheduleAssignments(
   input: ConfirmScheduleAssignmentsInput | FormData,
 ): Promise<ConfirmScheduleAssignmentResult> {
   const adminUser = await requireAdminUser();
+  await refreshCurrentSessionClaims();
   const parsed = parseConfirmScheduleAssignments(input);
   const result = await confirmScheduleAssignmentDraft({
     scheduleId: parsed.scheduleId,

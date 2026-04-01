@@ -26,6 +26,7 @@ vi.mock("#shared/lib/supabase/adminClient", () => ({
 describe("scheduleDal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
   });
 
   it("persists schedules atomically and returns the default recruiting status", async () => {

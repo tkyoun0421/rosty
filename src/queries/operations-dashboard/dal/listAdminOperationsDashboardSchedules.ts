@@ -11,6 +11,7 @@ import {
 } from "#queries/operations-dashboard/utils/operationsDashboard";
 import { cacheTags } from "#shared/config/cacheTags";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 interface AttendanceCheckInRow {
   checked_in_at: string;
@@ -112,8 +113,12 @@ function mapOperationsDashboardRows(rows: ScheduleRow[], now: Date): OperationsD
 async function runListAdminOperationsDashboardSchedules(window: {
   todayStartIso: string;
   upcomingEndIso: string;
+}, options: {
+  useAdminClient: boolean;
 }): Promise<ScheduleRow[]> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = options.useAdminClient
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
   const { data, error } = await supabase
     .from("schedules")
     .select(
@@ -143,11 +148,14 @@ export async function listAdminOperationsDashboardSchedules(
 ): Promise<OperationsDashboardSections> {
   const now = options.now ?? new Date();
   const window = getOperationsDashboardWindow(now);
+  const canUseAdminCache = !process.env.VITEST && !options.now && Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-  if (process.env.VITEST || options.now) {
+  if (!canUseAdminCache) {
     const rows = await runListAdminOperationsDashboardSchedules({
       todayStartIso: window.todayStartIso,
       upcomingEndIso: window.upcomingEndIso,
+    }, {
+      useAdminClient: false,
     });
 
     return mapOperationsDashboardRows(rows, now);
@@ -158,6 +166,8 @@ export async function listAdminOperationsDashboardSchedules(
       await runListAdminOperationsDashboardSchedules({
         todayStartIso: window.todayStartIso,
         upcomingEndIso: window.upcomingEndIso,
+      }, {
+        useAdminClient: true,
       }),
     [
       "queries:operations-dashboard:listAdminOperationsDashboardSchedules",

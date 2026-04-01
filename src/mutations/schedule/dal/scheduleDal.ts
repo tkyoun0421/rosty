@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 import type { ScheduleInput } from "#mutations/schedule/schemas/schedule";
 import type { ScheduleStatus, ScheduleWithRoleSlots } from "#shared/model/schedule";
 
@@ -46,10 +47,16 @@ function mapScheduleWithRoleSlots(row: ScheduleRecordRow): ScheduleWithRoleSlots
   };
 }
 
+async function getScheduleAdminMutationClient() {
+  return process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
+}
+
 export async function createScheduleRecord(
   input: ScheduleInput & { createdBy: string },
 ): Promise<ScheduleWithRoleSlots> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getScheduleAdminMutationClient();
   const { data, error } = await supabase.rpc("create_schedule_with_slots", {
     p_starts_at: input.startsAt,
     p_ends_at: input.endsAt,
@@ -83,7 +90,7 @@ export async function updateScheduleRecordStatus(input: {
   scheduleId: string;
   status: Extract<ScheduleStatus, "recruiting" | "assigning">;
 }): Promise<ScheduleWithRoleSlots> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getScheduleAdminMutationClient();
   const { data: currentSchedule, error: currentScheduleError } = await supabase
     .from("schedules")
     .select("status")

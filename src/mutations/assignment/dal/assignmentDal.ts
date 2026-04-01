@@ -3,6 +3,7 @@ import "server-only";
 import type { SaveScheduleAssignmentDraftPayload } from "#mutations/assignment/schemas/saveScheduleAssignmentDraft";
 import type { ScheduleAssignmentRecord } from "#shared/model/assignment";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 const assignmentSelect = [
   "id",
@@ -61,6 +62,12 @@ function mapAssignmentRow(row: AssignmentRow): ScheduleAssignmentRecord {
   };
 }
 
+async function getAssignmentAdminMutationClient() {
+  return process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
+}
+
 function getUnfilledSlotIds(roleSlots: RoleSlotRow[], assignments: ScheduleAssignmentRecord[]) {
   const assignmentCountBySlotId = new Map<string, number>();
 
@@ -102,7 +109,7 @@ function validateDraftPayload(input: SaveScheduleAssignmentDraftPayload, roleSlo
 export async function replaceScheduleAssignmentDraft(
   input: SaveScheduleAssignmentDraftPayload,
 ): Promise<ScheduleAssignmentRecord[]> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getAssignmentAdminMutationClient();
 
   const { data: roleSlots, error: roleSlotsError } = await supabase
     .from("schedule_role_slots")
@@ -224,7 +231,7 @@ export async function replaceScheduleAssignmentDraft(
 export async function confirmScheduleAssignmentDraft(
   input: ConfirmScheduleAssignmentDraftInput,
 ): Promise<ConfirmScheduleAssignmentResult> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getAssignmentAdminMutationClient();
 
   const { data: roleSlots, error: roleSlotsError } = await supabase
     .from("schedule_role_slots")

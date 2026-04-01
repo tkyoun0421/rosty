@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 
 import type { AppRole, InviteStatus } from "#shared/model/access";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 export interface InviteRecord {
   id: string;
@@ -16,13 +17,19 @@ export function hashInviteToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
+async function getInviteAdminMutationClient() {
+  return process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
+}
+
 export async function createInviteRecord(input: {
   tokenHash: string;
   role: AppRole;
   expiresAt: string;
   createdBy: string;
 }) {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getInviteAdminMutationClient();
   const { data, error } = await supabase
     .from("invites")
     .insert({
@@ -86,7 +93,7 @@ export async function markInviteAccepted(input: { inviteId: string; userId: stri
 }
 
 export async function revokeInvite(inviteId: string) {
-  const supabase = getAdminSupabaseClient();
+  const supabase = await getInviteAdminMutationClient();
   const { error } = await supabase
     .from("invites")
     .update({
@@ -124,4 +131,3 @@ export async function upsertProfileRole(input: {
     throw roleError;
   }
 }
-

@@ -8,6 +8,7 @@ import type {
 } from "#queries/attendance/types/adminScheduleAttendanceDetail";
 import { cacheTags } from "#shared/config/cacheTags";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 interface AttendanceCheckInRow {
   checked_in_at: string;
@@ -132,8 +133,11 @@ function mapAttendanceDetail(
 async function runGetAdminScheduleAttendanceDetail(
   scheduleId: string,
   options: GetAdminScheduleAttendanceDetailOptions = {},
+  clientOptions: { useAdminClient: boolean },
 ): Promise<AdminScheduleAttendanceDetail | null> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = clientOptions.useAdminClient
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
   const { data, error } = await supabase
     .from("schedules")
     .select(
@@ -162,12 +166,20 @@ export async function getAdminScheduleAttendanceDetail(
   scheduleId: string,
   options: GetAdminScheduleAttendanceDetailOptions = {},
 ): Promise<AdminScheduleAttendanceDetail | null> {
-  if (process.env.VITEST || options.now) {
-    return await runGetAdminScheduleAttendanceDetail(scheduleId, options);
+  const useAdminClient = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const canUseAdminCache = useAdminClient && !process.env.VITEST && !options.now;
+
+  if (!canUseAdminCache) {
+    return await runGetAdminScheduleAttendanceDetail(scheduleId, options, {
+      useAdminClient,
+    });
   }
 
   const cachedQuery = unstable_cache(
-    async () => await runGetAdminScheduleAttendanceDetail(scheduleId),
+    async () =>
+      await runGetAdminScheduleAttendanceDetail(scheduleId, undefined, {
+        useAdminClient: true,
+      }),
     ["queries:attendance:getAdminScheduleAttendanceDetail", scheduleId],
     {
       tags: [cacheTags.attendance.all, cacheTags.attendance.scheduleDetail(scheduleId)],

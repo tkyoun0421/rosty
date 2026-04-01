@@ -5,6 +5,7 @@ import { unstable_cache } from "next/cache";
 import type { AdminApplicantAssignmentStatus, AdminScheduleAssignmentDetail } from "#queries/assignment/types/adminScheduleAssignmentDetail";
 import { cacheTags } from "#shared/config/cacheTags";
 import { getAdminSupabaseClient } from "#shared/lib/supabase/adminClient";
+import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 
 interface RoleSlotAssignmentRow {
   worker_user_id: string;
@@ -111,8 +112,11 @@ function mapAssignmentDetail(row: ScheduleRow): AdminScheduleAssignmentDetail {
 
 async function runGetAdminScheduleAssignmentDetail(
   scheduleId: string,
+  options: { useAdminClient: boolean },
 ): Promise<AdminScheduleAssignmentDetail | null> {
-  const supabase = getAdminSupabaseClient();
+  const supabase = options.useAdminClient
+    ? getAdminSupabaseClient()
+    : await getServerSupabaseClient();
   const { data, error } = await supabase
     .from("schedules")
     .select(
@@ -143,12 +147,15 @@ async function runGetAdminScheduleAssignmentDetail(
 export async function getAdminScheduleAssignmentDetail(
   scheduleId: string,
 ): Promise<AdminScheduleAssignmentDetail | null> {
-  if (process.env.VITEST) {
-    return await runGetAdminScheduleAssignmentDetail(scheduleId);
+  const useAdminClient = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const canUseAdminCache = useAdminClient && !process.env.VITEST;
+
+  if (!canUseAdminCache) {
+    return await runGetAdminScheduleAssignmentDetail(scheduleId, { useAdminClient });
   }
 
   const cachedQuery = unstable_cache(
-    async () => await runGetAdminScheduleAssignmentDetail(scheduleId),
+    async () => await runGetAdminScheduleAssignmentDetail(scheduleId, { useAdminClient: true }),
     ["queries:assignment:getAdminScheduleAssignmentDetail", scheduleId],
     {
       tags: [cacheTags.assignments.all, cacheTags.assignments.detail(scheduleId)],

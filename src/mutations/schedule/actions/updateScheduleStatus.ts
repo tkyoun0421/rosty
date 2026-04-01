@@ -7,9 +7,11 @@ import {
   type UpdateScheduleStatusInput,
 } from "#mutations/schedule/schemas/updateScheduleStatus";
 import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
+import { refreshCurrentSessionClaims } from "#shared/lib/supabase/refreshSession";
 
 export async function updateScheduleStatus(input: UpdateScheduleStatusInput | FormData) {
   await requireAdminUser();
+  await refreshCurrentSessionClaims();
 
   const parsed = updateScheduleStatusSchema.parse(normalizeUpdateScheduleStatusInput(input));
   return await updateScheduleRecordStatus(parsed);

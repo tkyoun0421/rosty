@@ -3,6 +3,7 @@
 import { getCurrentUser } from "#queries/access/dal/getCurrentUser";
 import { upsertWorkerRateRecord } from "#mutations/worker-rate/dal/workerRateDal";
 import { workerRateSchema } from "#mutations/worker-rate/schemas/workerRate";
+import { refreshCurrentSessionClaims } from "#shared/lib/supabase/refreshSession";
 
 export async function upsertWorkerRate(input: { userId: string; hourlyRateCents: number }) {
   const currentUser = await getCurrentUser();
@@ -10,6 +11,8 @@ export async function upsertWorkerRate(input: { userId: string; hourlyRateCents:
   if (!currentUser || currentUser.role !== "admin") {
     throw new Error("FORBIDDEN");
   }
+
+  await refreshCurrentSessionClaims();
 
   const parsed = workerRateSchema.parse(input);
 
@@ -21,4 +24,3 @@ export async function upsertWorkerRate(input: { userId: string; hourlyRateCents:
 
   return parsed;
 }
-

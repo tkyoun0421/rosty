@@ -5,6 +5,7 @@ const lt = vi.fn(() => ({ order }));
 const gte = vi.fn(() => ({ lt }));
 const select = vi.fn(() => ({ gte }));
 const from = vi.fn(() => ({ select }));
+const getServerSupabaseClient = vi.fn(async () => ({ from }));
 const getAdminSupabaseClient = vi.fn(() => ({ from }));
 const unstable_cache = vi.fn((callback: () => unknown, _keys: string[], _options: unknown) => callback);
 const getAdminScheduleAssignmentDetail = vi.fn();
@@ -12,6 +13,10 @@ const getAdminScheduleAttendanceDetail = vi.fn();
 
 vi.mock("next/cache", () => ({
   unstable_cache,
+}));
+
+vi.mock("#shared/lib/supabase/serverClient", () => ({
+  getServerSupabaseClient,
 }));
 
 vi.mock("#shared/lib/supabase/adminClient", () => ({
@@ -30,6 +35,7 @@ describe("listAdminOperationsDashboardSchedules", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITEST = "true";
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     order.mockResolvedValue({
       data: [
         {
@@ -131,6 +137,7 @@ describe("listAdminOperationsDashboardSchedules", () => {
       now: new Date("2026-04-07T09:30:00+09:00"),
     });
 
+    expect(getServerSupabaseClient).toHaveBeenCalledTimes(1);
     expect(from).toHaveBeenCalledWith("schedules");
     expect(gte).toHaveBeenCalledWith("starts_at", "2026-04-06T15:00:00.000Z");
     expect(lt).toHaveBeenCalledWith("starts_at", "2026-04-10T15:00:00.000Z");
@@ -185,6 +192,7 @@ describe("listAdminOperationsDashboardSchedules", () => {
   it("uses dedicated dashboard cache tags for the admin operations read model", async () => {
     vi.resetModules();
     process.env.VITEST = "";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
 
     const { cacheTags } = await import("#shared/config/cacheTags");
     const { listAdminOperationsDashboardSchedules } = await import(
@@ -192,6 +200,7 @@ describe("listAdminOperationsDashboardSchedules", () => {
     );
     await listAdminOperationsDashboardSchedules();
 
+    expect(getAdminSupabaseClient).toHaveBeenCalledTimes(1);
     expect(cacheTags.dashboard).toEqual({
       all: "dashboard",
       adminOperations: "dashboard:admin-operations",
@@ -203,5 +212,20 @@ describe("listAdminOperationsDashboardSchedules", () => {
         tags: [cacheTags.dashboard.all, cacheTags.dashboard.adminOperations],
       }),
     );
+  });
+
+  it("falls back to the session client without caching when the service role key is missing", async () => {
+    vi.resetModules();
+    process.env.VITEST = "";
+    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    const { listAdminOperationsDashboardSchedules } = await import(
+      "#queries/operations-dashboard/dal/listAdminOperationsDashboardSchedules"
+    );
+    await listAdminOperationsDashboardSchedules();
+
+    expect(getServerSupabaseClient).toHaveBeenCalledTimes(1);
+    expect(getAdminSupabaseClient).not.toHaveBeenCalled();
+    expect(unstable_cache).not.toHaveBeenCalled();
   });
 });

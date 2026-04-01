@@ -45,6 +45,7 @@ vi.mock("#shared/lib/supabase/adminClient", () => ({
 describe("replaceScheduleAssignmentDraft", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
     roleSlotsEq.mockResolvedValue({
       data: [
         { id: "slot-1", headcount: 1 },

@@ -7,11 +7,13 @@ import { parseSaveScheduleAssignmentDraft, type SaveScheduleAssignmentDraftInput
 import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
 import type { ScheduleAssignmentRecord } from "#shared/model/assignment";
 import { cacheTags } from "#shared/config/cacheTags";
+import { refreshCurrentSessionClaims } from "#shared/lib/supabase/refreshSession";
 
 export async function saveScheduleAssignmentDraft(
   input: SaveScheduleAssignmentDraftInput | FormData,
 ): Promise<ScheduleAssignmentRecord[]> {
   await requireAdminUser();
+  await refreshCurrentSessionClaims();
 
   const parsed = parseSaveScheduleAssignmentDraft(input);
   const savedDraftRows = await replaceScheduleAssignmentDraft(parsed);

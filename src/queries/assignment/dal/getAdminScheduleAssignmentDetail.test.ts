@@ -14,6 +14,7 @@ describe("getAdminScheduleAssignmentDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITEST = "true";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
   });
 
   it("returns the schedule window, status, and role slots with assigned counts", async () => {

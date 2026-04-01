@@ -14,6 +14,7 @@ describe("getAdminScheduleAttendanceDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.VITEST = "true";
+    process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
   });
 
   it("returns one worker row for each confirmed assignment even when no attendance row exists", async () => {

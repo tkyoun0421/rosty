@@ -6,6 +6,7 @@ import {
   getIdentityFullName,
 } from "#mutations/auth/dal/authDal";
 import { ONBOARDING_PATH, ROOT_PATH, SIGN_IN_PATH } from "#shared/config/authConfig";
+import { refreshCurrentSessionClaims } from "#shared/lib/supabase/refreshSession";
 import { getServerSupabaseClient } from "#shared/lib/supabase/serverClient";
 import type { ProfileGender } from "#shared/model/access";
 import { isProfileComplete } from "#queries/access/utils/profileCompleteness";
@@ -63,6 +64,8 @@ export async function finalizeAuthSession(inviteToken?: string) {
       throw bootstrapError;
     }
   }
+
+  await refreshCurrentSessionClaims();
 
   const nextProfile = {
     fullName,
