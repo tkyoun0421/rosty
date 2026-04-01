@@ -11,7 +11,7 @@ v1? ?몄쬆怨???븷 遺꾨━, ?ㅼ?以?寃뚯떆? ?좎껌, 諛곗젙怨??�
 - [x] **Phase 2: Schedule Publishing**
 - [x] **Phase 3: Assignment And Pay Preview**
 - [ ] **Phase 4: Attendance Check-In**
-- [ ] **Phase 5: Operations Dashboard**
+- [x] **Phase 5: Operations Dashboard**
 
 ## Phase Details
 
@@ -63,10 +63,10 @@ Plans:
 **Requirements**: DASH-01, DASH-02, DASH-03
 **Plans**: 3
 Plans:
-- [ ] 05-01-PLAN.md - Define the dashboard read contract, anomaly helpers, cache tags, and aggregated admin query slice.
-- [ ] 05-02-PLAN.md - Build the /admin operations dashboard flow, schedule cards, and explicit dashboard route wiring.
-- [ ] 05-03-PLAN.md - Revalidate dashboard cache tags from schedule, assignment, and attendance mutations.
-**Status**: In Progress
+- [x] 05-01-PLAN.md - Define the dashboard read contract, anomaly helpers, cache tags, and aggregated admin query slice.
+- [x] 05-02-PLAN.md - Build the /admin operations dashboard flow, schedule cards, and explicit dashboard route wiring.
+- [x] 05-03-PLAN.md - Revalidate dashboard cache tags from schedule, assignment, and attendance mutations.
+**Status**: Complete
 
 ## Progress
 
@@ -76,7 +76,7 @@ Plans:
 | 2. Schedule Publishing | 3/3 | Complete | 2026-03-31 |
 | 3. Assignment And Pay Preview | 4/4 | Complete | 2026-03-31 |
 | 4. Attendance Check-In | 2/3 | In Progress | 2026-03-31 |
-| 5. Operations Dashboard | 0/3 | Not started | - |
+| 5. Operations Dashboard | 3/3 | Complete | 2026-04-01 |
 
 ---
-*Last updated: 2026-03-31 after Phase 4 Plan 03 execution*
+*Last updated: 2026-04-01 after Phase 5 Plan 02 execution*
