@@ -3,15 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-attendance-check-in-03-PLAN.md without commits per user instruction (04-02 still pending)
-last_updated: "2026-03-31T11:37:49Z"
-last_activity: 2026-03-31 -- Completed Phase 04 Plan 03 out of order
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-04-01T09:00:04.784Z"
+last_activity: 2026-04-01
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 14
-  completed_plans: 13
-  percent: 93
+  completed_phases: 4
+  total_plans: 17
+  completed_plans: 15
 ---
 
 # Project State
@@ -21,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-31)
 
 **Core value:** Build a single-venue internal staffing tool where admins can quickly confirm work assignments and workers can clearly review confirmed work, role context, and expected pay.
-**Current focus:** Phase 04 — attendance-check-in
+**Current focus:** Phase 05 — operations-dashboard
 
 ## Current Position
 
-Phase: 04 (attendance-check-in) — EXECUTING
+Phase: 05 (operations-dashboard) — EXECUTING
 Plan: 2 of 3
 Status: Ready to execute
-Last activity: 2026-03-31 (04-03 complete, 04-02 pending)
+Last activity: 2026-04-01
 
-Progress: [complete][complete][complete][active][pending] 93%
+Progress: [complete][complete][complete][complete][active] planning next
 
 ## Performance Metrics
 
@@ -40,9 +39,9 @@ Progress: [complete][complete][complete][active][pending] 93%
 | 1. Access Foundation | 4 | complete |
 | 2. Schedule Publishing | 3 | complete |
 | 3. Assignment And Pay Preview | 4 | complete |
-| 4. Attendance Check-In | 2/3 | in progress |
-| Phase 04-attendance-check-in P01 | 10min | 2 tasks | 12 files |
-| Phase 04-attendance-check-in P02 | 10min | 2 tasks | 6 files |
+| 4. Attendance Check-In | 3 | complete |
+| 5. Operations Dashboard | 0 | context gathered |
+| Phase 05 P01 | 16min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -61,25 +60,28 @@ Progress: [complete][complete][complete][active][pending] 93%
 - Phase 3: applicant review happens on the schedule detail screen.
 - Phase 3: assignments are made per role slot and final confirmation is explicit.
 - Phase 3: workers see total expected pay plus calculation basis.
-- Phase 4: check-in timing follows the venue first-meal rule, not a generic shift-relative window.
-- Phase 4: if first meal is `10:00`, check-in opens at `08:20`.
-- Phase 4: if first meal is `11:00` or later, check-in opens `1 hour 50 minutes before first meal`.
+- Phase 4: check-in timing follows the venue first-ceremony rule, not a generic shift-relative window.
+- Phase 4: if first ceremony is `10:00`, check-in opens at `08:20`.
+- Phase 4: if first ceremony is `11:00` or later, check-in opens `1 hour 50 minutes before first ceremony`.
 - Phase 4: location validation uses one venue coordinate plus one allowed radius.
 - Phase 4: attendance submission is allowed once only, with no re-submission.
 - Phase 4: admin attendance review is schedule-centric and includes worker attendance and lateness status.
+- Phase 5: operations dashboard uses schedule cards as the primary summary unit.
+- Phase 5: anomaly priority is `unfilled slots > missing check-ins > lateness`.
+- Phase 5: dashboard scope is `today + nearby upcoming schedules`.
+- Phase 5: the dashboard stays summary-first and routes drill-down to existing schedule detail pages.
 - Codebase rules: use `#` absolute imports only and forbid relative imports.
 - Codebase rules: action files orchestrate only; schema and normalization logic stay in `schemas/`.
 - Codebase rules: prefer tag-based invalidation over `revalidatePath`.
 - Codebase rules: pure helpers belong in domain `utils/` or `shared`, not inside component files.
-- [Phase 04-attendance-check-in]: Attendance window logic stays anchored to schedules.starts_at, with a special 08:20 opening for 10:00 starts and a 110-minute lead for 11:00 or later starts.
-- [Phase 04-attendance-check-in]: Attendance writes snapshot submitted coordinates, computed distance, allowed radius, and lateness at insert time so downstream reads do not recompute validation.
-- [Phase 04-attendance-check-in]: Geolocation access, secure-context checks, and one-shot submit feedback stay inside the client card while backend timing and submission state stay in the attendance query slice.
+- [Phase 05]: Keep dashboard anomaly classification request-time while caching only raw schedule rows for the active dashboard window.
+- [Phase 05]: Count only confirmed assignments toward staffed coverage so draft rows cannot clear an unfilled slots anomaly.
 
 ### Pending Todos
 
-- Execute Phase 4 Plan 02 worker attendance UI.
+- Plan Phase 5 operations dashboard implementation.
 - Run manual UAT for the latest profile onboarding and first-admin bootstrap flow.
-- Review and optionally commit the out-of-order Phase 4 Plan 03 admin attendance work if approved.
+- Optionally repair older planning documents that still display mojibake in this shell.
 
 ### Blockers/Concerns
 
@@ -88,9 +90,9 @@ Progress: [complete][complete][complete][active][pending] 93%
 
 ## Session Continuity
 
-Last session: 2026-03-31T11:38:34.055Z
-Stopped at: Completed 04-attendance-check-in-03-PLAN.md without commits per user instruction (04-02 still pending)
+Last session: 2026-04-01T09:00:04.779Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
 
 ---
-*State refreshed: 2026-03-31 after Phase 4 Plan 03 execution*
+*State refreshed: 2026-04-01 after Phase 5 discuss*

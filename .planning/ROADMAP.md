@@ -61,7 +61,11 @@ Plans:
 **Goal**: 愿由ъ옄媛 ?뱀씪 諛??덉젙 洹쇰Т, ?좎껌/諛곗젙/異쒓렐 ?곹깭, ?댁쁺 ?댁긽 吏뺥썑瑜????붾㈃?먯꽌 鍮좊Ⅴ寃??뺤씤?????덇쾶 ?쒕떎.
 **Depends on**: Phase 4
 **Requirements**: DASH-01, DASH-02, DASH-03
-**Plans**: 2
+**Plans**: 3
+Plans:
+- [ ] 05-01-PLAN.md - Define the dashboard read contract, anomaly helpers, cache tags, and aggregated admin query slice.
+- [ ] 05-02-PLAN.md - Build the /admin operations dashboard flow, schedule cards, and explicit dashboard route wiring.
+- [ ] 05-03-PLAN.md - Revalidate dashboard cache tags from schedule, assignment, and attendance mutations.
 **Status**: In Progress
 
 ## Progress
@@ -72,7 +76,7 @@ Plans:
 | 2. Schedule Publishing | 3/3 | Complete | 2026-03-31 |
 | 3. Assignment And Pay Preview | 4/4 | Complete | 2026-03-31 |
 | 4. Attendance Check-In | 2/3 | In Progress | 2026-03-31 |
-| 5. Operations Dashboard | 0/2 | Not started | - |
+| 5. Operations Dashboard | 0/3 | Not started | - |
 
 ---
 *Last updated: 2026-03-31 after Phase 4 Plan 03 execution*
