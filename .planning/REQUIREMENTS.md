@@ -44,7 +44,7 @@
 
 ### Operations Dashboard
 
-- [ ] **DASH-01**: 관리자는 당일 및 예정 근무 현황을 대시보드에서 확인할 수 있다.
+- [x] **DASH-01**: 관리자는 당일 및 예정 근무 현황을 대시보드에서 확인할 수 있다.
 - [x] **DASH-02**: 관리자는 근무 스케줄별 신청 수, 배정 상태, 출근 상태를 한 화면에서 확인할 수 있다.
 - [x] **DASH-03**: 관리자는 지각 여부를 포함한 운영 이상 징후를 빠르게 확인할 수 있다.
 
@@ -89,7 +89,7 @@
 | ATTD-01 | Phase 4 | Complete |
 | ATTD-02 | Phase 4 | Complete |
 | ATTD-03 | Phase 4 | Complete |
-| DASH-01 | Phase 5 | Pending |
+| DASH-01 | Phase 5 | Complete |
 | DASH-02 | Phase 5 | Complete |
 | DASH-03 | Phase 5 | Complete |
 
