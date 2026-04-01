@@ -181,4 +181,23 @@ describe("Admin operations dashboard", () => {
 
     expect(screen.getByText("No schedules need attention right now")).toBeInTheDocument();
   });
+
+  it("keeps admin gating in the thin /admin route", async () => {
+    const page = await import("#app/admin/page");
+
+    render(await page.default());
+
+    expect(requireAdminUser).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("heading", { name: "Today" })).toBeInTheDocument();
+  });
+
+  it("shows the admin forbidden copy when access is denied", async () => {
+    requireAdminUser.mockRejectedValue(new Error("FORBIDDEN"));
+
+    const page = await import("#app/admin/page");
+
+    render(await page.default());
+
+    expect(screen.getByText("Admin access required.")).toBeInTheDocument();
+  });
 });
