@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -28,8 +30,8 @@ describe("Admin invites page", () => {
 
     render(await AdminInvitesPage());
 
-    expect(screen.getByRole("heading", { name: "초대 관리" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "근무자 초대 생성" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "珥덈? 愿由?" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "洹쇰Т??珥덈? ?앹꽦" })).toBeInTheDocument();
   });
 
   it("shows the denied access copy and hides the invite CTA when admin access is rejected", async () => {
@@ -42,15 +44,18 @@ describe("Admin invites page", () => {
     render(await AdminInvitesPage());
 
     expect(screen.getByText("Admin access required.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "근무자 초대 생성" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "洹쇰Т??珥덈? ?앹꽦" })).not.toBeInTheDocument();
   });
 
   it("keeps admin gating in the thin /admin/invites route", async () => {
+    const routeSource = await readFile("src/app/admin/invites/page.tsx", "utf8");
     const page = await import("#app/admin/invites/page");
 
     render(await page.default());
 
+    expect(routeSource).toContain("return await AdminInvitesPage()");
+    expect(routeSource).not.toContain("requireAdminUser");
     expect(requireAdminUser).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("heading", { name: "초대 관리" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "珥덈? 愿由?" })).toBeInTheDocument();
   });
 });
