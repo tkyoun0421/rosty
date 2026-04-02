@@ -77,7 +77,9 @@ Plans:
 **Depends on**: Phase 5
 **Requirements**: AUTH-01, AUTH-03
 **Gap Closure**: Closes milestone audit auth hardening gaps for `/admin/invites`.
-**Plans**: 0
+**Plans**: 1
+Plans:
+- [ ] 06-01-PLAN.md - Guard `/admin/invites` with `requireAdminUser` in the flow and add route-level regression coverage.
 **Status**: Planned
 
 ### Phase 7: Application Admin Freshness
