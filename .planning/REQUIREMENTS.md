@@ -20,8 +20,8 @@
 ### Applications
 
 - [x] **APPL-01**: 근무자는 모집 중인 근무 스케줄 목록을 확인할 수 있다.
-- [ ] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
-- [ ] **APPL-03**: 관리자는 각 근무 스케줄에 대한 신청자 목록과 신청 상태를 확인할 수 있다.
+- [x] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
+- [x] **APPL-03**: 관리자는 각 근무 스케줄에 대한 신청자 목록과 신청 상태를 확인할 수 있다.
 
 ### Assignment
 
@@ -45,7 +45,7 @@
 ### Operations Dashboard
 
 - [x] **DASH-01**: 관리자는 당일 및 예정 근무 현황을 대시보드에서 확인할 수 있다.
-- [ ] **DASH-02**: 관리자는 근무 스케줄별 신청 수, 배정 상태, 출근 상태를 한 화면에서 확인할 수 있다.
+- [x] **DASH-02**: 관리자는 근무 스케줄별 신청 수, 배정 상태, 출근 상태를 한 화면에서 확인할 수 있다.
 - [x] **DASH-03**: 관리자는 지각 여부를 포함한 운영 이상 징후를 빠르게 확인할 수 있다.
 
 ## v2 Requirements
@@ -77,8 +77,8 @@
 | SCHD-02 | Phase 2 | Complete |
 | SCHD-03 | Phase 2 | Complete |
 | APPL-01 | Phase 2 | Complete |
-| APPL-02 | Phase 7 | Pending |
-| APPL-03 | Phase 7 | Pending |
+| APPL-02 | Phase 7 | Complete |
+| APPL-03 | Phase 7 | Complete |
 | ASGN-01 | Phase 3 | Complete |
 | ASGN-02 | Phase 3 | Complete |
 | ASGN-03 | Phase 3 | Complete |
@@ -90,7 +90,7 @@
 | ATTD-02 | Phase 4 | Complete |
 | ATTD-03 | Phase 4 | Complete |
 | DASH-01 | Phase 5 | Complete |
-| DASH-02 | Phase 7 | Pending |
+| DASH-02 | Phase 7 | Complete |
 | DASH-03 | Phase 5 | Complete |
 
 **Coverage:**
@@ -100,4 +100,4 @@
 
 ---
 *Requirements defined: 2026-03-31*
-*Last updated: 2026-03-31 after Phase 4 Plan 03 execution*
+*Last updated: 2026-04-03 after Phase 07 execution*
