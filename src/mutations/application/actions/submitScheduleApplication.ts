@@ -7,8 +7,17 @@ import { parseSubmitScheduleApplicationFormData } from "#mutations/application/s
 import { cacheTags } from "#shared/config/cacheTags";
 
 export async function submitScheduleApplication(formData: FormData) {
-  await createScheduleApplication(parseSubmitScheduleApplicationFormData(formData));
-  revalidateTag(cacheTags.applications.all, "max");
-  revalidateTag(cacheTags.applications.workerScheduleIds, "max");
-  revalidateTag(cacheTags.schedules.recruitingList, "max");
+  const parsed = parseSubmitScheduleApplicationFormData(formData);
+  const result = await createScheduleApplication(parsed);
+
+  if (result.status === "applied") {
+    revalidateTag(cacheTags.applications.all, "max");
+    revalidateTag(cacheTags.applications.workerScheduleIds, "max");
+    revalidateTag(cacheTags.schedules.recruitingList, "max");
+    revalidateTag(cacheTags.assignments.detail(parsed.scheduleId), "max");
+    revalidateTag(cacheTags.dashboard.all, "max");
+    revalidateTag(cacheTags.dashboard.adminOperations, "max");
+  }
+
+  return result;
 }
