@@ -30,8 +30,8 @@ describe("Admin invites page", () => {
 
     render(await AdminInvitesPage());
 
-    expect(screen.getByRole("heading", { name: "珥덈? 愿由?" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "洹쇰Т??珥덈? ?앹꽦" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "초대 관리" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "근무자 초대 생성" })).toBeInTheDocument();
   });
 
   it("shows the denied access copy and hides the invite CTA when admin access is rejected", async () => {
@@ -44,7 +44,7 @@ describe("Admin invites page", () => {
     render(await AdminInvitesPage());
 
     expect(screen.getByText("Admin access required.")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "洹쇰Т??珥덈? ?앹꽦" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "근무자 초대 생성" })).not.toBeInTheDocument();
   });
 
   it("keeps admin gating in the thin /admin/invites route", async () => {
@@ -56,6 +56,6 @@ describe("Admin invites page", () => {
     expect(routeSource).toContain("return await AdminInvitesPage()");
     expect(routeSource).not.toContain("requireAdminUser");
     expect(requireAdminUser).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("heading", { name: "珥덈? 愿由?" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "초대 관리" })).toBeInTheDocument();
   });
 });

@@ -1,6 +1,13 @@
 import { createWorkerInvite } from "#mutations/invite/actions/createWorkerInvite";
+import { requireAdminUser } from "#queries/access/dal/requireAdminUser";
 
-export function AdminInvitesPage() {
+export async function AdminInvitesPage() {
+  try {
+    await requireAdminUser();
+  } catch {
+    return <main>Admin access required.</main>;
+  }
+
   return (
     <main>
       <h1>초대 관리</h1>
