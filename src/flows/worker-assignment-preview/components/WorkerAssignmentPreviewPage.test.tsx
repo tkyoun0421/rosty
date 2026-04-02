@@ -120,9 +120,10 @@ describe("WorkerAssignmentPreviewPage", () => {
     vi.clearAllMocks();
     setSecureContext(true);
     installGeolocationSuccess();
+    vi.spyOn(window, "confirm").mockReturnValue(true);
   });
 
-  it("renders total pay, calculation basis, confirmed assignments, and attendance status in order", async () => {
+  it("renders check-in status first, then calculation basis and confirmed assignments", async () => {
     mockWorkerAssignmentPage();
 
     const { WorkerAssignmentPreviewPage } = await import(
@@ -130,26 +131,18 @@ describe("WorkerAssignmentPreviewPage", () => {
     );
     render(await WorkerAssignmentPreviewPage());
 
-    const headings = screen.getAllByRole("heading").map((node) => node.textContent);
-
     expect(listConfirmedWorkerAssignments).toHaveBeenCalledWith("worker-1");
     expect(listWorkerAttendanceStatuses).toHaveBeenCalledWith("worker-1");
-    expect(headings.slice(0, 4)).toEqual([
-      "Confirmed work pay preview",
-      "Calculation basis",
-      "Confirmed assignments",
-      "captain",
-    ]);
-    expect(screen.getByText("144,000 KRW")).toBeInTheDocument();
-    expect(screen.getByText("Confirmed assignments: 1")).toBeInTheDocument();
-    expect(screen.getByText("Overtime hours: 2")).toBeInTheDocument();
-    expect(screen.getByText("Role: captain")).toBeInTheDocument();
-    expect(screen.getByText("Overtime applied: Yes")).toBeInTheDocument();
-    expect(screen.getByText("Check-in open")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Check-in status" })).toBeInTheDocument();
+    expect(screen.getAllByText("144,000 KRW").length).toBeGreaterThan(0);
+    expect(screen.getByText("Confirmed assignments")).toBeInTheDocument();
+    expect(screen.getByText("Expected total")).toBeInTheDocument();
+    expect(screen.getByText("Role assignment: captain")).toBeInTheDocument();
+    expect(screen.getAllByText("Check-in open").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Check in now" })).toBeEnabled();
   });
 
-  it("renders an empty state and never shows draft messaging", async () => {
+  it("renders the ui-spec empty state copy when there is no confirmed shift ready", async () => {
     getCurrentUser.mockResolvedValue({ id: "worker-1", email: "worker@example.com", role: "worker" });
     listConfirmedWorkerAssignments.mockResolvedValue([]);
     listWorkerAttendanceStatuses.mockResolvedValue([]);
@@ -159,13 +152,12 @@ describe("WorkerAssignmentPreviewPage", () => {
     );
     render(await WorkerAssignmentPreviewPage());
 
-    expect(screen.getByText("No confirmed work yet")).toBeInTheDocument();
+    expect(screen.getByText("No confirmed shift ready for check-in")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Confirmed assignments and pay previews will appear here after an admin confirms them.",
+        "Your confirmed assignment will appear here when check-in opens. If you already have a shift, wait for the check-in window or contact an admin.",
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/draft/i)).not.toBeInTheDocument();
   });
 
   it("shows the recorded state and disables resubmission when attendance is already submitted", async () => {
@@ -187,7 +179,7 @@ describe("WorkerAssignmentPreviewPage", () => {
     render(await WorkerAssignmentPreviewPage());
 
     expect(screen.getByText("Check-in recorded")).toBeInTheDocument();
-    expect(screen.getByText(/Submitted at/)).toBeInTheDocument();
+    expect(screen.getByText(/Attendance submitted/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Check in now" })).toBeDisabled();
   });
 

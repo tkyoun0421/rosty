@@ -170,8 +170,8 @@ describe("AdminScheduleAssignmentPage", () => {
     expect(applicants.compareDocumentPosition(actions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(getAdminScheduleAssignmentDetail).toHaveBeenCalledWith("schedule-1");
     expect(getAdminScheduleAttendanceDetail).toHaveBeenCalledWith("schedule-1");
-    expect(screen.getByText("1 checked in")).toBeInTheDocument();
-    expect(screen.getByText("1 late")).toBeInTheDocument();
+    expect(screen.getAllByText("Checked in").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Late").length).toBeGreaterThan(0);
   });
 
   it("shows the approved admin attendance status labels", async () => {
@@ -180,10 +180,10 @@ describe("AdminScheduleAssignmentPage", () => {
 
     render(await AdminScheduleAssignmentPage({ scheduleId: "schedule-1" }));
 
-    expect(screen.getByText("Checked in")).toBeInTheDocument();
-    expect(screen.getByText("Late")).toBeInTheDocument();
-    expect(screen.getByText("Not checked in")).toBeInTheDocument();
-    expect(screen.getByText("Not open yet")).toBeInTheDocument();
+    expect(screen.getAllByText("Checked in").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Late").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Not checked in").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Not open yet").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Kim Hana").length).toBeGreaterThan(0);
     expect(screen.getAllByText("captain").length).toBeGreaterThan(0);
   });

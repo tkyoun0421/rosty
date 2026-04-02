@@ -29,14 +29,8 @@ export async function AdminScheduleAssignmentPage({
   }
 
   return (
-    <main
-      style={{
-        backgroundColor: "#F6F1E8",
-        minHeight: "100vh",
-        padding: "32px",
-      }}
-    >
-      <div style={{ display: "grid", gap: "32px" }}>
+    <main className="min-h-screen bg-secondary/40 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-8">
         <AttendanceReviewPanel detail={attendanceDetail} />
         <ApplicantAssignmentPanel detail={assignmentDetail} />
       </div>

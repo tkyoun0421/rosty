@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-04-01T09:12:23.883Z"
-last_activity: 2026-04-01
+status: verifying
+stopped_at: Paused Phase 04 UAT with 2 tests remaining
+last_updated: "2026-04-02T00:10:00Z"
+last_activity: 2026-04-02
 progress:
   total_phases: 5
   completed_phases: 5
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-31)
 
 **Core value:** Build a single-venue internal staffing tool where admins can quickly confirm work assignments and workers can clearly review confirmed work, role context, and expected pay.
-**Current focus:** Phase 05 — operations-dashboard
+**Current focus:** Phase 04 UAT completion, then Phase 05 manual dashboard verification
 
 ## Current Position
 
-Phase: 05 (operations-dashboard) — EXECUTING
-Plan: 3 of 3
-Status: Ready to execute
-Last activity: 2026-04-01
+Phase: 04 (attendance-check-in) -> VERIFYING
+Plan: UAT 3 of 5 tests passed
+Status: Paused waiting for manual admin-side verification
+Last activity: 2026-04-02
 
-Progress: [complete][complete][complete][complete][active] planning next
+Progress: [complete][complete][complete][active-uat][pending-human-uat]
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Progress: [complete][complete][complete][complete][active] planning next
 | 2. Schedule Publishing | 3 | complete |
 | 3. Assignment And Pay Preview | 4 | complete |
 | 4. Attendance Check-In | 3 | complete |
-| 5. Operations Dashboard | 0 | context gathered |
+| 5. Operations Dashboard | 3 | implementation complete, human UAT pending |
 | Phase 05 P01 | 16min | 2 tasks | 6 files |
 | Phase 05 P03 | 5min | 2 tasks | 8 files |
 | Phase 05 P02 | 11min | 2 tasks | 5 files |
@@ -85,20 +85,25 @@ Progress: [complete][complete][complete][complete][active] planning next
 
 ### Pending Todos
 
-- Plan Phase 5 operations dashboard implementation.
+- Finish Phase 4 UAT in `.planning/phases/04-attendance-check-in/04-UAT.md`.
+- After Phase 4 closes, run Phase 5 human UAT in `.planning/phases/05-operations-dashboard/05-HUMAN-UAT.md`.
 - Run manual UAT for the latest profile onboarding and first-admin bootstrap flow.
 - Optionally repair older planning documents that still display mojibake in this shell.
 
 ### Blockers/Concerns
 
+- `STATE.md` had drifted from the actual workflow state and previously pointed at Phase 5 execution even though active work was manual verification.
+- `gsd-next` will prefer the active UAT session until `.planning/phases/04-attendance-check-in/04-UAT.md` is completed or explicitly abandoned.
 - Historical planning documents had encoding damage in shell output. Use `pnpm encoding:check` and repository bytes as the source of truth.
 - PowerShell console rendering may still display mojibake even when files are valid UTF-8 without BOM.
 
 ## Session Continuity
 
-Last session: 2026-04-01T09:12:23.878Z
-Stopped at: Completed 05-02-PLAN.md
-Resume file: None
+Last session: 2026-04-02T00:10:00Z
+Stopped at: Phase 4 UAT paused after 3 passes and before admin attendance checks
+Resume file: `.planning/phases/04-attendance-check-in/04-UAT.md`
 
 ---
-*State refreshed: 2026-04-01 after Phase 5 discuss*
+*State refreshed: 2026-04-02 after pausing Phase 4 UAT*
+
+

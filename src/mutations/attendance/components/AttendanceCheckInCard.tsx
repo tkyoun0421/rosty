@@ -3,62 +3,23 @@
 import { useState, useTransition } from "react";
 
 import { submitAttendanceCheckIn } from "#mutations/attendance/actions/submitAttendanceCheckIn";
+import {
+  formatAttendanceDateTime,
+  getAttendanceBadgeLabel,
+  getAttendanceDefaultHelper,
+  getAttendanceHeadline,
+  getGeolocationErrorMessage,
+} from "#mutations/attendance/utils/attendanceCheckIn";
 import type { WorkerAttendanceStatus } from "#queries/attendance/types/workerAttendanceStatus";
+import { Alert, AlertDescription, AlertTitle } from "#shared/ui/alert";
+import { Badge } from "#shared/ui/badge";
+import { Button } from "#shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "#shared/ui/card";
 
 interface AttendanceCheckInCardProps {
   assignmentId: string;
   roleCode: string;
   attendanceStatus: WorkerAttendanceStatus;
-}
-
-function formatDateTime(value: string) {
-  return new Intl.DateTimeFormat(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
-
-function getHeadline(status: WorkerAttendanceStatus) {
-  if (status.submissionStatus === "submitted") {
-    return "Check-in recorded";
-  }
-
-  return status.windowStatus === "open" ? "Check-in open" : "Check-in not open yet";
-}
-
-function getDefaultHelper(status: WorkerAttendanceStatus, isSecureContextAvailable: boolean) {
-  if (status.submissionStatus === "submitted") {
-    if (status.checkedInAt) {
-      return `Submitted at ${formatDateTime(status.checkedInAt)}${status.isLate ? " (Late)." : "."}`;
-    }
-
-    return "This assignment already has a submitted check-in.";
-  }
-
-  if (status.windowStatus === "open") {
-    if (!isSecureContextAvailable) {
-      return "Check-in requires a secure connection (HTTPS). Please reload this page in a secure context.";
-    }
-
-    return "We will ask for your current location before sending the check-in.";
-  }
-
-  return `Check-in opens at ${formatDateTime(status.checkInOpensAt)}.`;
-}
-
-function getGeolocationErrorMessage(code: number) {
-  if (code === 1) {
-    return "Location access was denied. Allow location permission to check in.";
-  }
-
-  if (code === 3) {
-    return "Location request timed out. Try again while staying near the venue.";
-  }
-
-  return "Current location is unavailable. Try again after your device can provide a position.";
 }
 
 export function AttendanceCheckInCard({
@@ -80,7 +41,7 @@ export function AttendanceCheckInCard({
     }
 
     if (status.windowStatus !== "open") {
-      setHelperMessage(`Check-in opens at ${formatDateTime(status.checkInOpensAt)}.`);
+      setHelperMessage(`Check-in opens at ${formatAttendanceDateTime(status.checkInOpensAt)}.`);
       return;
     }
 
@@ -91,6 +52,14 @@ export function AttendanceCheckInCard({
 
     if (!("geolocation" in navigator)) {
       setHelperMessage("This browser does not support location access for check-in.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Submit check-in: Submit this attendance record now? You can only check in once and cannot edit it later.",
+    );
+
+    if (!confirmed) {
       return;
     }
 
@@ -131,16 +100,20 @@ export function AttendanceCheckInCard({
           }
 
           if (result.status === "out_of_radius") {
-            setHelperMessage("You are outside the allowed venue check-in radius.");
+            setHelperMessage(
+              "We could not complete check-in. Confirm location access, move inside the venue check-in radius, and try again before the window closes.",
+            );
             return;
           }
 
           if (result.status === "too_early") {
-            setHelperMessage(`Check-in opens at ${formatDateTime(status.checkInOpensAt)}.`);
+            setHelperMessage(`Check-in opens at ${formatAttendanceDateTime(status.checkInOpensAt)}.`);
             return;
           }
 
-          setHelperMessage("We could not complete check-in. Confirm location access and try again.");
+          setHelperMessage(
+            "We could not complete check-in. Confirm location access, move inside the venue check-in radius, and try again before the window closes.",
+          );
         });
       },
       (error) => {
@@ -155,17 +128,47 @@ export function AttendanceCheckInCard({
   };
 
   return (
-    <section aria-label={`Attendance check-in for ${roleCode}`}>
-      <h4>{getHeadline(status)}</h4>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={!canSubmit}
-        aria-disabled={!canSubmit}
-      >
-        {isPending ? "Checking in..." : "Check in now"}
-      </button>
-      <p>{helperMessage ?? getDefaultHelper(status, isSecureContextAvailable)}</p>
-    </section>
+    <Card aria-label={`Attendance check-in for ${roleCode}`} className="border-primary/10 bg-background">
+      <CardHeader className="gap-4 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-2">
+            <Badge
+              variant={
+                status.submissionStatus === "submitted"
+                  ? status.isLate
+                    ? "destructive"
+                    : "default"
+                  : status.windowStatus === "open"
+                    ? "default"
+                    : "secondary"
+              }
+            >
+              {getAttendanceBadgeLabel(status)}
+            </Badge>
+            <CardTitle className="text-xl font-semibold">{getAttendanceHeadline(status)}</CardTitle>
+          </div>
+          <Button onClick={handleClick} disabled={!canSubmit} aria-disabled={!canSubmit} size="lg">
+            {isPending ? "Checking in..." : "Check in now"}
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="grid gap-2 text-sm text-muted-foreground">
+          <p className="m-0">Role assignment: {roleCode}</p>
+          <p className="m-0">
+            {helperMessage ?? getAttendanceDefaultHelper(status, isSecureContextAvailable)}
+          </p>
+        </div>
+        {status.submissionStatus === "submitted" && status.checkedInAt ? (
+          <Alert>
+            <AlertTitle>Attendance submitted</AlertTitle>
+            <AlertDescription>
+              Recorded at {formatAttendanceDateTime(status.checkedInAt)}
+              {status.isLate ? " and marked late." : "."}
+            </AlertDescription>
+          </Alert>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
