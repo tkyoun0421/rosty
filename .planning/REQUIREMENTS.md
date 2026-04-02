@@ -20,8 +20,8 @@
 ### Applications
 
 - [x] **APPL-01**: 근무자는 모집 중인 근무 스케줄 목록을 확인할 수 있다.
-- [x] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
-- [x] **APPL-03**: 관리자는 각 근무 스케줄에 대한 신청자 목록과 신청 상태를 확인할 수 있다.
+- [ ] **APPL-02**: 근무자는 특정 근무 스케줄에 근무 신청을 제출할 수 있다.
+- [ ] **APPL-03**: 관리자는 각 근무 스케줄에 대한 신청자 목록과 신청 상태를 확인할 수 있다.
 
 ### Assignment
 
@@ -32,9 +32,9 @@
 ### Payroll Preview
 
 - [ ] **PAY-01**: 관리자는 근무자별 시급을 등록하고 수정할 수 있다.
-- [x] **PAY-02**: 시스템은 확정된 근무 정보를 기준으로 근무자별 예상 급여를 계산할 수 있다.
+- [ ] **PAY-02**: 시스템은 확정된 근무 정보를 기준으로 근무자별 예상 급여를 계산할 수 있다.
 - [x] **PAY-03**: 시스템은 9시간 초과 근무분에 대해 기본 시급의 1.5배를 적용해 예상 급여를 계산할 수 있다.
-- [x] **PAY-04**: 근무자는 자신의 확정 근무에 대한 예상 급여를 확인할 수 있다.
+- [ ] **PAY-04**: 근무자는 자신의 확정 근무에 대한 예상 급여를 확인할 수 있다.
 
 ### Attendance
 
@@ -45,7 +45,7 @@
 ### Operations Dashboard
 
 - [x] **DASH-01**: 관리자는 당일 및 예정 근무 현황을 대시보드에서 확인할 수 있다.
-- [x] **DASH-02**: 관리자는 근무 스케줄별 신청 수, 배정 상태, 출근 상태를 한 화면에서 확인할 수 있다.
+- [ ] **DASH-02**: 관리자는 근무 스케줄별 신청 수, 배정 상태, 출근 상태를 한 화면에서 확인할 수 있다.
 - [x] **DASH-03**: 관리자는 지각 여부를 포함한 운영 이상 징후를 빠르게 확인할 수 있다.
 
 ## v2 Requirements
@@ -70,27 +70,27 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Complete |
+| AUTH-01 | Phase 6 | Pending |
 | AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 1 | Complete |
+| AUTH-03 | Phase 6 | Pending |
 | SCHD-01 | Phase 2 | Complete |
 | SCHD-02 | Phase 2 | Complete |
 | SCHD-03 | Phase 2 | Complete |
 | APPL-01 | Phase 2 | Complete |
-| APPL-02 | Phase 2 | Complete |
-| APPL-03 | Phase 3 | Complete |
+| APPL-02 | Phase 7 | Pending |
+| APPL-03 | Phase 7 | Pending |
 | ASGN-01 | Phase 3 | Complete |
 | ASGN-02 | Phase 3 | Complete |
 | ASGN-03 | Phase 3 | Complete |
-| PAY-01 | Phase 1 | Complete |
-| PAY-02 | Phase 3 | Complete |
+| PAY-01 | Phase 8 | Pending |
+| PAY-02 | Phase 8 | Pending |
 | PAY-03 | Phase 3 | Complete |
-| PAY-04 | Phase 3 | Complete |
+| PAY-04 | Phase 8 | Pending |
 | ATTD-01 | Phase 4 | Complete |
 | ATTD-02 | Phase 4 | Complete |
 | ATTD-03 | Phase 4 | Complete |
 | DASH-01 | Phase 5 | Complete |
-| DASH-02 | Phase 5 | Complete |
+| DASH-02 | Phase 7 | Pending |
 | DASH-03 | Phase 5 | Complete |
 
 **Coverage:**

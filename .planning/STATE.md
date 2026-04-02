@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed Phase 04 UAT; next is Phase 05 human UAT
-last_updated: "2026-04-02T00:17:00Z"
+status: planning
+stopped_at: Created milestone gap-closure phases 6-9
+last_updated: "2026-04-02T00:25:00Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 5
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-31)
 
 **Core value:** Build a single-venue internal staffing tool where admins can quickly confirm work assignments and workers can clearly review confirmed work, role context, and expected pay.
-**Current focus:** Phase 05 manual dashboard verification
+**Current focus:** Phase 06 planning for milestone gap closure
 
 ## Current Position
 
-Phase: 05 (operations-dashboard) -> VERIFYING
-Plan: Human UAT 0 of 2 tests passed
-Status: Ready for manual dashboard verification
+Phase: 06 (admin-invite-route-guard) -> READY_TO_PLAN
+Plan: Gap-closure phases 6-9 created from milestone audit
+Status: Ready to plan first gap-closure phase
 Last activity: 2026-04-02
 
-Progress: [complete][complete][complete][complete][active-human-uat]
+Progress: [complete][complete][complete][complete][gap-phases-added]
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Progress: [complete][complete][complete][complete][active-human-uat]
 | 2. Schedule Publishing | 3 | complete |
 | 3. Assignment And Pay Preview | 4 | complete |
 | 4. Attendance Check-In | 3 | complete |
-| 5. Operations Dashboard | 3 | implementation complete, human UAT pending |
+| 5. Operations Dashboard | 3 | complete |
 | Phase 05 P01 | 16min | 2 tasks | 6 files |
 | Phase 05 P03 | 5min | 2 tasks | 8 files |
 | Phase 05 P02 | 11min | 2 tasks | 5 files |
@@ -85,23 +85,22 @@ Progress: [complete][complete][complete][complete][active-human-uat]
 
 ### Pending Todos
 
-- Run Phase 5 human UAT in `.planning/phases/05-operations-dashboard/05-HUMAN-UAT.md`.
+- Plan Phase 6 gap-closure work.
 - Run manual UAT for the latest profile onboarding and first-admin bootstrap flow.
 - Optionally repair older planning documents that still display mojibake in this shell.
 
 ### Blockers/Concerns
 
 - `STATE.md` had drifted from the actual workflow state and previously pointed at Phase 5 execution even though active work was manual verification.
-- `gsd-next` should now route to `.planning/phases/05-operations-dashboard/05-HUMAN-UAT.md` for the remaining dashboard checks.
+- Milestone audit still has `gaps_found`; milestone completion remains blocked until phases 6-9 are implemented and re-audited.
 - Historical planning documents had encoding damage in shell output. Use `pnpm encoding:check` and repository bytes as the source of truth.
 - PowerShell console rendering may still display mojibake even when files are valid UTF-8 without BOM.
 
 ## Session Continuity
 
-Last session: 2026-04-02T00:17:00Z
-Stopped at: Phase 4 UAT completed with 5 of 5 tests passing
-Resume file: `.planning/phases/05-operations-dashboard/05-HUMAN-UAT.md`
+Last session: 2026-04-02T00:25:00Z
+Stopped at: Added gap-closure roadmap phases from milestone audit
+Resume file: `.planning/ROADMAP.md`
 
 ---
-*State refreshed: 2026-04-02 after completing Phase 4 UAT*
-
+*State refreshed: 2026-04-02 after planning milestone gap phases*
