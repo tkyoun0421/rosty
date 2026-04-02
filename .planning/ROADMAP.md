@@ -77,10 +77,11 @@ Plans:
 **Depends on**: Phase 5
 **Requirements**: AUTH-01, AUTH-03
 **Gap Closure**: Closes milestone audit auth hardening gaps for `/admin/invites`.
-**Plans**: 1
+**Plans**: 2
 Plans:
-- [ ] 06-01-PLAN.md - Guard `/admin/invites` with `requireAdminUser` in the flow and add route-level regression coverage.
-**Status**: Planned
+- [x] 06-01-PLAN.md - Create the failing-first invite-route regression harness for admin allow, worker deny, and thin-route wiring.
+- [ ] 06-02-PLAN.md - Guard `/admin/invites` with `requireAdminUser` in the flow and make the thin route await the guarded flow.
+**Status**: In Progress
 
 ### Phase 7: Application Admin Freshness
 **Goal**: Revalidate admin schedule-detail and dashboard reads after worker application writes so admin-side applicant state stays fresh.
@@ -115,7 +116,7 @@ Plans:
 | 3. Assignment And Pay Preview | 4/4 | Complete | 2026-03-31 |
 | 4. Attendance Check-In | 3/3 | Complete | 2026-04-02 |
 | 5. Operations Dashboard | 3/3 | Complete | 2026-04-01 |
-| 6. Admin Invite Route Guard | 0/0 | Planned | - |
+| 6. Admin Invite Route Guard | 1/2 | In Progress | - |
 | 7. Application Admin Freshness | 0/0 | Planned | - |
 | 8. Pay Preview Freshness | 0/0 | Planned | - |
 | 9. Verification Evidence Reconciliation | 0/0 | Planned | - |
