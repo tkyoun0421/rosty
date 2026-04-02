@@ -7,9 +7,9 @@
 
 ### Authentication
 
-- [ ] **AUTH-01**: 관리자는 초대 기반으로 근무자 계정을 생성하거나 초대 링크를 발급할 수 있다.
+- [x] **AUTH-01**: 관리자는 초대 기반으로 근무자 계정을 생성하거나 초대 링크를 발급할 수 있다.
 - [ ] **AUTH-02**: 사용자는 Google 로그인을 통해 가입 및 로그인할 수 있다.
-- [ ] **AUTH-03**: 시스템은 사용자 역할에 따라 관리자와 근무자의 접근 권한을 구분한다.
+- [x] **AUTH-03**: 시스템은 사용자 역할에 따라 관리자와 근무자의 접근 권한을 구분한다.
 
 ### Schedule Setup
 
@@ -70,9 +70,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 6 | Pending |
+| AUTH-01 | Phase 6 | Complete |
 | AUTH-02 | Phase 1 | Complete |
-| AUTH-03 | Phase 6 | Pending |
+| AUTH-03 | Phase 6 | Complete |
 | SCHD-01 | Phase 2 | Complete |
 | SCHD-02 | Phase 2 | Complete |
 | SCHD-03 | Phase 2 | Complete |

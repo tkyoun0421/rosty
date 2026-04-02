@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-04-02T11:22:40.324Z"
+status: verifying
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-04-02T11:28:34.669Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 9
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 19
-  completed_plans: 18
+  completed_plans: 19
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-31)
 
 Phase: 06 (admin-invite-route-guard) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 Progress: [complete][complete][complete][complete][gap-phases-added]
@@ -45,6 +45,7 @@ Progress: [complete][complete][complete][complete][gap-phases-added]
 | Phase 05 P03 | 5min | 2 tasks | 8 files |
 | Phase 05 P02 | 11min | 2 tasks | 5 files |
 | Phase 06 P01 | 7min | 1 tasks | 1 files |
+| Phase 06 P02 | 3min | 1 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Progress: [complete][complete][complete][complete][gap-phases-added]
 - [Phase 05]: Keep admin access enforcement inside AdminOperationsDashboardPage so the thin /admin route stays declarative.
 - [Phase 05]: Normalize dashboard anomaly badges to the locked UI-spec labels instead of exposing DAL label casing directly.
 - [Phase 06]: Admin invite guard regressions should mock requireAdminUser and import the real thin /admin/invites route entry.
+- [Phase 06]: Kept the admin check inside AdminInvitesPage so /admin/invites stays declarative and consistent with other admin routes.
+- [Phase 06]: Reused the existing inline forbidden copy instead of widening scope into Next.js forbidden() handling.
 
 ### Pending Todos
 
@@ -100,8 +103,8 @@ Progress: [complete][complete][complete][complete][gap-phases-added]
 
 ## Session Continuity
 
-Last session: 2026-04-02T11:22:40.318Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-04-02T11:28:34.663Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None
 
 ---
