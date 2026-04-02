@@ -12,7 +12,7 @@ v1? ?몄쬆怨???븷 遺꾨━, ?ㅼ?以?寃뚯떆? ?좎껌, 諛곗젙怨??�
 - [x] **Phase 3: Assignment And Pay Preview**
 - [x] **Phase 4: Attendance Check-In**
 - [x] **Phase 5: Operations Dashboard**
-- [ ] **Phase 6: Admin Invite Route Guard**
+- [x] **Phase 6: Admin Invite Route Guard**
 - [ ] **Phase 7: Application Admin Freshness**
 - [ ] **Phase 8: Pay Preview Freshness**
 - [ ] **Phase 9: Verification Evidence Reconciliation**
@@ -80,8 +80,8 @@ Plans:
 **Plans**: 2
 Plans:
 - [x] 06-01-PLAN.md - Create the failing-first invite-route regression harness for admin allow, worker deny, and thin-route wiring.
-- [ ] 06-02-PLAN.md - Guard `/admin/invites` with `requireAdminUser` in the flow and make the thin route await the guarded flow.
-**Status**: In Progress
+- [x] 06-02-PLAN.md - Guard `/admin/invites` with `requireAdminUser` in the flow and make the thin route await the guarded flow.
+**Status**: Complete
 
 ### Phase 7: Application Admin Freshness
 **Goal**: Revalidate admin schedule-detail and dashboard reads after worker application writes so admin-side applicant state stays fresh.
@@ -116,10 +116,10 @@ Plans:
 | 3. Assignment And Pay Preview | 4/4 | Complete | 2026-03-31 |
 | 4. Attendance Check-In | 3/3 | Complete | 2026-04-02 |
 | 5. Operations Dashboard | 3/3 | Complete | 2026-04-01 |
-| 6. Admin Invite Route Guard | 1/2 | In Progress | - |
+| 6. Admin Invite Route Guard | 2/2 | Complete | 2026-04-02 |
 | 7. Application Admin Freshness | 0/0 | Planned | - |
 | 8. Pay Preview Freshness | 0/0 | Planned | - |
 | 9. Verification Evidence Reconciliation | 0/0 | Planned | - |
 
 ---
-*Last updated: 2026-04-02 after milestone gap planning*
+*Last updated: 2026-04-02 after Phase 6 verification and completion*

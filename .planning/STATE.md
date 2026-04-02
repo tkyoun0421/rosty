@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-04-02T11:28:34.669Z"
+status: ready_to_plan
+stopped_at: Phase 06 complete, ready to plan Phase 07
+last_updated: "2026-04-02T20:11:45.8771723Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 9
@@ -17,19 +17,19 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-31)
+See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Build a single-venue internal staffing tool where admins can quickly confirm work assignments and workers can clearly review confirmed work, role context, and expected pay.
-**Current focus:** Phase 06 — admin-invite-route-guard
+**Current focus:** Phase 07 - application-admin-freshness
 
 ## Current Position
 
-Phase: 06 (admin-invite-route-guard) — EXECUTING
-Plan: 2 of 2
-Status: Phase complete — ready for verification
-Last activity: 2026-04-02
+Phase: 07 of 09 (application-admin-freshness)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-02 - Phase 06 verification passed and the phase was marked complete.
 
-Progress: [complete][complete][complete][complete][gap-phases-added]
+Progress: [████████████████████] 19/19 plans (100%)
 
 ## Performance Metrics
 
@@ -41,11 +41,7 @@ Progress: [complete][complete][complete][complete][gap-phases-added]
 | 3. Assignment And Pay Preview | 4 | complete |
 | 4. Attendance Check-In | 3 | complete |
 | 5. Operations Dashboard | 3 | complete |
-| Phase 05 P01 | 16min | 2 tasks | 6 files |
-| Phase 05 P03 | 5min | 2 tasks | 8 files |
-| Phase 05 P02 | 11min | 2 tasks | 5 files |
-| Phase 06 P01 | 7min | 1 tasks | 1 files |
-| Phase 06 P02 | 3min | 1 tasks | 3 files |
+| 6. Admin Invite Route Guard | 2 | complete |
 
 ## Accumulated Context
 
@@ -53,59 +49,28 @@ Progress: [complete][complete][complete][complete][gap-phases-added]
 
 - Start as a single-venue internal staffing tool.
 - Use one account system with role-based permissions.
-- Phase 1: invite acceptance uses token possession without email-match enforcement.
-- Phase 1: login returns to `/` first, then role-based routing happens there.
-- Phase 1: worker rates use current-value storage with audit columns only.
-- Phase 2: one schedule contains multiple role slots.
-- Phase 2: workers apply to the schedule as a whole, not a specific role slot.
-- Phase 2: schedule creation defaults to `recruiting`, then admins manage later transitions.
-- Phase 2: worker recruitment listing stays lightweight.
-- Phase 2: privileged schedule writes require a strict DB-backed `requireAdminUser` guard.
-- Phase 3: applicant review happens on the schedule detail screen.
-- Phase 3: assignments are made per role slot and final confirmation is explicit.
-- Phase 3: workers see total expected pay plus calculation basis.
-- Phase 4: check-in timing follows the venue first-ceremony rule, not a generic shift-relative window.
-- Phase 4: if first ceremony is `10:00`, check-in opens at `08:20`.
-- Phase 4: if first ceremony is `11:00` or later, check-in opens `1 hour 50 minutes before first ceremony`.
-- Phase 4: location validation uses one venue coordinate plus one allowed radius.
-- Phase 4: attendance submission is allowed once only, with no re-submission.
-- Phase 4: admin attendance review is schedule-centric and includes worker attendance and lateness status.
-- Phase 5: operations dashboard uses schedule cards as the primary summary unit.
-- Phase 5: anomaly priority is `unfilled slots > missing check-ins > lateness`.
-- Phase 5: dashboard scope is `today + nearby upcoming schedules`.
-- Phase 5: the dashboard stays summary-first and routes drill-down to existing schedule detail pages.
-- Codebase rules: use `#` absolute imports only and forbid relative imports.
-- Codebase rules: action files orchestrate only; schema and normalization logic stay in `schemas/`.
-- Codebase rules: prefer tag-based invalidation over `revalidatePath`.
-- Codebase rules: pure helpers belong in domain `utils/` or `shared`, not inside component files.
-- [Phase 05]: Keep dashboard anomaly classification request-time while caching only raw schedule rows for the active dashboard window.
-- [Phase 05]: Count only confirmed assignments toward staffed coverage so draft rows cannot clear an unfilled slots anomaly.
-- [Phase 05]: Keep dashboard freshness verification at the action-test level and avoid route-level revalidation fallback.
-- [Phase 05]: Revalidate dashboard tags directly from schedule, assignment, and attendance mutations that change dashboard-visible state.
-- [Phase 05]: Keep admin access enforcement inside AdminOperationsDashboardPage so the thin /admin route stays declarative.
-- [Phase 05]: Normalize dashboard anomaly badges to the locked UI-spec labels instead of exposing DAL label casing directly.
-- [Phase 06]: Admin invite guard regressions should mock requireAdminUser and import the real thin /admin/invites route entry.
-- [Phase 06]: Kept the admin check inside AdminInvitesPage so /admin/invites stays declarative and consistent with other admin routes.
-- [Phase 06]: Reused the existing inline forbidden copy instead of widening scope into Next.js forbidden() handling.
+- Schedule creation defaults to `recruiting`, then admins manage later transitions.
+- Workers apply to the schedule as a whole, not a specific role slot.
+- Privileged schedule writes and admin read routes use strict DB-backed `requireAdminUser` guards.
+- Operations dashboard scope is `today + nearby upcoming schedules`, with anomaly priority `unfilled slots > missing check-ins > lateness`.
+- Admin invite protection stays inside `AdminInvitesPage`, and `/admin/invites` remains a thin async route.
 
 ### Pending Todos
 
-- Plan Phase 6 gap-closure work.
 - Run manual UAT for the latest profile onboarding and first-admin bootstrap flow.
 - Optionally repair older planning documents that still display mojibake in this shell.
 
 ### Blockers/Concerns
 
-- `STATE.md` had drifted from the actual workflow state and previously pointed at Phase 5 execution even though active work was manual verification.
-- Milestone audit still has `gaps_found`; milestone completion remains blocked until phases 6-9 are implemented and re-audited.
-- Historical planning documents had encoding damage in shell output. Use `pnpm encoding:check` and repository bytes as the source of truth.
+- Milestone audit still has `gaps_found`; milestone completion remains blocked until phases 7-9 are implemented and re-audited.
+- Historical planning documents have encoding damage in shell output. Use `pnpm encoding:check` and repository bytes as the source of truth.
 - PowerShell console rendering may still display mojibake even when files are valid UTF-8 without BOM.
 
 ## Session Continuity
 
-Last session: 2026-04-02T11:28:34.663Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-04-02T20:11:45.8771723Z
+Stopped at: Phase 06 complete, ready to plan Phase 07
 Resume file: None
 
 ---
-*State refreshed: 2026-04-02 after planning milestone gap phases*
+*State refreshed: 2026-04-02 after Phase 6 verification and completion*

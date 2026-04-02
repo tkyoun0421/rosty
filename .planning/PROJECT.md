@@ -18,6 +18,8 @@
 - Phase 2 validated: 스케줄 생성, 모집 상태 관리, 근무자 신청 흐름
 - Phase 3 validated: 신청자 검토, 역할별 배정/확정, 근무자 예상 급여 미리보기
 
+- Phase 6 validated: admin invite route guard for `/admin/invites` (AUTH-01, AUTH-03)
+
 ### Active
 
 - [ ] 근무자가 자신의 확정 근무에 대해 위치 기반 출근 체크를 제출할 수 있어야 한다.
@@ -65,4 +67,4 @@
 - 주요 제품 판단이 고정되면 key decisions에 누적한다.
 
 ---
-*Last updated: 2026-03-31 after Phase 3 completion*
+*Last updated: 2026-04-02 after Phase 6 completion*
