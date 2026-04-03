@@ -19,6 +19,7 @@
 - Phase 3 validated: 신청자 검토, 역할별 배정/확정, 근무자 예상 급여 미리보기
 
 - Phase 6 validated: admin invite route guard for `/admin/invites` (AUTH-01, AUTH-03)
+- Phase 7 validated: worker application submits refresh admin schedule detail and dashboard freshness after real writes (APPL-02, APPL-03, DASH-02)
 
 ### Active
 
@@ -67,4 +68,4 @@
 - 주요 제품 판단이 고정되면 key decisions에 누적한다.
 
 ---
-*Last updated: 2026-04-02 after Phase 6 completion*
+*Last updated: 2026-04-04 after Phase 7 completion*
