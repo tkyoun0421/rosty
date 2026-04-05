@@ -20,12 +20,12 @@
 
 - Phase 6 validated: admin invite route guard for `/admin/invites` (AUTH-01, AUTH-03)
 - Phase 7 validated: worker application submits refresh admin schedule detail and dashboard freshness after real writes (APPL-02, APPL-03, DASH-02)
+- Phase 8 validated: admin worker-rate writes refresh worker pay preview through dedicated pay-preview cache tags (PAY-01, PAY-02, PAY-04)
 
 ### Active
 
-- [ ] 근무자가 자신의 확정 근무에 대해 위치 기반 출근 체크를 제출할 수 있어야 한다.
-- [ ] 관리자가 근무자별 출근 상태와 지각 여부를 확인할 수 있어야 한다.
-- [ ] 관리자가 당일 운영 현황과 이상 징후를 빠르게 확인할 수 있어야 한다.
+- [ ] Complete the live Phase 08 freshness checks recorded in `.planning/phases/08-pay-preview-freshness/08-HUMAN-UAT.md`.
+- [ ] Reconcile missing and stale verification evidence in Phase 09.
 
 ### Out of Scope
 
@@ -67,5 +67,4 @@
 - 요구사항이 범위를 벗어나면 out of scope 또는 backlog로 이동한다.
 - 주요 제품 판단이 고정되면 key decisions에 누적한다.
 
----
-*Last updated: 2026-04-04 after Phase 7 completion*
+*Last updated: 2026-04-05 after Phase 08 completion*

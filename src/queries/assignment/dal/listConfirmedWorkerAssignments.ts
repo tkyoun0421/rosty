@@ -115,7 +115,11 @@ export async function listConfirmedWorkerAssignments(
     async () => await runListConfirmedWorkerAssignments(workerUserId),
     ["queries:assignment:listConfirmedWorkerAssignments", workerUserId],
     {
-      tags: [cacheTags.assignments.all, cacheTags.assignments.workerConfirmed(workerUserId)],
+      tags: [
+        cacheTags.assignments.all,
+        cacheTags.assignments.workerConfirmed(workerUserId),
+        cacheTags.assignments.workerPayPreview(workerUserId),
+      ],
     },
   );
 

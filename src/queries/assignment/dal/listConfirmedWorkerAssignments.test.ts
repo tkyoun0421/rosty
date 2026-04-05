@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const unstable_cache = vi.fn((callback: () => unknown, _keys: string[], _options: unknown) => callback);
 const assignmentsEqStatus = vi.fn();
 const assignmentsEqWorker = vi.fn(() => ({ eq: assignmentsEqStatus }));
 const assignmentsSelect = vi.fn(() => ({ eq: assignmentsEqWorker }));
@@ -21,6 +22,10 @@ const from = vi.fn((table: string) => {
 });
 
 const getServerSupabaseClient = vi.fn(async () => ({ from }));
+
+vi.mock("next/cache", () => ({
+  unstable_cache,
+}));
 
 vi.mock("#shared/lib/supabase/serverClient", () => ({
   getServerSupabaseClient,
@@ -152,5 +157,28 @@ describe("listConfirmedWorkerAssignments", () => {
     );
 
     await expect(listConfirmedWorkerAssignments("worker-1")).resolves.toEqual([]);
+  });
+
+  it("uses the dedicated worker pay-preview cache tag in the cached branch", async () => {
+    vi.resetModules();
+    process.env.VITEST = "";
+
+    const { cacheTags } = await import("#shared/config/cacheTags");
+    const { listConfirmedWorkerAssignments } = await import(
+      "#queries/assignment/dal/listConfirmedWorkerAssignments"
+    );
+    await listConfirmedWorkerAssignments("worker-1");
+
+    expect(unstable_cache).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Array),
+      expect.objectContaining({
+        tags: [
+          cacheTags.assignments.all,
+          cacheTags.assignments.workerConfirmed("worker-1"),
+          cacheTags.assignments.workerPayPreview("worker-1"),
+        ],
+      }),
+    );
   });
 });

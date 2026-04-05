@@ -30,11 +30,9 @@
 - [x] **ASGN-03**: 근무자는 자신에게 확정된 근무 일정과 역할을 확인할 수 있다.
 
 ### Payroll Preview
-
-- [ ] **PAY-01**: 관리자는 근무자별 시급을 등록하고 수정할 수 있다.
-- [ ] **PAY-02**: 시스템은 확정된 근무 정보를 기준으로 근무자별 예상 급여를 계산할 수 있다.
-- [x] **PAY-03**: 시스템은 9시간 초과 근무분에 대해 기본 시급의 1.5배를 적용해 예상 급여를 계산할 수 있다.
-- [ ] **PAY-04**: 근무자는 자신의 확정 근무에 대한 예상 급여를 확인할 수 있다.
+- [x] **PAY-01**: 관리자는 근무자별 시급을 등록하고 수정할 수 있다.
+- [x] **PAY-02**: 시스템은 확정된 근무 정보를 기준으로 근무자별 예상 급여를 계산할 수 있다.
+- [x] **PAY-04**: 근무자는 자신의 확정 근무에 대한 예상 급여를 확인할 수 있다.
 
 ### Attendance
 
@@ -81,11 +79,9 @@
 | APPL-03 | Phase 7 | Complete |
 | ASGN-01 | Phase 3 | Complete |
 | ASGN-02 | Phase 3 | Complete |
-| ASGN-03 | Phase 3 | Complete |
-| PAY-01 | Phase 8 | Pending |
-| PAY-02 | Phase 8 | Pending |
-| PAY-03 | Phase 3 | Complete |
-| PAY-04 | Phase 8 | Pending |
+| PAY-01 | Phase 8 | Complete |
+| PAY-02 | Phase 8 | Complete |
+| PAY-04 | Phase 8 | Complete |
 | ATTD-01 | Phase 4 | Complete |
 | ATTD-02 | Phase 4 | Complete |
 | ATTD-03 | Phase 4 | Complete |
@@ -99,5 +95,4 @@
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-03-31*
-*Last updated: 2026-04-03 after Phase 07 execution*
+*Last updated: 2026-04-05 after Phase 08 completion*
