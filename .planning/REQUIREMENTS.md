@@ -8,7 +8,7 @@
 ### Authentication
 
 - [x] **AUTH-01**: 관리자는 초대 기반으로 근무자 계정을 생성하거나 초대 링크를 발급할 수 있다.
-- [ ] **AUTH-02**: 사용자는 Google 로그인을 통해 가입 및 로그인할 수 있다.
+- [x] **AUTH-02**: 사용자는 Google 로그인을 통해 가입 및 로그인할 수 있다.
 - [x] **AUTH-03**: 시스템은 사용자 역할에 따라 관리자와 근무자의 접근 권한을 구분한다.
 
 ### Schedule Setup
@@ -32,6 +32,7 @@
 ### Payroll Preview
 - [x] **PAY-01**: 관리자는 근무자별 시급을 등록하고 수정할 수 있다.
 - [x] **PAY-02**: 시스템은 확정된 근무 정보를 기준으로 근무자별 예상 급여를 계산할 수 있다.
+- [x] **PAY-03**: Overtime beyond 9 hours is calculated at 1.5x.
 - [x] **PAY-04**: 근무자는 자신의 확정 근무에 대한 예상 급여를 확인할 수 있다.
 
 ### Attendance
@@ -79,8 +80,10 @@
 | APPL-03 | Phase 7 | Complete |
 | ASGN-01 | Phase 3 | Complete |
 | ASGN-02 | Phase 3 | Complete |
+| ASGN-03 | Phase 3 | Complete |
 | PAY-01 | Phase 8 | Complete |
 | PAY-02 | Phase 8 | Complete |
+| PAY-03 | Phase 3 | Complete |
 | PAY-04 | Phase 8 | Complete |
 | ATTD-01 | Phase 4 | Complete |
 | ATTD-02 | Phase 4 | Complete |
@@ -95,4 +98,4 @@
 - Unmapped: 0
 
 ---
-*Last updated: 2026-04-05 after Phase 08 completion*
+*Last updated: 2026-04-05 after Phase 09 completion*

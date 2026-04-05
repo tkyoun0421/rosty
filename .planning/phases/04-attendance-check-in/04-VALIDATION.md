@@ -19,16 +19,16 @@ created: 2026-03-31
 |----------|-------|
 | **Framework** | vitest 3.2.4 |
 | **Config file** | `vitest.config.ts` |
-| **Quick run command** | `pnpm exec vitest <affected test files> -x` |
-| **Full suite command** | `pnpm test` |
+| **Quick run command** | `pnpm exec vitest run <affected test files>` |
+| **Full suite command** | `pnpm exec vitest run` |
 | **Estimated runtime** | ~30 seconds |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `pnpm exec vitest <affected test files> -x`
-- **After every plan wave:** Run `pnpm test`
+- **After every task commit:** Run `pnpm exec vitest run <affected test files>`
+- **After every plan wave:** Run `pnpm exec vitest run`
 - **Before `$gsd-verify-work`:** Full suite must be green
 - **Max feedback latency:** 30 seconds
 
@@ -64,18 +64,18 @@ created: 2026-03-31
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Browser geolocation permission denied flow | ATTD-01, ATTD-02 | Browser permission APIs and secure-context behavior are environment-dependent | Open worker confirmed assignment page in the browser, deny location permission, verify blocked copy explains why check-in cannot proceed. |
+| Browser geolocation permission denied flow | ATTD-01, ATTD-02 | Browser permission APIs and secure-context behavior are environment-dependent | Open the worker confirmed-assignment page in the browser, deny location permission, verify blocked copy explains why check-in cannot proceed. |
 | Real-device venue-radius validation | ATTD-02 | Accurate GPS drift and secure-context geolocation cannot be reliably simulated in unit tests alone | Test on a device/browser with location access, confirm in-radius submit succeeds and out-of-radius submit is rejected with the configured error copy. |
 
 ---
 
 ## Validation Sign-Off
 
-- [ ] All tasks have automated verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all missing references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have automated verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all missing references
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** refreshed 2026-04-05 after Phase 09 evidence reconciliation
