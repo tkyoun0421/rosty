@@ -3,7 +3,7 @@
 ## Milestones
 
 - [x] **v1.0 MVP** - Phases 1-9 (shipped 2026-04-06)
-- [ ] **v1.1 UI Surface Completion** - Phases 10-12 (planned)
+- [ ] **v1.1 UI Surface Completion** - Phases 10-12 (active)
 
 ## Archived Milestones
 
@@ -35,7 +35,7 @@ Closeout notes:
 
 ## Phases
 
-- [ ] **Phase 10: Entry And Shared Shell Surface**
+- [x] **Phase 10: Entry And Shared Shell Surface**
 - [ ] **Phase 11: Admin Scheduling Surface Completion**
 - [ ] **Phase 12: Worker Work Surface Completion**
 
@@ -52,10 +52,10 @@ Closeout notes:
 4. Primary entry routes show readable loading, unauthorized, empty, and failure states instead of placeholder copy or raw scaffolds.
 **Plans**: 3
 Plans:
-- [ ] 10-01-PLAN.md - shared entry-frame, sign-in surface, and invite-acceptance surface with token-aware Google CTA.
-- [ ] 10-02-PLAN.md - onboarding rebuild plus readable unauthorized, loading, and recoverable error surfaces.
-- [ ] 10-03-PLAN.md - root, worker, and admin landing shells, including the `/admin` route handoff to a real admin home.
-**Status**: Planned
+- [x] 10-01-PLAN.md - shared entry-frame, sign-in surface, and invite-acceptance surface with token-aware Google CTA.
+- [x] 10-02-PLAN.md - onboarding rebuild plus readable unauthorized, loading, and recoverable error surfaces.
+- [x] 10-03-PLAN.md - root, worker, and admin landing shells, including the `/admin` route handoff to a real admin home.
+**Status**: Complete (2026-04-06)
 
 ### Phase 11: Admin Scheduling Surface Completion
 **Goal**: Turn admin schedule creation, saved schedules, schedule detail, and dashboard drill-down into a usable management surface.
@@ -84,9 +84,9 @@ Plans:
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 10. Entry And Shared Shell Surface | v1.1 | 0/3 | Not started | - |
+| 10. Entry And Shared Shell Surface | v1.1 | 3/3 | Complete | 2026-04-06 |
 | 11. Admin Scheduling Surface Completion | v1.1 | 0/3 | Not started | - |
 | 12. Worker Work Surface Completion | v1.1 | 0/2 | Not started | - |
 
 ---
-*Last updated: 2026-04-06 after Phase 10 planning*
+*Last updated: 2026-04-06 after Phase 10 execution*

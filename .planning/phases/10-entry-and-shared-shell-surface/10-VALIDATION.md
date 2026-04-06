@@ -1,9 +1,9 @@
 ---
 phase: 10-entry-and-shared-shell-surface
 slug: entry-and-shared-shell-surface
-status: draft
+status: complete
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-06
 ---
 
@@ -20,7 +20,7 @@ created: 2026-04-06
 | **Framework** | Vitest |
 | **Config file** | `vitest.config.ts` |
 | **Quick run command** | `pnpm exec vitest run src/mutations/auth/components/GoogleSignInButton.test.tsx src/flows/auth-shell/components/RootRedirectPage.test.tsx src/flows/worker-shell/components/WorkerShellPage.test.tsx src/flows/admin-shell/components/AdminShellPage.test.tsx` |
-| **Full suite command** | `pnpm test` |
+| **Full suite command** | `pnpm exec vitest run` |
 | **Estimated runtime** | ~20 seconds |
 
 ---
@@ -38,12 +38,12 @@ created: 2026-04-06
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 10-01-01 | 01 | 1 | ENTRY-01 | component | `pnpm exec vitest run src/flows/auth-shell/components/SignInPage.test.tsx src/mutations/auth/components/GoogleSignInButton.test.tsx` | partial | pending |
-| 10-01-02 | 01 | 1 | ENTRY-02 | route + component | `pnpm exec vitest run src/app/invite/[token]/page.test.tsx src/mutations/auth/components/GoogleSignInButton.test.tsx` | W0 | pending |
-| 10-02-01 | 02 | 2 | ENTRY-04 | flow | `pnpm exec vitest run src/flows/profile-onboarding/components/ProfileOnboardingPage.test.tsx` | W0 | pending |
-| 10-02-02 | 02 | 2 | ENTRY-04 | route | `pnpm exec vitest run src/app/unauthorized/page.test.tsx` | W0 | pending |
-| 10-03-01 | 03 | 1 | ENTRY-03 | flow | `pnpm exec vitest run src/flows/auth-shell/components/RootRedirectPage.test.tsx src/flows/worker-shell/components/WorkerShellPage.test.tsx src/flows/admin-shell/components/AdminShellPage.test.tsx` | partial | pending |
-| 10-03-02 | 03 | 1 | ENTRY-03, ENTRY-04 | route + flow | `pnpm exec vitest run src/flows/auth-shell/components/RootRedirectPage.test.tsx src/flows/worker-shell/components/WorkerShellPage.test.tsx src/flows/admin-shell/components/AdminShellPage.test.tsx` | partial | pending |
+| 10-01-01 | 01 | 1 | ENTRY-01 | component | `pnpm exec vitest run src/flows/auth-shell/components/SignInPage.test.tsx src/mutations/auth/components/GoogleSignInButton.test.tsx` | yes | green |
+| 10-01-02 | 01 | 1 | ENTRY-02 | route + component | `pnpm exec vitest run src/app/invite/[token]/page.test.tsx src/mutations/auth/components/GoogleSignInButton.test.tsx` | yes | green |
+| 10-02-01 | 02 | 2 | ENTRY-04 | flow | `pnpm exec vitest run src/flows/profile-onboarding/components/ProfileOnboardingPage.test.tsx` | yes | green |
+| 10-02-02 | 02 | 2 | ENTRY-04 | route | `pnpm exec vitest run src/app/unauthorized/page.test.tsx` | yes | green |
+| 10-03-01 | 03 | 1 | ENTRY-03 | flow | `pnpm exec vitest run src/flows/auth-shell/components/RootRedirectPage.test.tsx src/flows/worker-shell/components/WorkerShellPage.test.tsx src/flows/admin-shell/components/AdminShellPage.test.tsx` | yes | green |
+| 10-03-02 | 03 | 1 | ENTRY-03, ENTRY-04 | route + flow | `pnpm exec vitest run src/flows/auth-shell/components/RootRedirectPage.test.tsx src/flows/worker-shell/components/WorkerShellPage.test.tsx src/flows/admin-shell/components/AdminShellPage.test.tsx` | yes | green |
 
 *Status: pending / green / red / flaky*
 
@@ -51,10 +51,10 @@ created: 2026-04-06
 
 ## Wave 0 Requirements
 
-- [ ] `src/flows/auth-shell/components/SignInPage.test.tsx` - verifies sign-in heading, supporting copy, and primary Google CTA label
-- [ ] `src/app/invite/[token]/page.test.tsx` - verifies invite-specific copy and token-aware CTA label
-- [ ] `src/flows/profile-onboarding/components/ProfileOnboardingPage.test.tsx` - verifies onboarding redirect rules and readable shell copy
-- [ ] `src/app/unauthorized/page.test.tsx` - verifies unauthorized recovery messaging and navigation
+- [x] `src/flows/auth-shell/components/SignInPage.test.tsx` - verifies sign-in heading, supporting copy, and primary Google CTA label
+- [x] `src/app/invite/[token]/page.test.tsx` - verifies invite-specific copy and token-aware CTA label
+- [x] `src/flows/profile-onboarding/components/ProfileOnboardingPage.test.tsx` - verifies onboarding redirect rules and readable shell copy
+- [x] `src/app/unauthorized/page.test.tsx` - verifies unauthorized recovery messaging and navigation
 
 *Existing root, worker, admin-shell, and Google-sign-in tests provide the initial regression baseline once assertions are expanded to match the new surfaces.*
 
@@ -80,4 +80,4 @@ created: 2026-04-06
 - [x] Feedback latency < 20s
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** complete

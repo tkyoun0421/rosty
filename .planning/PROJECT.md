@@ -15,7 +15,8 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - `v1.0 MVP` shipped on 2026-04-06.
 - The archived milestone covers invite-backed access, schedule publishing, worker applications, assignment confirmation, attendance review, operations triage, admin route hardening, and freshness fixes for the highest-risk reads.
 - The archived audit has no remaining requirement or integration blockers. The only open debt is manual-only verification recorded in the archived v1.0 audit and phase artifacts.
-- `v1.1 UI Surface Completion` is active, and Phase 10 is planned and ready for execution.
+- `v1.1 UI Surface Completion` is active, and Phase 10 completed on 2026-04-06.
+- The current open debt for v1.1 is live-browser verification for the new Phase 10 entry surfaces and the archived manual-only checks from v1.0.
 
 ## Current Milestone: v1.1 UI Surface Completion
 
@@ -34,14 +35,14 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - DB-backed admin authorization now protects privileged invite and admin read flows, including `/admin/invites`.
 - Cache-tag freshness contracts keep worker apply events and admin worker-rate writes synchronized with the affected admin and worker reads.
 - Milestone evidence, requirement traceability, and the v1.0 audit were reconciled against the current codebase before archive.
+- Phase 10 completed the shared entry surface for sign-in, invite acceptance, onboarding, unauthorized handling, loading and recoverable error states, plus role-aware landing shells for `/`, `/worker`, and `/admin`.
 
 ### Active
 
-- [ ] Execute Phase 10 so sign-in, invite acceptance, onboarding, unauthorized handling, and route-level loading/error states become readable product surfaces.
-- [ ] Convert `/`, `/worker`, and `/admin` into coherent role-aware landing shells before deeper admin and worker surface polish.
+- [ ] Plan Phase 11 so admin schedule creation, saved schedules, detail review, and dashboard drill-down become readable and actionable product surfaces.
 - [ ] Make admin schedule creation, list management, dashboard drill-down, and schedule detail surfaces readable and actionable without relying on raw HTML defaults.
 - [ ] Make worker recruiting, confirmed-work, pay-preview, and attendance surfaces understandable at a glance, including empty/error/success feedback states.
-- [ ] Decide when to re-run the archived manual-only v1.0 verification debt relative to v1.1 UI work.
+- [ ] Decide when to run the live-browser UAT for Phase 10 and when to re-run the archived manual-only v1.0 verification debt relative to v1.1 UI work.
 
 ### Out of Scope
 
@@ -53,9 +54,9 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 
 - `v1.0 MVP` shipped across 9 phases, 25 plans, and 43 summary-counted tasks.
 - Application code under `src/` is 9,664 lines of TypeScript/TSX at milestone archive time.
-- The Phase 09 reconciliation finished with a green `pnpm exec vitest run` covering 53 files and 151 tests.
+- Phase 10 execution finished with a green `pnpm exec vitest run` covering 57 files and 158 tests.
 - The archived v1.0 audit records no unsatisfied requirements or integration gaps, only manual-only follow-up checks for phases 02, 03, 04, 05, and 08.
-- Several primary routes still render with bare form controls, weak layout structure, or mojibake copy, so the product feels less complete than the implemented behavior underneath it.
+- The largest remaining usability gap now sits in Phase 11 and Phase 12 surfaces rather than the product entry flow.
 
 ## Constraints
 
@@ -87,4 +88,4 @@ Update this document at major phase boundaries so the active work, validated sco
 - When verification or audit work changes the practical next step, update `Active`.
 - When a requested feature exceeds v1 scope, move it to backlog or future planning rather than silently expanding this document.
 
-*Last updated: 2026-04-06 after Phase 10 planning*
+*Last updated: 2026-04-06 after Phase 10 execution*

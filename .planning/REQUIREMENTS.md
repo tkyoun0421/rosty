@@ -7,10 +7,10 @@
 
 ### Entry Experience
 
-- [ ] **ENTRY-01**: User can open a sign-in screen with a clear primary Google sign-in action and readable explanation of what happens next.
-- [ ] **ENTRY-02**: Invited user can understand that they are accepting an invite and see the appropriate sign-in call to action from the invite entry surface.
-- [ ] **ENTRY-03**: Signed-in user can land on a role-aware home shell that makes the next available destinations obvious.
-- [ ] **ENTRY-04**: User sees readable loading, unauthorized, empty, and failure states on the primary entry surfaces instead of placeholder copy.
+- [x] **ENTRY-01**: User can open a sign-in screen with a clear primary Google sign-in action and readable explanation of what happens next.
+- [x] **ENTRY-02**: Invited user can understand that they are accepting an invite and see the appropriate sign-in call to action from the invite entry surface.
+- [x] **ENTRY-03**: Signed-in user can land on a role-aware home shell that makes the next available destinations obvious.
+- [x] **ENTRY-04**: User sees readable loading, unauthorized, empty, and failure states on the primary entry surfaces instead of placeholder copy.
 
 ### Admin Surface
 
@@ -48,10 +48,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENTRY-01 | Phase 10 | Pending |
-| ENTRY-02 | Phase 10 | Pending |
-| ENTRY-03 | Phase 10 | Pending |
-| ENTRY-04 | Phase 10 | Pending |
+| ENTRY-01 | Phase 10 | Complete |
+| ENTRY-02 | Phase 10 | Complete |
+| ENTRY-03 | Phase 10 | Complete |
+| ENTRY-04 | Phase 10 | Complete |
 | ADMINUI-01 | Phase 11 | Pending |
 | ADMINUI-02 | Phase 11 | Pending |
 | ADMINUI-03 | Phase 11 | Pending |
@@ -67,4 +67,4 @@
 
 ---
 *Requirements defined: 2026-04-06*
-*Last updated: 2026-04-06 after v1.1 roadmap creation*
+*Last updated: 2026-04-06 after Phase 10 execution*
