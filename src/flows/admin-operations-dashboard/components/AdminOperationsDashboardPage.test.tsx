@@ -148,6 +148,7 @@ describe("Admin operations dashboard", () => {
       "href",
       "/admin/schedules/schedule-today-1",
     );
+    expect(screen.getAllByRole("link", { name: "Open schedule management" }).length).toBeGreaterThan(0);
   });
 
   it("renders the top anomaly badge first with the locked labels", async () => {
@@ -180,6 +181,7 @@ describe("Admin operations dashboard", () => {
     render(await AdminOperationsDashboardPage());
 
     expect(screen.getByText("No schedules need attention right now")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Open schedule management" }).length).toBeGreaterThan(0);
   });
 
   it("keeps admin gating in the thin /admin/operations route", async () => {
