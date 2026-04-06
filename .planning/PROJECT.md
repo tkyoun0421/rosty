@@ -16,10 +16,14 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - The archived milestone covers invite-backed access, schedule publishing, worker applications, assignment confirmation, attendance review, operations triage, admin route hardening, and freshness fixes for the highest-risk reads.
 - The archived audit has no remaining requirement or integration blockers. The only open debt is manual-only verification recorded in the archived v1.0 audit and phase artifacts.
 
-## Next Milestone Goals
+## Current Milestone: v1.1 UI Surface Completion
 
-- Decide whether to close the accepted manual v1 verification debt before expanding product scope.
-- If scope expands, prioritize the next milestone around smarter assignment support and clearer worker/admin communication loops.
+**Goal:** Turn the shipped v1 staffing flows into usable product surfaces so login, navigation, schedule management, and worker-facing screens feel coherent and operable.
+
+**Target features:**
+- A clear entry experience for sign-in, invite acceptance, onboarding, and the role-aware home shell
+- A usable admin scheduling surface covering schedule creation, saved schedules, detail entry, and operations drill-down
+- A usable worker surface covering recruiting schedules, confirmed work, pay preview, and attendance context
 
 ## Requirements
 
@@ -32,8 +36,10 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 
 ### Active
 
-- [ ] Decide whether the accepted manual verification debt from the archived v1.0 audit should be closed before broader rollout or carried forward intentionally.
-- [ ] Define the next milestone scope after v1.0, likely centered on assignment intelligence and communication follow-ups if those still match operator needs.
+- [ ] Replace raw or placeholder-looking entry screens with a coherent sign-in, invite, onboarding, and home-shell experience.
+- [ ] Make admin schedule creation, list management, dashboard drill-down, and schedule detail surfaces readable and actionable without relying on raw HTML defaults.
+- [ ] Make worker recruiting, confirmed-work, pay-preview, and attendance surfaces understandable at a glance, including empty/error/success feedback states.
+- [ ] Decide when to re-run the archived manual-only v1.0 verification debt relative to v1.1 UI work.
 
 ### Out of Scope
 
@@ -47,6 +53,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - Application code under `src/` is 9,664 lines of TypeScript/TSX at milestone archive time.
 - The Phase 09 reconciliation finished with a green `pnpm exec vitest run` covering 53 files and 151 tests.
 - The archived v1.0 audit records no unsatisfied requirements or integration gaps, only manual-only follow-up checks for phases 02, 03, 04, 05, and 08.
+- Several primary routes still render with bare form controls, weak layout structure, or mojibake copy, so the product feels less complete than the implemented behavior underneath it.
 
 ## Constraints
 
@@ -68,6 +75,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 | Keep freshness invalidation in submit wrappers, not DAL writes | Preserves narrow persistence helpers and keeps cache policy tied to successful writes | Accepted |
 | Revalidate dedicated cache tags instead of broad route invalidation | Makes freshness guarantees explicit and testable at the mutation boundary | Accepted |
 | Treat `human_needed` verification as non-blocking tech debt only after requirements and integration evidence pass | Prevents manual-only checks from hiding real implementation regressions while still keeping the milestone audit honest | Accepted |
+| Prioritize surface completion before expanding capability breadth in v1.1 | The current gap is usability and presentation, not missing domain behavior | Pending |
 
 ## Evolution
 
@@ -77,4 +85,4 @@ Update this document at major phase boundaries so the active work, validated sco
 - When verification or audit work changes the practical next step, update `Active`.
 - When a requested feature exceeds v1 scope, move it to backlog or future planning rather than silently expanding this document.
 
-*Last updated: 2026-04-06 after v1.0 milestone archival*
+*Last updated: 2026-04-06 after v1.1 milestone kickoff*
