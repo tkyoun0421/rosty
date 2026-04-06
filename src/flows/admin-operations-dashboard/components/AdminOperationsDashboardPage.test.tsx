@@ -144,6 +144,10 @@ describe("Admin operations dashboard", () => {
     expect(article.getByText("Applicants")).toBeInTheDocument();
     expect(article.getByText("Confirmed")).toBeInTheDocument();
     expect(article.getByText("Checked in")).toBeInTheDocument();
+    expect(article.getByText("3 confirmed of 4 planned seats")).toBeInTheDocument();
+    expect(
+      article.getByText("Open schedule detail to edit assignments and attendance follow-up."),
+    ).toBeInTheDocument();
     expect(article.getByRole("link", { name: "Review schedule" })).toHaveAttribute(
       "href",
       "/admin/schedules/schedule-today-1",
@@ -166,6 +170,21 @@ describe("Admin operations dashboard", () => {
     const labels = article.getAllByText(/Unfilled slots|Missing check-ins|Late arrivals|On track/);
 
     expect(labels[0]).toHaveTextContent("Unfilled slots");
+  });
+
+  it("uses the refreshed triage copy for today and upcoming sections", async () => {
+    const { AdminOperationsDashboardPage } = await import(
+      "#flows/admin-operations-dashboard/components/AdminOperationsDashboardPage"
+    );
+
+    render(await AdminOperationsDashboardPage());
+
+    expect(
+      screen.getByText("Handle assignment gaps and attendance cleanup before the shift starts."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Queue the next schedules that need staffing review before they become today/),
+    ).toBeInTheDocument();
   });
 
   it("uses the approved empty state copy when no schedules need attention", async () => {

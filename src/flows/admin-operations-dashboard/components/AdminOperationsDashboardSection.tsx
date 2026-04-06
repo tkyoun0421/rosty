@@ -18,8 +18,8 @@ export function AdminOperationsDashboardSection({
         </h2>
         <p className="text-sm text-muted-foreground">
           {title === "Today"
-            ? "Focus on the schedules that need immediate staffing or attendance attention."
-            : "Preview the next schedules that may need follow-up soon."}
+            ? "Handle assignment gaps and attendance cleanup before the shift starts."
+            : "Queue the next schedules that need staffing review before they become today&apos;s work."}
         </p>
       </div>
       {schedules.length > 0 ? (

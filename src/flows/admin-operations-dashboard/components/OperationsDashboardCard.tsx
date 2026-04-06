@@ -28,22 +28,30 @@ export function OperationsDashboardCard({ card }: OperationsDashboardCardProps) 
     <article>
       <Card className="h-full bg-background">
         <CardHeader className="gap-4">
-          <div>
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <Badge
               variant={card.topAnomaly.kind === "on_track" ? "secondary" : "default"}
               className="w-fit"
             >
               {anomalyLabel}
             </Badge>
+            <p className="text-sm font-semibold text-muted-foreground">
+              {card.confirmedAssignmentCount} confirmed of {card.totalHeadcount} planned seats
+            </p>
           </div>
+
           <div className="grid gap-2">
             <CardTitle>{card.title}</CardTitle>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
-              <span>{card.dateLabel}</span>
-              <span>Starts at {card.startTimeLabel}</span>
+            <div className="grid gap-1">
+              <p className="text-2xl font-semibold leading-none">{card.startTimeLabel}</p>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+                <span>{card.dateLabel}</span>
+                <span>{card.totalRoleSlots} role slots</span>
+              </div>
             </div>
           </div>
         </CardHeader>
+
         <CardContent className="grid gap-5">
           <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {metrics.map((metric) => (
@@ -53,11 +61,15 @@ export function OperationsDashboardCard({ card }: OperationsDashboardCardProps) 
               </div>
             ))}
           </dl>
-          <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-secondary/50 px-4 py-3">
+
+          <div className="grid gap-4 rounded-xl border border-border bg-secondary/50 px-4 py-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
             <div className="grid gap-1">
               <p className="text-sm font-semibold">Staffing and attendance summary</p>
               <p className="text-sm text-muted-foreground">
-                {card.confirmedAssignmentCount} confirmed for {card.totalHeadcount} planned spots.
+                {card.confirmedAssignmentCount} confirmed of {card.totalHeadcount} planned seats.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Open schedule detail to edit assignments and attendance follow-up.
               </p>
             </div>
             <Link
