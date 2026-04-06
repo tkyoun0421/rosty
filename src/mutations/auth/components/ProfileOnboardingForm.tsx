@@ -1,11 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { submitProfileOnboarding } from "#mutations/auth/actions/submitProfileOnboarding";
 import { ROOT_PATH, SIGN_IN_PATH } from "#shared/config/authConfig";
 import type { ProfileGender } from "#shared/model/access";
+import { Alert, AlertDescription, AlertTitle } from "#shared/ui/alert";
+import { Button } from "#shared/ui/button";
 
 interface ProfileOnboardingFormProps {
   avatarUrl: string | null;
@@ -14,26 +17,29 @@ interface ProfileOnboardingFormProps {
   gender: ProfileGender | null;
 }
 
+const fieldClassName =
+  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) {
     if (error.message === "UNAUTHORIZED") {
-      return "로그인이 만료됐습니다. 다시 로그인해 주세요.";
+      return "Your session expired. Sign in again to continue.";
     }
 
     if (error.message === "PROFILE_IMAGE_REQUIRED") {
-      return "프로필 사진을 등록해야 합니다.";
+      return "Add a profile image to finish onboarding.";
     }
 
     if (error.message === "PROFILE_IMAGE_INVALID_TYPE") {
-      return "프로필 사진은 JPG, PNG, WEBP만 사용할 수 있습니다.";
+      return "Use a JPG, PNG, or WEBP image file.";
     }
 
     if (error.message === "PROFILE_IMAGE_TOO_LARGE") {
-      return "프로필 사진은 5MB 이하여야 합니다.";
+      return "Choose an image smaller than 5 MB.";
     }
   }
 
-  return "프로필 저장에 실패했습니다. 다시 시도해 주세요.";
+  return "We could not save your profile. Try again.";
 }
 
 export function ProfileOnboardingForm({
@@ -58,6 +64,7 @@ export function ProfileOnboardingForm({
 
   return (
     <form
+      className="grid gap-6"
       encType="multipart/form-data"
       onSubmit={(event) => {
         event.preventDefault();
@@ -82,31 +89,51 @@ export function ProfileOnboardingForm({
         });
       }}
     >
-      <label>
-        이름
-        <input name="fullName" type="text" defaultValue={fullName ?? ""} required />
-      </label>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm font-medium text-foreground">
+          Full name
+          <input
+            className={fieldClassName}
+            name="fullName"
+            type="text"
+            defaultValue={fullName ?? ""}
+            required
+          />
+        </label>
 
-      <label>
-        성별
-        <select name="gender" defaultValue={gender ?? ""} required>
-          <option value="" disabled>
-            선택해 주세요
-          </option>
-          <option value="male">남성</option>
-          <option value="female">여성</option>
-          <option value="other">기타</option>
-        </select>
-      </label>
+        <label className="grid gap-2 text-sm font-medium text-foreground">
+          Gender
+          <select className={fieldClassName} name="gender" defaultValue={gender ?? ""} required>
+            <option value="" disabled>
+              Select a value
+            </option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
 
-      <label>
-        생년월일
-        <input name="birthDate" type="date" defaultValue={birthDate ?? ""} required />
-      </label>
+        <label className="grid gap-2 text-sm font-medium text-foreground sm:col-span-2">
+          Birth date
+          <input
+            className={fieldClassName}
+            name="birthDate"
+            type="date"
+            defaultValue={birthDate ?? ""}
+            required
+          />
+        </label>
+      </div>
 
-      <label>
-        프로필 사진
+      <div className="grid gap-3">
+        <div className="grid gap-2">
+          <p className="m-0 text-sm font-medium text-foreground">Profile image</p>
+          <p className="m-0 text-sm text-muted-foreground">
+            Upload a clear photo so admins and coworkers can identify you quickly.
+          </p>
+        </div>
         <input
+          className="block w-full rounded-lg border border-dashed border-border bg-background px-3 py-3 text-sm text-foreground file:mr-4 file:rounded-md file:border-0 file:bg-secondary file:px-3 file:py-2 file:text-sm file:font-semibold file:text-secondary-foreground hover:file:bg-secondary/80"
           name="avatar"
           type="file"
           accept="image/jpeg,image/png,image/webp"
@@ -114,6 +141,11 @@ export function ProfileOnboardingForm({
             const file = event.target.files?.[0];
 
             if (!file) {
+              if (localPreviewUrlRef.current) {
+                URL.revokeObjectURL(localPreviewUrlRef.current);
+                localPreviewUrlRef.current = null;
+              }
+
               setPreviewUrl(avatarUrl);
               return;
             }
@@ -127,14 +159,42 @@ export function ProfileOnboardingForm({
             setPreviewUrl(nextPreviewUrl);
           }}
         />
-      </label>
+      </div>
 
-      {previewUrl ? <img src={previewUrl} alt="프로필 사진 미리보기" width={96} height={96} /> : null}
-      {errorMessage ? <p>{errorMessage}</p> : null}
+      {previewUrl ? (
+        <div className="flex items-center gap-4 rounded-2xl border border-border bg-secondary/20 p-4">
+          <Image
+            src={previewUrl}
+            alt="Profile preview"
+            width={96}
+            height={96}
+            unoptimized
+            className="h-24 w-24 rounded-2xl object-cover"
+          />
+          <div className="grid gap-1">
+            <p className="m-0 text-sm font-medium text-foreground">Preview</p>
+            <p className="m-0 text-sm text-muted-foreground">
+              This image will be used on your profile after onboarding completes.
+            </p>
+          </div>
+        </div>
+      ) : null}
 
-      <button type="submit" disabled={isPending}>
-        {isPending ? "저장 중..." : "프로필 저장"}
-      </button>
+      {errorMessage ? (
+        <Alert variant="destructive">
+          <AlertTitle>Profile setup failed</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      <div className="flex flex-wrap gap-3">
+        <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={isPending}>
+          {isPending ? "Saving profile..." : "Complete profile"}
+        </Button>
+        <p className="m-0 text-sm text-muted-foreground">
+          You will return to the workspace after your profile is saved successfully.
+        </p>
+      </div>
     </form>
   );
 }
