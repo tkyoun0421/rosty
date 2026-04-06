@@ -18,20 +18,24 @@ export function AttendanceReviewPanel({ detail }: AttendanceReviewPanelProps) {
         <div className="grid gap-2">
           <CardTitle>Attendance review</CardTitle>
           <p className="m-0 text-[28px] font-semibold leading-tight">
-            {detail.summary.checkedInCount + detail.summary.lateCount} of {detail.summary.confirmedWorkerCount} confirmed workers checked in
+            {detail.summary.checkedInCount + detail.summary.lateCount} of{" "}
+            {detail.summary.confirmedWorkerCount} confirmed workers checked in
           </p>
           <p className="m-0 text-base text-muted-foreground">
-            Opened at {formatAttendanceTime(detail.schedule.opensAt)}. Late check-ins use the schedule start time cutoff.
+            Review check-in status before changing assignments or publishing the final staffing
+            plan. Attendance opened at {formatAttendanceTime(detail.schedule.opensAt)}.
           </p>
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {getAttendanceSummaryCards(detail).map((card) => (
-            <div key={card.label} className="rounded-2xl bg-secondary/70 p-4">
-              <p className="m-0 text-sm font-semibold text-muted-foreground">{card.label}</p>
-              <p className="mt-2 text-2xl font-semibold leading-none">{card.value}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{card.helper}</p>
-            </div>
+            <Card key={card.label} className="border-dashed bg-secondary/30 shadow-none">
+              <CardContent className="grid gap-2 px-4 py-4">
+                <p className="m-0 text-sm font-semibold text-muted-foreground">{card.label}</p>
+                <p className="m-0 text-2xl font-semibold leading-none">{card.value}</p>
+                <p className="m-0 text-sm text-muted-foreground">{card.helper}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </CardHeader>
@@ -39,7 +43,7 @@ export function AttendanceReviewPanel({ detail }: AttendanceReviewPanelProps) {
         {detail.workers.map((worker) => (
           <article
             key={worker.scheduleAssignmentId}
-            className="grid gap-3 rounded-2xl border border-border bg-secondary/40 p-4"
+            className="grid gap-3 rounded-2xl border border-border bg-secondary/30 p-4"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="grid gap-1">

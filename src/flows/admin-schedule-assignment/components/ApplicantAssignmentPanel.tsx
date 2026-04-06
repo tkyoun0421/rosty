@@ -13,7 +13,6 @@ import {
   buildRoleSlotSummaries,
   buildUpdatedApplicants,
   countAssignmentsByRoleSlot,
-  formatScheduleWindow,
 } from "#flows/admin-schedule-assignment/utils/adminScheduleAssignment";
 
 interface ApplicantAssignmentPanelProps {
@@ -127,14 +126,6 @@ export function ApplicantAssignmentPanel({ detail }: ApplicantAssignmentPanelPro
         gap: "32px",
       }}
     >
-      <section aria-label="Schedule facts" style={{ display: "grid", gap: "8px" }}>
-        <h1 style={{ margin: 0 }}>Schedule assignment detail</h1>
-        <p style={{ margin: 0 }}>
-          {formatScheduleWindow(detail.schedule.startsAt, detail.schedule.endsAt)}
-        </p>
-        <p style={{ margin: 0 }}>Status: {scheduleStatus}</p>
-      </section>
-
       <div
         className="assignment-layout"
         style={{

@@ -162,6 +162,10 @@ describe("AdminScheduleAssignmentPage", () => {
 
     render(await AdminScheduleAssignmentPage({ scheduleId: "schedule-1" }));
 
+    expect(screen.getByRole("heading", { name: "Schedule assignment detail" })).toBeInTheDocument();
+    expect(screen.getByText("Schedule detail")).toBeInTheDocument();
+    expect(screen.getByText("Current status")).toBeInTheDocument();
+    expect(screen.getByText("Assigning")).toBeInTheDocument();
     const attendance = screen.getByRole("heading", { name: "Attendance review" });
     const applicants = screen.getByRole("heading", { name: "Applicant assignment controls" });
     const actions = screen.getByRole("heading", { name: "Assignment actions" });

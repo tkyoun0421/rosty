@@ -1,4 +1,5 @@
 import type { RoleSlotSummary } from "#flows/admin-schedule-assignment/utils/adminScheduleAssignment";
+import { Card, CardContent, CardHeader, CardTitle } from "#shared/ui/card";
 
 interface AssignmentSummaryCardProps {
   roleSlots: RoleSlotSummary[];
@@ -10,39 +11,32 @@ export function AssignmentSummaryCard({ roleSlots }: AssignmentSummaryCardProps)
   const unfilledCount = Math.max(totalHeadcount - filledCount, 0);
 
   return (
-    <section
-      aria-label="Assignment summary"
-      style={{
-        backgroundColor: "#E4DACB",
-        borderRadius: "16px",
-        padding: "24px",
-      }}
-    >
-      <h2 style={{ fontSize: "20px", margin: 0 }}>Assignment summary</h2>
-      <p style={{ color: "#1F5A6E", fontSize: "28px", fontWeight: 600, margin: "16px 0 8px" }}>
-        {filledCount}/{totalHeadcount} assigned
-      </p>
-      <p style={{ margin: 0 }}>Unfilled slots: {unfilledCount}</p>
-      <ul
-        style={{ display: "grid", gap: "12px", listStyle: "none", margin: "24px 0 0", padding: 0 }}
-      >
-        {roleSlots.map((slot) => (
-          <li
-            key={slot.id}
-            style={{
-              backgroundColor: "#F6F1E8",
-              borderRadius: "12px",
-              padding: "16px",
-            }}
-          >
-            <strong>{slot.roleCode}</strong>
-            <p style={{ margin: "8px 0 0" }}>
-              Assigned {slot.assignedCount} / {slot.headcount}
-            </p>
-            <p style={{ margin: "4px 0 0" }}>Unfilled {slot.unfilledCount}</p>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <Card aria-label="Assignment summary" className="bg-background">
+      <CardHeader className="gap-2">
+        <CardTitle>Assignment summary</CardTitle>
+        <p className="m-0 text-[28px] font-semibold leading-tight">
+          {filledCount}/{totalHeadcount} assigned
+        </p>
+        <p className="m-0 text-sm text-muted-foreground">
+          {unfilledCount} seats still need assignment before final confirmation.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <ul className="grid gap-3">
+          {roleSlots.map((slot) => (
+            <li
+              key={slot.id}
+              className="grid gap-1 rounded-2xl border border-border bg-secondary/30 px-4 py-4"
+            >
+              <strong className="text-base font-semibold">{slot.roleCode}</strong>
+              <p className="m-0 text-sm text-muted-foreground">
+                Assigned {slot.assignedCount} / {slot.headcount}
+              </p>
+              <p className="m-0 text-sm text-muted-foreground">Unfilled {slot.unfilledCount}</p>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
