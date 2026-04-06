@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.0
-milestone_name: milestone
-status: review
-stopped_at: Phase 09 verified, milestone ready for review
-last_updated: "2026-04-05T20:18:43.7350536+09:00"
-last_activity: 2026-04-05 -- Phase 09 verified
+milestone_name: MVP
+status: complete
+stopped_at: v1.0 archived; ready for next milestone definition
+last_updated: "2026-04-06T14:43:05.6446385+09:00"
+last_activity: 2026-04-06 -- v1.0 milestone archived
 progress:
   total_phases: 9
   completed_phases: 9
@@ -18,17 +18,18 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-05)
+See: .planning/PROJECT.md (updated 2026-04-06)
 
-**Core value:** Build a single-venue internal staffing tool where admins can quickly confirm work assignments and workers can clearly review confirmed work, role context, and expected pay.
-**Current focus:** Milestone audit review and remaining human verification
+**Core value:** Admins should be able to confirm venue staffing quickly, and workers should be able to review their confirmed work, role context, and expected pay clearly.
+**Current focus:** Define the next milestone and decide how aggressively to close the accepted manual v1 verification debt.
 
 ## Current Position
 
-Phase: 09 (verification-evidence-reconciliation) - COMPLETE
-Plan: All plans complete
-Status: Phase 09 verified; milestone audit refreshed as `tech_debt`
-Last activity: 2026-04-05 -- Phase 09 verified
+Milestone: v1.0 (MVP) - ARCHIVED
+Phase: None
+Plan: None
+Status: v1.0 archived after all 9 phases and 25 plans completed; remaining manual-only verification debt accepted into follow-up planning.
+Last activity: 2026-04-06 -- v1.0 milestone archived
 
 Progress: [##########] 25/25 plans (100%)
 
@@ -53,32 +54,25 @@ Progress: [##########] 25/25 plans (100%)
 
 - Start as a single-venue internal staffing tool.
 - Use one account system with role-based permissions.
-- Schedule creation defaults to `recruiting`, then admins manage later transitions.
-- Workers apply to the schedule as a whole, not a specific role slot.
-- Privileged schedule writes and admin read routes use strict DB-backed `requireAdminUser` guards.
-- Operations dashboard scope is `today + nearby upcoming schedules`, with anomaly priority `unfilled slots > missing check-ins > lateness`.
-- Admin invite protection stays inside `AdminInvitesPage`, and `/admin/invites` remains a thin async route.
-- [Phase 07]: Keep the freshness fix in the submit wrapper instead of moving invalidation into `createScheduleApplication`.
-- [Phase 07]: Revalidate only the schedule-scoped assignment detail tag for admin detail freshness.
-- [Phase 09]: Treat pending `human_needed` verification items as non-blocking `tech_debt` once requirements and integration evidence are satisfied.
-- [Phase 09]: Repair top-level requirement traceability where ROADMAP and phase verification prove the intended mapping (`AUTH-02`, `ASGN-03`, `PAY-03`).
+- Keep admin authorization inside server-side flow components and keep `src/app` routes thin.
+- Keep freshness invalidation in submit wrappers and target dedicated cache tags instead of broad route revalidation.
+- Treat pending `human_needed` items as non-blocking `tech_debt` only after requirements and integration evidence are satisfied.
 
 ### Pending Todos
 
-- Run the live freshness checks in `.planning/phases/08-pay-preview-freshness/08-HUMAN-UAT.md`.
-- Run the remaining human verification recorded in `02-VERIFICATION.md`, `03-VERIFICATION.md`, `04-VERIFICATION.md`, and `05-VERIFICATION.md`.
-- Review `.planning/v1.0-MILESTONE-AUDIT.md` and decide whether to accept the remaining `tech_debt` before milestone completion.
+- Decide whether the accepted manual verification debt from phases 02, 03, 04, 05, and 08 should be closed before the next milestone expands scope.
+- Run `$gsd-new-milestone` when the next version's goals are clear.
 
 ### Blockers/Concerns
 
-- The refreshed milestone audit is `tech_debt`, not `passed`, because several phases still have explicit human-only checks pending.
-- Historical planning documents may still display mojibake in this shell even when repository bytes are valid UTF-8 without BOM.
+- No implementation or requirements blockers remain for v1.0.
+- Remaining manual verification debt now lives in `.planning/milestones/v1.0-MILESTONE-AUDIT.md` and the archived phase artifacts.
 
 ## Session Continuity
 
-Last session: 2026-04-05T20:18:43.7350536+09:00
-Stopped at: Phase 09 verified, milestone ready for review
-Resume file: .planning/v1.0-MILESTONE-AUDIT.md
+Last session: 2026-04-06T14:43:05.6446385+09:00
+Stopped at: v1.0 archived; ready for next milestone definition
+Resume file: .planning/PROJECT.md
 
 ---
-*State refreshed: 2026-04-05 after Phase 09 completion*
+*State refreshed: 2026-04-06 after v1.0 milestone archival*
