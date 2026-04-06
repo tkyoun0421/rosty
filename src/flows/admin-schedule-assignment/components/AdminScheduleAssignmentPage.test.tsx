@@ -165,7 +165,7 @@ describe("AdminScheduleAssignmentPage", () => {
     expect(screen.getByRole("heading", { name: "Schedule assignment detail" })).toBeInTheDocument();
     expect(screen.getByText("Schedule detail")).toBeInTheDocument();
     expect(screen.getByText("Current status")).toBeInTheDocument();
-    expect(screen.getByText("Assigning")).toBeInTheDocument();
+    expect(screen.getAllByText("Assigning").length).toBeGreaterThan(0);
     const attendance = screen.getByRole("heading", { name: "Attendance review" });
     const applicants = screen.getByRole("heading", { name: "Applicant assignment controls" });
     const actions = screen.getByRole("heading", { name: "Assignment actions" });
@@ -232,6 +232,7 @@ describe("AdminScheduleAssignmentPage", () => {
     expect(
       screen.getByText("Confirming now will publish roles and pay previews to workers. Continue?"),
     ).toBeInTheDocument();
+    expect(screen.getByText(/Role slots in this publish 2/)).toBeInTheDocument();
 
     fireEvent.click(screen.getAllByRole("button", { name: "Confirm assignments" })[1]);
 

@@ -2,9 +2,6 @@
 
 import { startTransition, useState } from "react";
 
-import { submitScheduleAssignmentConfirm } from "#mutations/assignment/actions/submitScheduleAssignmentConfirm";
-import { submitScheduleAssignmentDraft } from "#mutations/assignment/actions/submitScheduleAssignmentDraft";
-import type { AdminScheduleAssignmentDetail } from "#queries/assignment/types/adminScheduleAssignmentDetail";
 import { AssignmentSummaryCard } from "#flows/admin-schedule-assignment/components/AssignmentSummaryCard";
 import { ConfirmAssignmentsDialog } from "#flows/admin-schedule-assignment/components/ConfirmAssignmentsDialog";
 import {
@@ -14,6 +11,14 @@ import {
   buildUpdatedApplicants,
   countAssignmentsByRoleSlot,
 } from "#flows/admin-schedule-assignment/utils/adminScheduleAssignment";
+import { scheduleStatusLabels } from "#flows/admin-schedules/utils/formatSchedule";
+import { submitScheduleAssignmentConfirm } from "#mutations/assignment/actions/submitScheduleAssignmentConfirm";
+import { submitScheduleAssignmentDraft } from "#mutations/assignment/actions/submitScheduleAssignmentDraft";
+import type { AdminScheduleAssignmentDetail } from "#queries/assignment/types/adminScheduleAssignmentDetail";
+import { Alert, AlertDescription, AlertTitle } from "#shared/ui/alert";
+import { Badge } from "#shared/ui/badge";
+import { Button } from "#shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "#shared/ui/card";
 
 interface ApplicantAssignmentPanelProps {
   detail: AdminScheduleAssignmentDetail;
@@ -24,6 +29,34 @@ const applicantStatusLabels = {
   draft_assigned: "Draft saved",
   confirmed_assigned: "Confirmed",
 } as const;
+
+function selectClassName() {
+  return "min-h-11 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
+}
+
+function formatAppliedAt(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "Asia/Seoul",
+  }).format(new Date(value));
+}
+
+function getApplicantBadgeVariant(
+  status: keyof typeof applicantStatusLabels,
+): "default" | "secondary" | "outline" {
+  if (status === "confirmed_assigned") {
+    return "outline";
+  }
+
+  if (status === "draft_assigned") {
+    return "default";
+  }
+
+  return "secondary";
+}
 
 export function ApplicantAssignmentPanel({ detail }: ApplicantAssignmentPanelProps) {
   const [assignments, setAssignments] = useState(() => buildEditableAssignments(detail));
@@ -80,8 +113,8 @@ export function ApplicantAssignmentPanel({ detail }: ApplicantAssignmentPanelPro
         );
         setScheduleStatus("assigning");
         setSaveMessage("Draft saved. You can keep reviewing assignments on this page.");
-      } catch (error) {
-        setSaveError(error instanceof Error ? error.message : "Draft save failed.");
+      } catch {
+        setSaveError("Draft save failed.");
       } finally {
         setIsSaving(false);
       }
@@ -111,8 +144,8 @@ export function ApplicantAssignmentPanel({ detail }: ApplicantAssignmentPanelPro
         );
         setSaveMessage(null);
         setIsConfirmDialogOpen(false);
-      } catch (error) {
-        setConfirmError(error instanceof Error ? error.message : "Confirmation failed.");
+      } catch {
+        setConfirmError("Confirmation failed.");
       } finally {
         setIsConfirming(false);
       }
@@ -120,182 +153,138 @@ export function ApplicantAssignmentPanel({ detail }: ApplicantAssignmentPanelPro
   }
 
   return (
-    <section
-      style={{
-        display: "grid",
-        gap: "32px",
-      }}
-    >
-      <div
-        className="assignment-layout"
-        style={{
-          display: "grid",
-          gap: "32px",
-        }}
-      >
-        <aside
-          className="assignment-summary"
-          style={{
-            alignContent: "start",
-            display: "grid",
-            gap: "24px",
-          }}
-        >
-          <AssignmentSummaryCard roleSlots={roleSlotSummaries} />
-        </aside>
+    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.9fr)] xl:items-start">
+      <Card aria-label="Applicant assignment controls" className="bg-background">
+        <CardHeader className="gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="grid gap-2">
+              <CardTitle>Applicant assignment controls</CardTitle>
+              <p className="m-0 text-sm text-muted-foreground">
+                Review applicants by role slot, save the draft in place, and confirm separately
+                when staffing is ready to publish.
+              </p>
+            </div>
+            <Badge variant="outline">{scheduleStatusLabels[scheduleStatus]}</Badge>
+          </div>
+        </CardHeader>
 
-        <section
-          className="assignment-applicants"
-          aria-label="Applicant assignment controls"
-          style={{ display: "grid", gap: "16px" }}
-        >
-          <h2 style={{ margin: 0 }}>Applicant assignment controls</h2>
-          <p style={{ margin: 0 }}>
-            Review applicants by slot, save the draft in place, and confirm separately when ready.
-          </p>
-          <ul style={{ display: "grid", gap: "16px", listStyle: "none", margin: 0, padding: 0 }}>
-            {applicants.map((applicant) => {
-              const currentSlotId =
-                assignments.find((assignment) => assignment.workerUserId === applicant.workerUserId)
-                  ?.scheduleRoleSlotId ?? "";
+        <CardContent className="grid gap-4">
+          {applicants.map((applicant) => {
+            const currentSlotId =
+              assignments.find((assignment) => assignment.workerUserId === applicant.workerUserId)
+                ?.scheduleRoleSlotId ?? "";
 
-              return (
-                <li
-                  key={applicant.workerUserId}
-                  style={{
-                    backgroundColor: "#F6F1E8",
-                    border: "1px solid #E4DACB",
-                    borderRadius: "16px",
-                    padding: "16px",
-                  }}
-                >
-                  <article style={{ display: "grid", gap: "12px" }}>
-                    <div>
-                      <h3 style={{ margin: 0 }}>
-                        {applicant.workerName ?? applicant.workerUserId}
-                      </h3>
-                      <p style={{ margin: "8px 0 0" }}>
-                        Applied at: {applicant.appliedAt.slice(0, 16)}
-                      </p>
-                      <p style={{ margin: "4px 0 0", color: "#1F5A6E", fontWeight: 600 }}>
-                        Status: {applicantStatusLabels[applicant.assignmentStatus]}
-                      </p>
-                    </div>
+            return (
+              <article
+                key={applicant.workerUserId}
+                className="grid gap-4 rounded-2xl border border-border bg-secondary/20 p-4"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="grid gap-1">
+                    <h3 className="m-0 text-base font-semibold">
+                      {applicant.workerName ?? applicant.workerUserId}
+                    </h3>
+                    <p className="m-0 text-sm text-muted-foreground">
+                      Applied at {formatAppliedAt(applicant.appliedAt)}
+                    </p>
+                  </div>
+                  <Badge variant={getApplicantBadgeVariant(applicant.assignmentStatus)}>
+                    {applicantStatusLabels[applicant.assignmentStatus]}
+                  </Badge>
+                </div>
 
-                    <label style={{ display: "grid", gap: "8px", fontWeight: 600 }}>
-                      Role slot
-                      <select
-                        aria-label={`${applicant.workerName ?? applicant.workerUserId} role slot`}
-                        disabled={isLocked}
-                        value={currentSlotId}
-                        onChange={(event) => {
-                          const nextSlotId = event.target.value.trim();
-                          updateAssignment(
-                            applicant.workerUserId,
-                            nextSlotId.length === 0 ? null : nextSlotId,
-                          );
-                        }}
-                      >
-                        <option value="">Unassigned</option>
-                        {detail.roleSlots.map((roleSlot) => {
-                          const slotCount = assignmentCounts.get(roleSlot.id) ?? 0;
-                          const isCurrentSelection = currentSlotId === roleSlot.id;
-                          const isSlotFull = slotCount >= roleSlot.headcount && !isCurrentSelection;
+                <label className="grid gap-2 text-sm font-medium text-foreground">
+                  Role slot
+                  <select
+                    aria-label={`${applicant.workerName ?? applicant.workerUserId} role slot`}
+                    className={selectClassName()}
+                    disabled={isLocked}
+                    value={currentSlotId}
+                    onChange={(event) => {
+                      const nextSlotId = event.target.value.trim();
+                      updateAssignment(
+                        applicant.workerUserId,
+                        nextSlotId.length === 0 ? null : nextSlotId,
+                      );
+                    }}
+                  >
+                    <option value="">Unassigned</option>
+                    {detail.roleSlots.map((roleSlot) => {
+                      const slotCount = assignmentCounts.get(roleSlot.id) ?? 0;
+                      const isCurrentSelection = currentSlotId === roleSlot.id;
+                      const isSlotFull = slotCount >= roleSlot.headcount && !isCurrentSelection;
 
-                          return (
-                            <option key={roleSlot.id} value={roleSlot.id} disabled={isSlotFull}>
-                              {roleSlot.roleCode} ({slotCount}/{roleSlot.headcount})
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </label>
-                  </article>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+                      return (
+                        <option key={roleSlot.id} value={roleSlot.id} disabled={isSlotFull}>
+                          {roleSlot.roleCode} ({slotCount}/{roleSlot.headcount})
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
+              </article>
+            );
+          })}
+        </CardContent>
+      </Card>
 
-        <section
-          className="assignment-actions"
-          aria-label="Assignment actions"
-          style={{
-            backgroundColor: "#E4DACB",
-            borderRadius: "16px",
-            bottom: "24px",
-            display: "grid",
-            gap: "12px",
-            padding: "24px",
-            position: "sticky",
-          }}
-        >
-          <h2 style={{ margin: 0 }}>Assignment actions</h2>
-          <p style={{ margin: 0 }}>Draft save and final confirm stay separate.</p>
-          <button type="button" onClick={saveDraft} disabled={isSaving || isLocked}>
-            {isSaving ? "Saving..." : "Save draft"}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsConfirmDialogOpen(true)}
-            disabled={isConfirming || isLocked}
-          >
-            {isConfirming ? "Confirming..." : "Confirm assignments"}
-          </button>
-          {saveMessage ? (
-            <p role="status" style={{ margin: 0 }}>
-              {saveMessage}
+      <aside className="grid gap-6">
+        <AssignmentSummaryCard roleSlots={roleSlotSummaries} />
+
+        <Card aria-label="Assignment actions" className="bg-background xl:sticky xl:top-6">
+          <CardHeader className="gap-3">
+            <CardTitle>Assignment actions</CardTitle>
+            <p className="m-0 text-sm text-muted-foreground">
+              Draft save and final confirm stay separate. Final confirmation publishes worker roles
+              and pay previews.
             </p>
-          ) : null}
-          {confirmMessage ? (
-            <p role="status" style={{ margin: 0 }}>
-              {confirmMessage}
-            </p>
-          ) : null}
-          {saveError ? (
-            <p role="alert" style={{ color: "#B42318", margin: 0 }}>
-              {saveError}
-            </p>
-          ) : null}
-          {confirmError ? (
-            <p role="alert" style={{ color: "#B42318", margin: 0 }}>
-              {confirmError}
-            </p>
-          ) : null}
-        </section>
-      </div>
+          </CardHeader>
 
-      <style>{`
-        .assignment-layout {
-          grid-template-areas:
-            "summary"
-            "applicants"
-            "actions";
-          grid-template-columns: minmax(0, 1fr);
-        }
+          <CardContent className="grid gap-4">
+            <div className="grid gap-3">
+              <Button type="button" onClick={saveDraft} disabled={isSaving || isLocked}>
+                {isSaving ? "Saving..." : "Save draft"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsConfirmDialogOpen(true)}
+                disabled={isConfirming || isLocked}
+              >
+                {isConfirming ? "Confirming..." : "Confirm assignments"}
+              </Button>
+            </div>
 
-        .assignment-summary {
-          grid-area: summary;
-        }
+            {saveMessage ? (
+              <Alert>
+                <AlertTitle>Status: Draft saved</AlertTitle>
+                <AlertDescription>{saveMessage}</AlertDescription>
+              </Alert>
+            ) : null}
 
-        .assignment-applicants {
-          grid-area: applicants;
-        }
+            {confirmMessage ? (
+              <Alert>
+                <AlertTitle>Status: Confirmed</AlertTitle>
+                <AlertDescription>{confirmMessage}</AlertDescription>
+              </Alert>
+            ) : null}
 
-        .assignment-actions {
-          grid-area: actions;
-        }
+            {saveError ? (
+              <Alert variant="destructive">
+                <AlertTitle>Draft save failed.</AlertTitle>
+                <AlertDescription>{saveError}</AlertDescription>
+              </Alert>
+            ) : null}
 
-        @media (min-width: 960px) {
-          .assignment-layout {
-            align-items: start;
-            grid-template-areas:
-              "applicants summary"
-              "applicants actions";
-            grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
-          }
-        }
-      `}</style>
+            {confirmError ? (
+              <Alert variant="destructive">
+                <AlertTitle>Confirmation failed.</AlertTitle>
+                <AlertDescription>{confirmError}</AlertDescription>
+              </Alert>
+            ) : null}
+          </CardContent>
+        </Card>
+      </aside>
 
       <ConfirmAssignmentsDialog
         open={isConfirmDialogOpen}
