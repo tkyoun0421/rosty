@@ -67,7 +67,11 @@ Plans:
 3. Admin schedule detail makes draft-save, confirmation, attendance review, and status/result feedback understandable in place.
 4. The operations dashboard reads as the visual entry point into schedule drill-down work rather than a developer-facing scaffold.
 **Plans**: 3
-**Status**: Planned
+Plans:
+- [ ] 11-01-PLAN.md - rebuild `/admin/schedules` so schedule creation and saved schedule review feel like one coherent management screen.
+- [ ] 11-02-PLAN.md - rebuild `/admin/schedules/[scheduleId]` so attendance, assignment review, draft-save, and final confirm read as one usable detail workflow.
+- [ ] 11-03-PLAN.md - align `/admin/operations` with the scheduling workspace so dashboard triage and drill-down handoff feel coherent.
+**Status**: Planned (2026-04-06)
 
 ### Phase 12: Worker Work Surface Completion
 **Goal**: Make worker recruiting, confirmed-work, pay-preview, and attendance surfaces readable and self-explanatory.
@@ -89,4 +93,4 @@ Plans:
 | 12. Worker Work Surface Completion | v1.1 | 0/2 | Not started | - |
 
 ---
-*Last updated: 2026-04-06 after Phase 10 execution*
+*Last updated: 2026-04-06 after Phase 11 planning*

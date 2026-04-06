@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UI Surface Completion
 status: planning
-stopped_at: Phase 10 completed; Phase 11 ready for planning
-last_updated: "2026-04-06T20:03:24.0003783+09:00"
+stopped_at: Phase 11 planned; ready for execution
+last_updated: "2026-04-06T20:32:21.3609441+09:00"
 last_activity: 2026-04-06
 progress:
   total_phases: 3
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-04-06)
 ## Current Position
 
 Milestone: v1.1 (UI Surface Completion) - ACTIVE
-Phase: 11 (Admin Scheduling Surface Completion) - READY FOR PLANNING
-Plan: 0 of 3
-Status: Ready to discuss and plan
+Phase: 11 (Admin Scheduling Surface Completion) - PLANNED
+Plan: 3 of 3
+Status: Ready to execute
 Last activity: 2026-04-06
 
 Progress: [####------] 3/8 plans (38%)
@@ -60,21 +60,22 @@ Progress: [####------] 3/8 plans (38%)
 
 ### Pending Todos
 
-- Plan Phase 11: Admin Scheduling Surface Completion.
+- Execute Phase 11: Admin Scheduling Surface Completion.
+- Prepare Phase 12 worker work surface planning after the admin scheduling surfaces are implemented.
 - Schedule live-browser UAT for Phase 10 entry routes, including Google OAuth, invite continuity, and loading/error-state observation.
 - Decide when to re-run the archived manual verification debt from v1.0 relative to v1.1 execution.
 
 ### Blockers/Concerns
 
 - Phase 10 still carries manual-only verification for live Google OAuth and runtime route-state observation.
-- The product still feels incomplete on deeper admin and worker flows until Phase 11 and Phase 12 land.
+- The product still feels incomplete on deeper admin and worker flows until Phase 11 executes and Phase 12 lands.
 - Remaining manual verification debt from v1.0 lives in `.planning/milestones/v1.0-MILESTONE-AUDIT.md` and the archived phase artifacts.
 
 ## Session Continuity
 
-Last session: 2026-04-06T20:03:24+09:00
-Stopped at: Phase 10 completed; Phase 11 ready for planning
-Resume file: .planning/ROADMAP.md
+Last session: 2026-04-06T20:32:21+09:00
+Stopped at: Phase 11 planned; ready for execution
+Resume file: .planning/phases/11-admin-scheduling-surface-completion/11-01-PLAN.md
 
 ---
-*State refreshed: 2026-04-06 after Phase 10 execution*
+*State refreshed: 2026-04-06 after Phase 11 planning*

@@ -15,7 +15,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - `v1.0 MVP` shipped on 2026-04-06.
 - The archived milestone covers invite-backed access, schedule publishing, worker applications, assignment confirmation, attendance review, operations triage, admin route hardening, and freshness fixes for the highest-risk reads.
 - The archived audit has no remaining requirement or integration blockers. The only open debt is manual-only verification recorded in the archived v1.0 audit and phase artifacts.
-- `v1.1 UI Surface Completion` is active, and Phase 10 completed on 2026-04-06.
+- `v1.1 UI Surface Completion` is active, Phase 10 completed on 2026-04-06, and Phase 11 is now planned.
 - The current open debt for v1.1 is live-browser verification for the new Phase 10 entry surfaces and the archived manual-only checks from v1.0.
 
 ## Current Milestone: v1.1 UI Surface Completion
@@ -39,7 +39,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 
 ### Active
 
-- [ ] Plan Phase 11 so admin schedule creation, saved schedules, detail review, and dashboard drill-down become readable and actionable product surfaces.
+- [ ] Execute Phase 11 so admin schedule creation, saved schedules, detail review, and dashboard drill-down become readable and actionable product surfaces.
 - [ ] Make admin schedule creation, list management, dashboard drill-down, and schedule detail surfaces readable and actionable without relying on raw HTML defaults.
 - [ ] Make worker recruiting, confirmed-work, pay-preview, and attendance surfaces understandable at a glance, including empty/error/success feedback states.
 - [ ] Decide when to run the live-browser UAT for Phase 10 and when to re-run the archived manual-only v1.0 verification debt relative to v1.1 UI work.
@@ -56,7 +56,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - Application code under `src/` is 9,664 lines of TypeScript/TSX at milestone archive time.
 - Phase 10 execution finished with a green `pnpm exec vitest run` covering 57 files and 158 tests.
 - The archived v1.0 audit records no unsatisfied requirements or integration gaps, only manual-only follow-up checks for phases 02, 03, 04, 05, and 08.
-- The largest remaining usability gap now sits in Phase 11 and Phase 12 surfaces rather than the product entry flow.
+- The largest remaining usability gap now sits in the planned Phase 11 admin scheduling surface and the future Phase 12 worker work surface.
 
 ## Constraints
 
@@ -88,4 +88,4 @@ Update this document at major phase boundaries so the active work, validated sco
 - When verification or audit work changes the practical next step, update `Active`.
 - When a requested feature exceeds v1 scope, move it to backlog or future planning rather than silently expanding this document.
 
-*Last updated: 2026-04-06 after Phase 10 execution*
+*Last updated: 2026-04-06 after Phase 11 planning*
