@@ -1,12 +1,8 @@
 import { submitScheduleStatus } from "#mutations/schedule/actions/submitScheduleStatus";
 import { inlineScheduleStatuses } from "#mutations/schedule/schemas/updateScheduleStatus";
+import { scheduleStatusLabels } from "#flows/admin-schedules/utils/formatSchedule";
 import type { AdminScheduleListItem } from "#queries/schedule/types/scheduleList";
-
-const scheduleStatusLabels: Record<AdminScheduleListItem["status"], string> = {
-  recruiting: "Recruiting",
-  assigning: "Assigning",
-  confirmed: "Confirmed",
-};
+import { Button } from "#shared/ui/button";
 
 interface ScheduleStatusFormProps {
   scheduleId: string;
@@ -21,11 +17,15 @@ export function ScheduleStatusForm({ scheduleId, currentStatus }: ScheduleStatus
   const nextStatuses = inlineScheduleStatuses.filter((status) => status !== currentStatus);
 
   return (
-    <form action={submitScheduleStatus}>
+    <form action={submitScheduleStatus} className="grid gap-3 md:min-w-52">
       <input type="hidden" name="scheduleId" value={scheduleId} />
-      <label>
-        <span className="sr-only">Next status</span>
-        <select name="status" defaultValue={nextStatuses[0] ?? currentStatus}>
+      <label className="grid gap-2 text-sm font-medium text-foreground">
+        Move to
+        <select
+          className="min-h-11 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          name="status"
+          defaultValue={nextStatuses[0] ?? currentStatus}
+        >
           {nextStatuses.map((status) => (
             <option key={status} value={status}>
               {scheduleStatusLabels[status]}
@@ -33,7 +33,9 @@ export function ScheduleStatusForm({ scheduleId, currentStatus }: ScheduleStatus
           ))}
         </select>
       </label>
-      <button type="submit">Change status</button>
+      <Button type="submit" variant="outline">
+        Update status
+      </Button>
     </form>
   );
 }
