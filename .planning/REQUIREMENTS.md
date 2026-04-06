@@ -14,8 +14,8 @@
 
 ### Admin Surface
 
-- [ ] **ADMINUI-01**: Admin can create a schedule from a readable form with clear date, time, and role-slot editing controls.
-- [ ] **ADMINUI-02**: Admin can scan saved schedules and understand status, time, and staffing summary without relying on raw-table defaults.
+- [x] **ADMINUI-01**: Admin can create a schedule from a readable form with clear date, time, and role-slot editing controls.
+- [x] **ADMINUI-02**: Admin can scan saved schedules and understand status, time, and staffing summary without relying on raw-table defaults.
 - [ ] **ADMINUI-03**: Admin can open schedule detail, manage draft/confirm assignment actions, and understand action results from inline feedback.
 - [ ] **ADMINUI-04**: Admin can use the operations dashboard as a readable entry point into schedule drill-down work.
 
@@ -52,8 +52,8 @@
 | ENTRY-02 | Phase 10 | Complete |
 | ENTRY-03 | Phase 10 | Complete |
 | ENTRY-04 | Phase 10 | Complete |
-| ADMINUI-01 | Phase 11 | Pending |
-| ADMINUI-02 | Phase 11 | Pending |
+| ADMINUI-01 | Phase 11 | Complete |
+| ADMINUI-02 | Phase 11 | Complete |
 | ADMINUI-03 | Phase 11 | Pending |
 | ADMINUI-04 | Phase 11 | Pending |
 | WORKUI-01 | Phase 12 | Pending |
