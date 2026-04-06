@@ -48,23 +48,23 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ENTRY-01 | TBD | Pending |
-| ENTRY-02 | TBD | Pending |
-| ENTRY-03 | TBD | Pending |
-| ENTRY-04 | TBD | Pending |
-| ADMINUI-01 | TBD | Pending |
-| ADMINUI-02 | TBD | Pending |
-| ADMINUI-03 | TBD | Pending |
-| ADMINUI-04 | TBD | Pending |
-| WORKUI-01 | TBD | Pending |
-| WORKUI-02 | TBD | Pending |
-| WORKUI-03 | TBD | Pending |
+| ENTRY-01 | Phase 10 | Pending |
+| ENTRY-02 | Phase 10 | Pending |
+| ENTRY-03 | Phase 10 | Pending |
+| ENTRY-04 | Phase 10 | Pending |
+| ADMINUI-01 | Phase 11 | Pending |
+| ADMINUI-02 | Phase 11 | Pending |
+| ADMINUI-03 | Phase 11 | Pending |
+| ADMINUI-04 | Phase 11 | Pending |
+| WORKUI-01 | Phase 12 | Pending |
+| WORKUI-02 | Phase 12 | Pending |
+| WORKUI-03 | Phase 12 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 11 total
-- Mapped to phases: 0
-- Unmapped: 11
+- Mapped to phases: 11
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-06*
-*Last updated: 2026-04-06 after v1.1 requirement definition*
+*Last updated: 2026-04-06 after v1.1 roadmap creation*

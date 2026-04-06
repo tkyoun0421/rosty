@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UI Surface Completion
-status: planning
-stopped_at: Phase 10 not started; defining v1.1 requirements and roadmap
-last_updated: "2026-04-06T15:05:00+09:00"
-last_activity: 2026-04-06 -- started milestone v1.1 UI Surface Completion
+status: active
+stopped_at: Phase 10 ready for discussion and planning
+last_updated: "2026-04-06T15:12:00+09:00"
+last_activity: 2026-04-06 -- created v1.1 roadmap
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
-  total_plans: 0
+  total_plans: 8
   completed_plans: 0
   percent: 0
 ---
@@ -21,21 +21,26 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Admins should be able to confirm venue staffing quickly, and workers should be able to review their confirmed work, role context, and expected pay clearly.
-**Current focus:** Define v1.1 requirements and roadmap around UI surface completion for entry, admin scheduling, and worker-facing flows.
+**Current focus:** Start Phase 10 and turn the entry/sign-in/home-shell routes into usable product surfaces.
 
 ## Current Position
 
-Milestone: v1.1 (UI Surface Completion) - STARTED
-Phase: Not started (defining requirements)
+Milestone: v1.1 (UI Surface Completion) - ACTIVE
+Phase: 10 (entry-and-shared-shell-surface) - NOT STARTED
 Plan: None
-Status: Defining the v1.1 milestone scope and phase structure after archiving v1.0.
-Last activity: 2026-04-06 -- started milestone v1.1 UI Surface Completion
+Status: Requirements and roadmap are defined; Phase 10 is ready for discussion and planning.
+Last activity: 2026-04-06 -- created v1.1 roadmap
 
-Progress: [----------] 0/0 plans (0%)
+Progress: [----------] 0/8 plans (0%)
 
 ## Performance Metrics
 
-Current milestone roadmap not created yet. Phase numbering will continue from 10 after requirements are defined.
+**By Phase:**
+| Phase | Plans | Result |
+|-------|-------|--------|
+| 10. Entry And Shared Shell Surface | 0/3 | not started |
+| 11. Admin Scheduling Surface Completion | 0/3 | not started |
+| 12. Worker Work Surface Completion | 0/2 | not started |
 
 ## Accumulated Context
 
@@ -50,8 +55,8 @@ Current milestone roadmap not created yet. Phase numbering will continue from 10
 
 ### Pending Todos
 
-- Define v1.1 requirements for entry surfaces, admin scheduling surfaces, and worker-facing work surfaces.
-- Create the v1.1 roadmap starting at Phase 10.
+- Discuss and plan Phase 10: Entry And Shared Shell Surface.
+- Execute the Phase 10 surface-completion work before widening scope into later phases.
 - Decide when to re-run the archived manual verification debt from v1.0 relative to v1.1 execution.
 
 ### Blockers/Concerns
@@ -61,9 +66,9 @@ Current milestone roadmap not created yet. Phase numbering will continue from 10
 
 ## Session Continuity
 
-Last session: 2026-04-06T15:05:00+09:00
-Stopped at: Phase 10 not started; defining v1.1 requirements and roadmap
-Resume file: .planning/PROJECT.md
+Last session: 2026-04-06T15:12:00+09:00
+Stopped at: Phase 10 ready for discussion and planning
+Resume file: .planning/ROADMAP.md
 
 ---
-*State refreshed: 2026-04-06 after v1.1 milestone kickoff*
+*State refreshed: 2026-04-06 after v1.1 roadmap creation*
