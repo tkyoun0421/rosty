@@ -89,7 +89,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Entry And Shared Shell Surface | v1.1 | 3/3 | Complete | 2026-04-06 |
-| 11. Admin Scheduling Surface Completion | v1.1 | 1/3 | In Progress|  |
+| 11. Admin Scheduling Surface Completion | v1.1 | 2/3 | In Progress|  |
 | 12. Worker Work Surface Completion | v1.1 | 0/2 | Not started | - |
 
 ---
