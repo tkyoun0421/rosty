@@ -148,7 +148,7 @@ export function AttendanceCheckInCard({
             <CardTitle className="text-xl font-semibold">{getAttendanceHeadline(status)}</CardTitle>
           </div>
           <Button onClick={handleClick} disabled={!canSubmit} aria-disabled={!canSubmit} size="lg">
-            {isPending ? "Checking in..." : "Check in now"}
+            {isPending && !isSubmitted ? "Checking in..." : "Check in now"}
           </Button>
         </div>
       </CardHeader>
