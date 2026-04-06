@@ -15,6 +15,7 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 - `v1.0 MVP` shipped on 2026-04-06.
 - The archived milestone covers invite-backed access, schedule publishing, worker applications, assignment confirmation, attendance review, operations triage, admin route hardening, and freshness fixes for the highest-risk reads.
 - The archived audit has no remaining requirement or integration blockers. The only open debt is manual-only verification recorded in the archived v1.0 audit and phase artifacts.
+- `v1.1 UI Surface Completion` is active, and Phase 10 is planned and ready for execution.
 
 ## Current Milestone: v1.1 UI Surface Completion
 
@@ -36,7 +37,8 @@ Admins should be able to confirm venue staffing quickly, and workers should be a
 
 ### Active
 
-- [ ] Replace raw or placeholder-looking entry screens with a coherent sign-in, invite, onboarding, and home-shell experience.
+- [ ] Execute Phase 10 so sign-in, invite acceptance, onboarding, unauthorized handling, and route-level loading/error states become readable product surfaces.
+- [ ] Convert `/`, `/worker`, and `/admin` into coherent role-aware landing shells before deeper admin and worker surface polish.
 - [ ] Make admin schedule creation, list management, dashboard drill-down, and schedule detail surfaces readable and actionable without relying on raw HTML defaults.
 - [ ] Make worker recruiting, confirmed-work, pay-preview, and attendance surfaces understandable at a glance, including empty/error/success feedback states.
 - [ ] Decide when to re-run the archived manual-only v1.0 verification debt relative to v1.1 UI work.
@@ -85,4 +87,4 @@ Update this document at major phase boundaries so the active work, validated sco
 - When verification or audit work changes the practical next step, update `Active`.
 - When a requested feature exceeds v1 scope, move it to backlog or future planning rather than silently expanding this document.
 
-*Last updated: 2026-04-06 after v1.1 milestone kickoff*
+*Last updated: 2026-04-06 after Phase 10 planning*

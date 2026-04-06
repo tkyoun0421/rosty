@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UI Surface Completion
-status: active
-stopped_at: Phase 10 ready for discussion and planning
-last_updated: "2026-04-06T15:12:00+09:00"
-last_activity: 2026-04-06 -- created v1.1 roadmap
+status: planning
+stopped_at: Phase 10 planned, ready for execution
+last_updated: "2026-04-06T16:05:00+09:00"
+last_activity: 2026-04-06 -- Phase 10 planned
 progress:
   total_phases: 3
   completed_phases: 0
@@ -21,15 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Admins should be able to confirm venue staffing quickly, and workers should be able to review their confirmed work, role context, and expected pay clearly.
-**Current focus:** Start Phase 10 and turn the entry/sign-in/home-shell routes into usable product surfaces.
+**Current focus:** Execute Phase 10 and turn the entry, onboarding, and role-aware shell routes into usable product surfaces.
 
 ## Current Position
 
 Milestone: v1.1 (UI Surface Completion) - ACTIVE
-Phase: 10 (entry-and-shared-shell-surface) - NOT STARTED
-Plan: None
-Status: Requirements and roadmap are defined; Phase 10 is ready for discussion and planning.
-Last activity: 2026-04-06 -- created v1.1 roadmap
+Phase: 10 (entry-and-shared-shell-surface) - PLANNED
+Plan: 10-01 ready
+Status: Phase 10 planned, ready for execution.
+Last activity: 2026-04-06 -- Phase 10 planned
 
 Progress: [----------] 0/8 plans (0%)
 
@@ -55,8 +55,8 @@ Progress: [----------] 0/8 plans (0%)
 
 ### Pending Todos
 
-- Discuss and plan Phase 10: Entry And Shared Shell Surface.
-- Execute the Phase 10 surface-completion work before widening scope into later phases.
+- Execute Phase 10: Entry And Shared Shell Surface.
+- Prepare Phase 11 admin scheduling surface work once the Phase 10 shell and entry patterns are implemented.
 - Decide when to re-run the archived manual verification debt from v1.0 relative to v1.1 execution.
 
 ### Blockers/Concerns
@@ -66,9 +66,9 @@ Progress: [----------] 0/8 plans (0%)
 
 ## Session Continuity
 
-Last session: 2026-04-06T15:12:00+09:00
-Stopped at: Phase 10 ready for discussion and planning
-Resume file: .planning/ROADMAP.md
+Last session: 2026-04-06T16:05:00+09:00
+Stopped at: Phase 10 planned, ready for execution
+Resume file: .planning/phases/10-entry-and-shared-shell-surface/10-01-PLAN.md
 
 ---
-*State refreshed: 2026-04-06 after v1.1 roadmap creation*
+*State refreshed: 2026-04-06 after Phase 10 planning*

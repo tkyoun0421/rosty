@@ -51,6 +51,10 @@ Closeout notes:
 3. Signed-in users see a role-aware home shell that makes the next destinations obvious for admin and worker roles.
 4. Primary entry routes show readable loading, unauthorized, empty, and failure states instead of placeholder copy or raw scaffolds.
 **Plans**: 3
+Plans:
+- [ ] 10-01-PLAN.md - shared entry-frame, sign-in surface, and invite-acceptance surface with token-aware Google CTA.
+- [ ] 10-02-PLAN.md - onboarding rebuild plus readable unauthorized, loading, and recoverable error surfaces.
+- [ ] 10-03-PLAN.md - root, worker, and admin landing shells, including the `/admin` route handoff to a real admin home.
 **Status**: Planned
 
 ### Phase 11: Admin Scheduling Surface Completion
@@ -85,4 +89,4 @@ Closeout notes:
 | 12. Worker Work Surface Completion | v1.1 | 0/2 | Not started | - |
 
 ---
-*Last updated: 2026-04-06 after v1.1 roadmap creation*
+*Last updated: 2026-04-06 after Phase 10 planning*
