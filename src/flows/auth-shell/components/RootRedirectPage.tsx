@@ -21,6 +21,13 @@ export async function RootRedirectPage() {
     return redirect(UNAUTHORIZED_PATH);
   }
 
+  const roleSummary =
+    user.role === "worker"
+      ? "Review recruiting schedules or jump back into confirmed work from your worker workspace."
+      : "Open the admin workspace to manage schedules, operations, invites, and worker rates.";
+
+  const signedInAs = user.fullName ?? user.email;
+
   return (
     <main className="min-h-screen bg-background px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-5xl gap-8">
@@ -30,7 +37,7 @@ export async function RootRedirectPage() {
           </Badge>
           <h1 className="text-[28px] font-semibold leading-tight">Welcome back</h1>
           <p className="text-base text-muted-foreground">
-            Choose the next area to open. Admin tools are shown only to admin users.
+            Signed in as {signedInAs}. {roleSummary}
           </p>
         </header>
 
@@ -76,7 +83,7 @@ export async function RootRedirectPage() {
                   Open the admin workspace for schedules, assignments, invites, attendance, and worker rates.
                 </p>
                 <Link className="text-sm font-semibold text-primary underline-offset-4 hover:underline" href="/admin">
-                  Open admin page
+                  Open admin workspace
                 </Link>
               </CardContent>
             </Card>

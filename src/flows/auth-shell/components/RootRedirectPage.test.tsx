@@ -65,7 +65,11 @@ describe("RootRedirectPage", () => {
     render(await RootRedirectPage());
 
     expect(screen.getByRole("heading", { name: "Welcome back" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open admin page" })).toHaveAttribute("href", "/admin");
+    expect(screen.getByText(/Signed in as Kim Admin\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Open the admin workspace to manage schedules, operations, invites, and worker rates\./),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open admin workspace" })).toHaveAttribute("href", "/admin");
     expect(screen.queryByRole("link", { name: "Open schedules" })).not.toBeInTheDocument();
   });
 
@@ -85,6 +89,11 @@ describe("RootRedirectPage", () => {
 
     render(await RootRedirectPage());
 
+    expect(
+      screen.getByText(
+        "Signed in as Kim Worker. Review recruiting schedules or jump back into confirmed work from your worker workspace.",
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open schedules" })).toHaveAttribute(
       "href",
       "/worker/schedules",
@@ -93,7 +102,7 @@ describe("RootRedirectPage", () => {
       "href",
       "/worker/assignments",
     );
-    expect(screen.queryByRole("link", { name: "Open admin page" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Open admin workspace" })).not.toBeInTheDocument();
   });
 
   it("routes users without role to unauthorized after onboarding", async () => {
