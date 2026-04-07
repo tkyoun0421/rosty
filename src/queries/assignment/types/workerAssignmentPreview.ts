@@ -1,11 +1,13 @@
+export type WorkerAssignmentPayStatus = "ready" | "missing_worker_rate";
+
 export interface PayPreviewBreakdown {
-  regularHours: number;
-  overtimeHours: number;
+  regularHours: number | null;
+  overtimeHours: number | null;
   overtimeApplied: boolean;
-  hourlyRateCents: number;
-  regularPayCents: number;
-  overtimePayCents: number;
-  totalPayCents: number;
+  hourlyRateCents: number | null;
+  regularPayCents: number | null;
+  overtimePayCents: number | null;
+  totalPayCents: number | null;
 }
 
 export interface WorkerAssignmentPreview extends PayPreviewBreakdown {
@@ -15,4 +17,5 @@ export interface WorkerAssignmentPreview extends PayPreviewBreakdown {
   roleCode: string;
   startsAt: string;
   endsAt: string;
+  payStatus: WorkerAssignmentPayStatus;
 }

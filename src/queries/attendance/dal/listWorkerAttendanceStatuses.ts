@@ -57,7 +57,12 @@ async function runListWorkerAttendanceStatuses(
     return [];
   }
 
-  const assignmentIds = assignments.map((assignment) => assignment.assignmentId);
+  const attendanceInputs = assignments.map(({ assignmentId, scheduleId, startsAt }) => ({
+    assignmentId,
+    scheduleId,
+    startsAt,
+  }));
+  const assignmentIds = attendanceInputs.map((assignment) => assignment.assignmentId);
   const supabase = await getServerSupabaseClient();
   const { data, error } = await supabase
     .from("attendance_check_ins")
@@ -73,7 +78,7 @@ async function runListWorkerAttendanceStatuses(
     (((data as AttendanceStatusRow[] | null | undefined) ?? [])).map((row) => [row.schedule_assignment_id, row]),
   );
 
-  return assignments.map((assignment) =>
+  return attendanceInputs.map((assignment) =>
     mapWorkerAttendanceStatus({
       assignmentId: assignment.assignmentId,
       scheduleId: assignment.scheduleId,

@@ -1,5 +1,10 @@
 import type { WorkerAssignmentPreview } from "#queries/assignment/types/workerAssignmentPreview";
 
+import {
+  formatScheduleWindow,
+  getAssignmentBreakdown,
+} from "#flows/worker-assignment-preview/utils/workerAssignmentPreview";
+
 interface ConfirmedAssignmentListProps {
   assignments: WorkerAssignmentPreview[];
 }
@@ -15,13 +20,13 @@ export function ConfirmedAssignmentList({
           <li key={assignment.assignmentId}>
             <article>
               <h3>{assignment.roleCode}</h3>
-              <p>
-                Date/time: {assignment.startsAt.slice(0, 10)} {assignment.startsAt.slice(11, 16)} -{" "}
-                {assignment.endsAt.slice(11, 16)}
-              </p>
-              <p>Role: {assignment.roleCode}</p>
-              <p>Hourly rate: {assignment.hourlyRateCents.toLocaleString()} KRW</p>
-              <p>Overtime applied: {assignment.overtimeApplied ? "Yes" : "No"}</p>
+              <p>Date/time: {formatScheduleWindow(assignment.startsAt, assignment.endsAt)}</p>
+              <p>Pay status: {assignment.payStatus === "ready" ? "Ready" : "Pending admin rate"}</p>
+              {getAssignmentBreakdown(assignment).map((item) => (
+                <p key={`${assignment.assignmentId}-${item.label}`}>
+                  {item.label}: {item.value}
+                </p>
+              ))}
             </article>
           </li>
         ))}

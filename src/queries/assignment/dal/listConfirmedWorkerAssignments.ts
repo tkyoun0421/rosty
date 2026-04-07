@@ -34,10 +34,33 @@ interface WorkerRateRow {
 
 function mapWorkerAssignmentPreview(
   row: ConfirmedAssignmentRow,
-  hourlyRateCents: number,
+  hourlyRateCents: number | null,
 ): WorkerAssignmentPreview | null {
   if (row.status !== "confirmed" || row.schedules?.status !== "confirmed" || !row.schedule_role_slots) {
     return null;
+  }
+
+  const baseAssignment = {
+    assignmentId: row.id,
+    scheduleId: row.schedule_id,
+    scheduleRoleSlotId: row.schedule_role_slot_id,
+    roleCode: row.schedule_role_slots.role_code,
+    startsAt: row.schedules.starts_at,
+    endsAt: row.schedules.ends_at,
+  };
+
+  if (hourlyRateCents === null) {
+    return {
+      ...baseAssignment,
+      payStatus: "missing_worker_rate",
+      hourlyRateCents: null,
+      regularHours: null,
+      overtimeHours: null,
+      overtimeApplied: false,
+      regularPayCents: null,
+      overtimePayCents: null,
+      totalPayCents: null,
+    };
   }
 
   const payPreview = calculatePayPreview({
@@ -47,12 +70,8 @@ function mapWorkerAssignmentPreview(
   });
 
   return {
-    assignmentId: row.id,
-    scheduleId: row.schedule_id,
-    scheduleRoleSlotId: row.schedule_role_slot_id,
-    roleCode: row.schedule_role_slots.role_code,
-    startsAt: row.schedules.starts_at,
-    endsAt: row.schedules.ends_at,
+    ...baseAssignment,
+    payStatus: "ready",
     ...payPreview,
   };
 }
@@ -92,14 +111,11 @@ async function runListConfirmedWorkerAssignments(
     throw workerRateResult.error;
   }
 
-  if (!workerRateResult.data) {
-    return [];
-  }
+  const workerRateCents =
+    (workerRateResult.data as WorkerRateRow | null | undefined)?.hourly_rate_cents ?? null;
 
   return (((assignmentsResult.data as unknown as ConfirmedAssignmentRow[] | null | undefined) ?? []))
-    .map((row) =>
-      mapWorkerAssignmentPreview(row, (workerRateResult.data as unknown as WorkerRateRow).hourly_rate_cents),
-    )
+    .map((row) => mapWorkerAssignmentPreview(row, workerRateCents))
     .filter((row): row is WorkerAssignmentPreview => row !== null)
     .sort((left, right) => left.startsAt.localeCompare(right.startsAt));
 }

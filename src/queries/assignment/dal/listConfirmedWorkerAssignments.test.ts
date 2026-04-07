@@ -31,6 +31,26 @@ vi.mock("#shared/lib/supabase/serverClient", () => ({
   getServerSupabaseClient,
 }));
 
+function createAssignmentRow(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: "assignment-1",
+    schedule_id: "schedule-1",
+    schedule_role_slot_id: "slot-1",
+    worker_user_id: "worker-1",
+    status: "confirmed",
+    schedules: {
+      starts_at: "2026-04-10T09:00:00+09:00",
+      ends_at: "2026-04-10T18:00:00+09:00",
+      status: "confirmed",
+    },
+    schedule_role_slots: {
+      id: "slot-1",
+      role_code: "captain",
+    },
+    ...overrides,
+  };
+}
+
 describe("listConfirmedWorkerAssignments", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -41,26 +61,9 @@ describe("listConfirmedWorkerAssignments", () => {
     });
   });
 
-  it("returns confirmed assignments with role, schedule window, and pay breakdown", async () => {
+  it("returns confirmed assignments with role, schedule window, and ready pay breakdown", async () => {
     assignmentsEqStatus.mockResolvedValue({
-      data: [
-        {
-          id: "assignment-1",
-          schedule_id: "schedule-1",
-          schedule_role_slot_id: "slot-1",
-          worker_user_id: "worker-1",
-          status: "confirmed",
-          schedules: {
-            starts_at: "2026-04-10T09:00:00+09:00",
-            ends_at: "2026-04-10T18:00:00+09:00",
-            status: "confirmed",
-          },
-          schedule_role_slots: {
-            id: "slot-1",
-            role_code: "captain",
-          },
-        },
-      ],
+      data: [createAssignmentRow()],
       error: null,
     });
 
@@ -80,6 +83,7 @@ describe("listConfirmedWorkerAssignments", () => {
         roleCode: "captain",
         startsAt: "2026-04-10T09:00:00+09:00",
         endsAt: "2026-04-10T18:00:00+09:00",
+        payStatus: "ready",
         hourlyRateCents: 12000,
         regularHours: 9,
         overtimeHours: 0,
@@ -94,28 +98,18 @@ describe("listConfirmedWorkerAssignments", () => {
   it("filters out rows whose joined schedule is not confirmed", async () => {
     assignmentsEqStatus.mockResolvedValue({
       data: [
-        {
+        createAssignmentRow({
           id: "assignment-confirmed",
-          schedule_id: "schedule-1",
-          schedule_role_slot_id: "slot-1",
-          worker_user_id: "worker-1",
-          status: "confirmed",
           schedules: {
             starts_at: "2026-04-10T09:00:00+09:00",
             ends_at: "2026-04-10T20:00:00+09:00",
             status: "confirmed",
           },
-          schedule_role_slots: {
-            id: "slot-1",
-            role_code: "captain",
-          },
-        },
-        {
+        }),
+        createAssignmentRow({
           id: "assignment-hidden",
           schedule_id: "schedule-2",
           schedule_role_slot_id: "slot-2",
-          worker_user_id: "worker-1",
-          status: "confirmed",
           schedules: {
             starts_at: "2026-04-11T09:00:00+09:00",
             ends_at: "2026-04-11T13:00:00+09:00",
@@ -125,7 +119,7 @@ describe("listConfirmedWorkerAssignments", () => {
             id: "slot-2",
             role_code: "server",
           },
-        },
+        }),
       ],
       error: null,
     });
@@ -137,14 +131,15 @@ describe("listConfirmedWorkerAssignments", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]?.assignmentId).toBe("assignment-confirmed");
+    expect(result[0]?.payStatus).toBe("ready");
     expect(result[0]?.overtimeApplied).toBe(true);
     expect(result[0]?.overtimeHours).toBe(2);
     expect(result[0]?.totalPayCents).toBe(144000);
   });
 
-  it("returns an empty list when the worker rate is not visible", async () => {
+  it("preserves confirmed assignments when the worker rate is not visible", async () => {
     assignmentsEqStatus.mockResolvedValue({
-      data: [],
+      data: [createAssignmentRow()],
       error: null,
     });
     workerRatesMaybeSingle.mockResolvedValue({
@@ -156,7 +151,24 @@ describe("listConfirmedWorkerAssignments", () => {
       "#queries/assignment/dal/listConfirmedWorkerAssignments"
     );
 
-    await expect(listConfirmedWorkerAssignments("worker-1")).resolves.toEqual([]);
+    await expect(listConfirmedWorkerAssignments("worker-1")).resolves.toEqual([
+      {
+        assignmentId: "assignment-1",
+        scheduleId: "schedule-1",
+        scheduleRoleSlotId: "slot-1",
+        roleCode: "captain",
+        startsAt: "2026-04-10T09:00:00+09:00",
+        endsAt: "2026-04-10T18:00:00+09:00",
+        payStatus: "missing_worker_rate",
+        hourlyRateCents: null,
+        regularHours: null,
+        overtimeHours: null,
+        overtimeApplied: false,
+        regularPayCents: null,
+        overtimePayCents: null,
+        totalPayCents: null,
+      },
+    ]);
   });
 
   it("uses the dedicated worker pay-preview cache tag in the cached branch", async () => {

@@ -11,6 +11,26 @@ vi.mock("#shared/lib/supabase/serverClient", () => ({
   getServerSupabaseClient,
 }));
 
+function createAssignment(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    assignmentId: "assignment-1",
+    scheduleId: "schedule-1",
+    scheduleRoleSlotId: "slot-1",
+    roleCode: "captain",
+    startsAt: "2026-04-10T10:00:00+09:00",
+    endsAt: "2026-04-10T18:00:00+09:00",
+    payStatus: "ready",
+    hourlyRateCents: 12000,
+    regularHours: 8,
+    overtimeHours: 0,
+    overtimeApplied: false,
+    regularPayCents: 96000,
+    overtimePayCents: 0,
+    totalPayCents: 96000,
+    ...overrides,
+  };
+}
+
 describe("listWorkerAttendanceStatuses", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -18,36 +38,15 @@ describe("listWorkerAttendanceStatuses", () => {
 
   it("starts from confirmed assignments and returns one status per assignment even without attendance rows", async () => {
     listConfirmedWorkerAssignments.mockResolvedValue([
-      {
-        assignmentId: "assignment-1",
-        scheduleId: "schedule-1",
-        scheduleRoleSlotId: "slot-1",
-        roleCode: "captain",
-        startsAt: "2026-04-10T10:00:00+09:00",
-        endsAt: "2026-04-10T18:00:00+09:00",
-        hourlyRateCents: 12000,
-        regularHours: 8,
-        overtimeHours: 0,
-        overtimeApplied: false,
-        regularPayCents: 96000,
-        overtimePayCents: 0,
-        totalPayCents: 96000,
-      },
-      {
+      createAssignment(),
+      createAssignment({
         assignmentId: "assignment-2",
         scheduleId: "schedule-2",
         scheduleRoleSlotId: "slot-2",
         roleCode: "guide",
         startsAt: "2026-04-10T11:00:00+09:00",
         endsAt: "2026-04-10T19:00:00+09:00",
-        hourlyRateCents: 12000,
-        regularHours: 8,
-        overtimeHours: 0,
-        overtimeApplied: false,
-        regularPayCents: 96000,
-        overtimePayCents: 0,
-        totalPayCents: 96000,
-      },
+      }),
     ]);
 
     const inFilter = vi.fn().mockResolvedValue({
@@ -89,38 +88,17 @@ describe("listWorkerAttendanceStatuses", () => {
     ]);
   });
 
-  it("derives checkInOpensAt, windowStatus, and submissionStatus from backend timing rules", async () => {
+  it("keeps attendance status generation available when pay data is missing", async () => {
     listConfirmedWorkerAssignments.mockResolvedValue([
-      {
-        assignmentId: "assignment-1",
-        scheduleId: "schedule-1",
-        scheduleRoleSlotId: "slot-1",
-        roleCode: "captain",
-        startsAt: "2026-04-10T10:00:00+09:00",
-        endsAt: "2026-04-10T18:00:00+09:00",
-        hourlyRateCents: 12000,
-        regularHours: 8,
-        overtimeHours: 0,
-        overtimeApplied: false,
-        regularPayCents: 96000,
-        overtimePayCents: 0,
-        totalPayCents: 96000,
-      },
-      {
-        assignmentId: "assignment-2",
-        scheduleId: "schedule-2",
-        scheduleRoleSlotId: "slot-2",
-        roleCode: "guide",
-        startsAt: "2026-04-10T11:00:00+09:00",
-        endsAt: "2026-04-10T19:00:00+09:00",
-        hourlyRateCents: 12000,
-        regularHours: 8,
-        overtimeHours: 0,
-        overtimeApplied: false,
-        regularPayCents: 96000,
-        overtimePayCents: 0,
-        totalPayCents: 96000,
-      },
+      createAssignment({
+        payStatus: "missing_worker_rate",
+        hourlyRateCents: null,
+        regularHours: null,
+        overtimeHours: null,
+        regularPayCents: null,
+        overtimePayCents: null,
+        totalPayCents: null,
+      }),
     ]);
 
     const inFilter = vi.fn().mockResolvedValue({
@@ -142,13 +120,8 @@ describe("listWorkerAttendanceStatuses", () => {
     expect(result).toEqual([
       expect.objectContaining({
         assignmentId: "assignment-1",
+        scheduleId: "schedule-1",
         checkInOpensAt: "2026-04-09T23:20:00.000Z",
-        windowStatus: "open",
-        submissionStatus: "not_submitted",
-      }),
-      expect.objectContaining({
-        assignmentId: "assignment-2",
-        checkInOpensAt: "2026-04-10T00:10:00.000Z",
         windowStatus: "open",
         submissionStatus: "not_submitted",
       }),
@@ -156,23 +129,7 @@ describe("listWorkerAttendanceStatuses", () => {
   });
 
   it("returns stable submitted state without requiring UI-side attendance math", async () => {
-    listConfirmedWorkerAssignments.mockResolvedValue([
-      {
-        assignmentId: "assignment-1",
-        scheduleId: "schedule-1",
-        scheduleRoleSlotId: "slot-1",
-        roleCode: "captain",
-        startsAt: "2026-04-10T10:00:00+09:00",
-        endsAt: "2026-04-10T18:00:00+09:00",
-        hourlyRateCents: 12000,
-        regularHours: 8,
-        overtimeHours: 0,
-        overtimeApplied: false,
-        regularPayCents: 96000,
-        overtimePayCents: 0,
-        totalPayCents: 96000,
-      },
-    ]);
+    listConfirmedWorkerAssignments.mockResolvedValue([createAssignment()]);
 
     const inFilter = vi.fn().mockResolvedValue({
       data: [
