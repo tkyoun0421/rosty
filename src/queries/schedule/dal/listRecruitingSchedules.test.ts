@@ -15,7 +15,7 @@ describe("listRecruitingSchedules", () => {
     vi.clearAllMocks();
   });
 
-  it("returns only the minimal recruiting schedule fields ordered by start time", async () => {
+  it("returns recruiting schedules with card-ready role slot summaries ordered by start time", async () => {
     order.mockResolvedValue({
       data: [
         {
@@ -23,7 +23,10 @@ describe("listRecruitingSchedules", () => {
           starts_at: "2026-04-10T09:00:00+09:00",
           ends_at: "2026-04-10T13:00:00+09:00",
           status: "recruiting",
-          created_by: "admin-1",
+          schedule_role_slots: [
+            { role_code: "Captain", headcount: 2 },
+            { role_code: "Server", headcount: 4 },
+          ],
         },
       ],
       error: null,
@@ -34,7 +37,9 @@ describe("listRecruitingSchedules", () => {
 
     expect(getServerSupabaseClient).toHaveBeenCalled();
     expect(from).toHaveBeenCalledWith("schedules");
-    expect(select).toHaveBeenCalledWith("id, starts_at, ends_at, status");
+    expect(select).toHaveBeenCalledWith(
+      "id, starts_at, ends_at, status, schedule_role_slots(role_code, headcount)",
+    );
     expect(eq).toHaveBeenCalledWith("status", "recruiting");
     expect(order).toHaveBeenCalledWith("starts_at", { ascending: true });
     expect(result).toEqual([
@@ -43,6 +48,10 @@ describe("listRecruitingSchedules", () => {
         startsAt: "2026-04-10T09:00:00+09:00",
         endsAt: "2026-04-10T13:00:00+09:00",
         status: "recruiting",
+        roleSlotSummary: [
+          { roleCode: "Captain", headcount: 2 },
+          { roleCode: "Server", headcount: 4 },
+        ],
       },
     ]);
   });
