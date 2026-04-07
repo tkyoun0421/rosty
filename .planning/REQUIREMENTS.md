@@ -21,9 +21,9 @@
 
 ### Worker Surface
 
-- [ ] **WORKUI-01**: Worker can understand recruiting schedule items and current apply/applied state at a glance.
-- [ ] **WORKUI-02**: Worker can understand confirmed work, expected pay, and attendance state from the confirmed-work surface.
-- [ ] **WORKUI-03**: Worker sees clear empty and unavailable states that explain what to do next instead of raw blanks.
+- [x] **WORKUI-01**: Worker can understand recruiting schedule items and current apply/applied state at a glance.
+- [x] **WORKUI-02**: Worker can understand confirmed work, expected pay, and attendance state from the confirmed-work surface.
+- [x] **WORKUI-03**: Worker sees clear empty and unavailable states that explain what to do next instead of raw blanks.
 
 ## Future Requirements
 
@@ -56,9 +56,9 @@
 | ADMINUI-02 | Phase 11 | Complete |
 | ADMINUI-03 | Phase 11 | Complete |
 | ADMINUI-04 | Phase 11 | Complete |
-| WORKUI-01 | Phase 12 | Pending |
-| WORKUI-02 | Phase 12 | Pending |
-| WORKUI-03 | Phase 12 | Pending |
+| WORKUI-01 | Phase 12 | Complete |
+| WORKUI-02 | Phase 12 | Complete |
+| WORKUI-03 | Phase 12 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 11 total
@@ -67,4 +67,4 @@
 
 ---
 *Requirements defined: 2026-04-06*
-*Last updated: 2026-04-06 after Phase 11 execution*
+*Last updated: 2026-04-07 after Phase 12 execution*

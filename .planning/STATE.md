@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: UI Surface Completion
-status: planning
-stopped_at: Phase 12 context gathered
-last_updated: "2026-04-07T09:28:26.981Z"
-last_activity: 2026-04-06
+status: verifying
+stopped_at: Completed 12-02-PLAN.md
+last_updated: "2026-04-07T10:17:12.810Z"
+last_activity: 2026-04-07 -- Phase 12 execution completed
 progress:
   total_phases: 3
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
-  percent: 75
+  completed_phases: 3
+  total_plans: 8
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
@@ -21,17 +21,17 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-06)
 
 **Core value:** Admins should be able to confirm venue staffing quickly, and workers should be able to review their confirmed work, role context, and expected pay clearly.
-**Current focus:** Phase 12 - Worker Work Surface Completion
+**Current focus:** Milestone v1.1 verification and closeout
 
 ## Current Position
 
 Milestone: v1.1 (UI Surface Completion) - ACTIVE
-Phase: 12 (Worker Work Surface Completion)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-04-06
+Phase: 12 (Worker Work Surface Completion) - COMPLETE
+Plan: 2 of 2
+Status: Phase complete - ready for verification
+Last activity: 2026-04-07 -- Phase 12 execution completed
 
-Progress: [########--] 6/8 plans (75%)
+Progress: [##########] 8/8 plans (100%)
 
 ## Performance Metrics
 
@@ -40,13 +40,15 @@ Progress: [########--] 6/8 plans (75%)
 |-------|-------|--------|
 | 10. Entry And Shared Shell Surface | 3/3 | complete |
 | 11. Admin Scheduling Surface Completion | 3/3 | complete |
-| 12. Worker Work Surface Completion | 0/2 | not started |
+| 12. Worker Work Surface Completion | 2/2 | complete |
 | Phase 10 P01 | 4 min | 2 tasks | 7 files |
 | Phase 10 P02 | 8 min | 2 tasks | 10 files |
 | Phase 10 P03 | 6 min | 2 tasks | 8 files |
 | Phase 11 P01 | 5 min | 2 tasks | 7 files |
 | Phase 11 P02 | 6 min | 2 tasks | 6 files |
 | Phase 11 P03 | 4 min | 2 tasks | 4 files |
+| Phase 12 P01 | 14 min | 2 tasks | 7 files |
+| Phase 12 P02 | 11 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -61,26 +63,28 @@ Progress: [########--] 6/8 plans (75%)
 - Reuse `EntrySurfaceFrame` across auth-facing and entry-state routes so sign-in, invite, onboarding, unauthorized, loading, and error states read as one product family.
 - Move the existing admin operations dashboard behind `/admin/operations` so `/admin` can serve as the real admin landing shell.
 - Keep admin scheduling edits in `/admin/schedules` and `/admin/schedules/[scheduleId]`, while `/admin/operations` stays a triage-first drill-down surface.
+- Keep worker recruiting on the existing schedule application server action and cache-tag invalidation path while refreshing only the presentation layer.
+- Preserve confirmed worker assignments when pay rates are missing by exposing a pay-pending state instead of hiding the assignment.
 
 ### Pending Todos
 
-- Plan and execute Phase 12: Worker Work Surface Completion.
 - Schedule live-browser UAT for Phase 10 entry routes, including Google OAuth, invite continuity, and loading/error-state observation.
 - Schedule live-browser UAT for Phase 11 admin scheduling routes, including create, draft-save, confirm, and dashboard-to-detail flow.
-- Decide when to re-run the archived manual verification debt from v1.0 relative to v1.1 execution.
+- Schedule live-browser UAT for Phase 12 worker routes, including apply, pay-pending visibility, and attendance check-in flow.
+- Decide when to re-run the archived manual verification debt from v1.0 relative to v1.1 closeout.
 
 ### Blockers/Concerns
 
 - Phase 10 still carries manual-only verification for live Google OAuth and runtime route-state observation.
 - Phase 11 still carries manual-only verification for live schedule creation, draft/confirm flow feel, and dashboard-to-detail freshness.
-- The product still feels incomplete on worker-facing routes until Phase 12 lands.
+- Phase 12 still needs live browser verification for worker application and attendance UX in a real environment.
 - Remaining manual verification debt from v1.0 lives in `.planning/milestones/v1.0-MILESTONE-AUDIT.md` and the archived phase artifacts.
 
 ## Session Continuity
 
-Last session: 2026-04-07T09:28:26.974Z
-Stopped at: Phase 12 context gathered
-Resume file: .planning/phases/12-worker-work-surface-completion/12-CONTEXT.md
+Last session: 2026-04-07T10:16:58.367Z
+Stopped at: Completed 12-02-PLAN.md
+Resume file: None
 
 ---
-*State refreshed: 2026-04-06 after Phase 11 execution*
+*State refreshed: 2026-04-07 after Phase 12 execution*

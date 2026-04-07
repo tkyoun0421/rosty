@@ -37,7 +37,7 @@ Closeout notes:
 
 - [x] **Phase 10: Entry And Shared Shell Surface**
 - [x] **Phase 11: Admin Scheduling Surface Completion** (completed 2026-04-06)
-- [ ] **Phase 12: Worker Work Surface Completion**
+- [x] **Phase 12: Worker Work Surface Completion** (completed 2026-04-07)
 
 ## Phase Details
 
@@ -82,15 +82,18 @@ Plans:
 2. Workers can understand confirmed work, expected pay, and attendance context from a readable confirmed-work screen.
 3. Worker-facing surfaces explain empty states, unavailable states, and next steps without raw blanks or confusing placeholder text.
 **Plans**: 2
-**Status**: Planned
+Plans:
+- [x] 12-01-PLAN.md - rebuild `/worker/schedules` so recruiting cards, role summaries, and apply state feel coherent.
+- [x] 12-02-PLAN.md - rebuild `/worker/assignments` so confirmed work, pay readiness, and attendance state stay understandable.
+**Status**: Complete (2026-04-07)
 
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 10. Entry And Shared Shell Surface | v1.1 | 3/3 | Complete | 2026-04-06 |
-| 11. Admin Scheduling Surface Completion | v1.1 | 3/3 | Complete    | 2026-04-06 |
-| 12. Worker Work Surface Completion | v1.1 | 0/2 | Not started | - |
+| 11. Admin Scheduling Surface Completion | v1.1 | 3/3 | Complete | 2026-04-06 |
+| 12. Worker Work Surface Completion | v1.1 | 2/2 | Complete | 2026-04-07 |
 
 ---
-*Last updated: 2026-04-06 after Phase 11 execution*
+*Last updated: 2026-04-07 after Phase 12 execution*
